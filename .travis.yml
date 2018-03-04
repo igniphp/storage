@@ -1,0 +1,32 @@
+language: php
+
+sudo: false
+
+php:
+  - 7.1
+  - 7.2
+  - nightly
+
+env:
+  - DB=sqlite
+  - DB=mysql
+  - DB=mongo
+
+services:
+  - mongodb
+  - mysql
+
+before_install:
+  - composer self-update
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test; GRANT ALL PRIVILEGES ON test.* to travis@'%''
+  - mongo test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
+
+install:
+  - composer update
+
+script:
+  - vendor/bin/phpunit
+
+cache:
+  directories:
+    - $HOME/.composer/cache

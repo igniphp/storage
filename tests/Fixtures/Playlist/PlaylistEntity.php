@@ -2,28 +2,23 @@
 
 namespace IgniTest\Fixtures\Playlist;
 
+use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use IgniTest\Fixtures\Track\TrackEntity;
 
 class PlaylistEntity implements Entity
 {
-    protected $id;
+    use AutoGenerateId;
 
     protected $name;
 
     /** @var PlaylistDetails */
     protected $details;
 
-    public function __construct(string $id, string $name)
+    public function __construct(string $name)
     {
-        $this->id = $id;
         $this->name = $name;
         $this->details = new PlaylistDetails();
-    }
-
-    public function getId()
-    {
-        return $this->id;
     }
 
     public function getName(): string

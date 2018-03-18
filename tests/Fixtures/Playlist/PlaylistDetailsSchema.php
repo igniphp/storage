@@ -21,7 +21,7 @@ class PlaylistDetailsSchema extends Schema
                 $tracks = [];
                 /** @var TrackEntity $track */
                 foreach ($entity->getTracks() as $track) {
-                    $tracks[] = $track->getId();
+                    $tracks[] = $track->getId()->getValue();
                 }
 
                 return ['songs' => $tracks];

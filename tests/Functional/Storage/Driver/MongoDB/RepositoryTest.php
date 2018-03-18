@@ -28,7 +28,7 @@ class RepositoryTest extends TestCase
 
         $tracks = $playlist->getTracks();
 
-        self::assertSame(1, $playlist->getId());
+        self::assertSame(1, $playlist->getId()->getValue());
         self::assertSame(4.12, $playlist->getRating());
         self::assertCount(12, $playlist->getTracks());
 
@@ -50,17 +50,17 @@ class RepositoryTest extends TestCase
     public function testCreate(): void
     {
 
-        $playlist = new PlaylistEntity('someid', 'playlistname');
+        $playlist = new PlaylistEntity('playlistname');
         $playlist->addTrack($this->entityManager->get(TrackEntity::class, 1));
         $playlist->addTrack($this->entityManager->get(TrackEntity::class, 2));
         $playlist->addTrack($this->entityManager->get(TrackEntity::class, 3));
 
         $this->entityManager->create($playlist);
 
-        $cursor = new Collection($this->mongoConnection->find('playlist', ['_id' => 'someid']));
+        $cursor = new Collection($this->mongoConnection->find('playlist', ['_id' => $playlist->getId()->getValue()]));
         self::assertEquals(
             [
-                '_id' => 'someid',
+                '_id' => $playlist->getId()->getValue(),
                 'name' => 'playlistname',
                 'details' => [
                     'rating' => 0,

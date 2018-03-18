@@ -2,6 +2,7 @@
 
 namespace IgniTest\Fixtures\Track;
 
+use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Artist\ArtistEntity;
@@ -9,13 +10,13 @@ use IgniTest\Fixtures\Genre\GenreEntity;
 
 class TrackEntity implements Entity
 {
+    use AutoGenerateId;
+
     const MEDIA_TYPE_AUDIO_MPEG = 1;
     const MEDIA_TYPE_PROTECTED_AAC = 2;
     const MEDIA_TYPE_VIDEO_MPEG= 3;
     const MEDIA_TYPE_UNLOCKED_AAC = 4;
     const MEDIA_TYPE_AUDIO_AAC = 5;
-
-    protected $id;
 
     protected $name;
 
@@ -35,9 +36,8 @@ class TrackEntity implements Entity
 
     protected $artist;
 
-    public function __construct(int $id, string $name, string $composer, AlbumEntity $album)
+    public function __construct(string $name, string $composer, AlbumEntity $album)
     {
-        $this->id = $id;
         $this->album = $album;
         $this->name = $name;
         $this->composer = $composer;
@@ -76,11 +76,6 @@ class TrackEntity implements Entity
     public function getSize(): int
     {
         return $this->size;
-    }
-
-    public function getId(): int
-    {
-        return (int) $this->id;
     }
 
     public function setGenre(GenreEntity $genre): void

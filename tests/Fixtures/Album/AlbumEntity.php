@@ -2,13 +2,14 @@
 
 namespace IgniTest\Fixtures\Album;
 
+use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use DateTime;
 use IgniTest\Fixtures\Artist\ArtistEntity;
 
 class AlbumEntity implements Entity
 {
-    protected $id;
+    use AutoGenerateId;
 
     protected $artist;
 
@@ -18,9 +19,8 @@ class AlbumEntity implements Entity
 
     protected $tracks;
 
-    public function __construct(string $id, string $title, ArtistEntity $artist)
+    public function __construct(string $title, ArtistEntity $artist)
     {
-        $this->id = $id;
         $this->title = $title;
         $this->artist = $artist;
     }
@@ -38,11 +38,6 @@ class AlbumEntity implements Entity
     public function getReleaseDate(): DateTime
     {
         return $this->releaseDate;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     public function getArtist(): ArtistEntity

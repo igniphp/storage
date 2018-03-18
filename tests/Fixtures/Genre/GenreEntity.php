@@ -2,12 +2,13 @@
 
 namespace IgniTest\Fixtures\Genre;
 
+use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use Igni\Storage\Mapping\ImmutableCollection;
 
 class GenreEntity implements Entity
 {
-    protected $id;
+    use AutoGenerateId;
 
     protected $name;
 
@@ -24,19 +25,8 @@ class GenreEntity implements Entity
         return $this->name;
     }
 
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
     public function getTracks(): ImmutableCollection
     {
         return $this->tracks;
-    }
-
-    public static function dupa()
-    {
-        $entity = new GenreEntity('aa', 'a');
-        $entity->id = 'Dupa';
     }
 }

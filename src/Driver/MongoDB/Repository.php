@@ -50,7 +50,7 @@ abstract class Repository implements RepositoryInterface
 
     public function remove(Entity $entity): Entity
     {
-        $this->connection->remove($this->getSchema()->getSource(), $entity->getId());
+        $this->connection->remove($this->getSchema()->getSource(), $entity->getId()->getValue());
 
         return $entity;
     }

@@ -82,6 +82,10 @@ class Hydrator implements ObjectHydrator
         $manager = $this->entityManager;
 
         $extractor = function($entity) use ($properties, $namingStrategy, $manager): array {
+            // Id Autogeneration support.
+            if ($entity instanceof Entity) {
+                $entity->getId();
+            }
             $extracted = [];
             foreach($properties as $property => $strategy) {
                 if ($strategy instanceof DefinedMapping) {

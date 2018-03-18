@@ -2,21 +2,20 @@
 
 namespace IgniTest\Fixtures\Artist;
 
+use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use Igni\Storage\Mapping\ImmutableCollection;
 
 class ArtistEntity implements Entity
 {
+    use AutoGenerateId;
+
     protected $name;
-
-    protected $id;
-
     protected $albums;
 
-    public function __construct(string $name, string $id)
+    public function __construct(string $name)
     {
         $this->name = $name;
-        $this->id = $id;
     }
 
     public function getName(): string
@@ -27,11 +26,6 @@ class ArtistEntity implements Entity
     public function changeName(string $name): void
     {
         $this->name = $name;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     public function getAlbums(): ImmutableCollection

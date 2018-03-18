@@ -41,7 +41,7 @@ class RepositoryTest extends TestCase
     {
         /** @var ArtistEntity $artist */
         $artist = $this->entityManager->get(ArtistEntity::class, 1);
-        $album = new AlbumEntity('4242', 'Test Album creation', $artist);
+        $album = new AlbumEntity('Test Album creation', $artist);
 
         $this->entityManager->create($album);
 

@@ -3,8 +3,6 @@
 ## Igni Storage
 Licensed under MIT License.
 
-**Igni** validation is simple, lightweight and extensible validation library.
-
 ## Installation
 
 ```

@@ -50,9 +50,9 @@ class RepositoryTest extends TestCase
         $data = $cursor->current();
         self::assertSame(
             [
-                'AlbumId' => $album->getId(),
+                'AlbumId' => $album->getId()->getValue(),
                 'Title' => $album->getTitle(),
-                'ArtistId' => $album->getArtist()->getId(),
+                'ArtistId' => $album->getArtist()->getId()->getValue(),
                 'ReleaseDate' => null
             ],
             $data

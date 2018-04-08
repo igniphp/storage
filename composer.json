@@ -15,7 +15,8 @@
     "ext-pdo": "*",
     "ext-hash": "*",
     "ext-json": "*",
-    "igniphp/common": ">=1.0.0"
+    "igniphp/common": ">=1.0.0",
+    "doctrine/annotations": "^1.6"
   },
   "require-dev": {
     "phpunit/phpunit": "~5.7",

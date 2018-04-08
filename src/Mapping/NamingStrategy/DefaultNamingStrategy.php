@@ -10,19 +10,4 @@ class DefaultNamingStrategy implements NamingStrategy
     {
         return $name;
     }
-
-    public function addRule(string $from, $to): void
-    {
-        // Intentionally left empty.
-    }
-
-    public function hasRule(string $from): bool
-    {
-        return true;
-    }
-
-    public function removeRule(string $from): void
-    {
-        // Intentionally left empty.
-    }
 }

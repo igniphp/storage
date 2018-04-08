@@ -4,26 +4,23 @@ namespace Igni\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\MappingContext;
 use Igni\Storage\Mapping\MappingStrategy;
-use Igni\Storage\Uuid;
 
-final class Id implements MappingStrategy, DefaultOptionsProvider
+final class Enum implements MappingStrategy, DefaultOptionsProvider
 {
-    public static function hydrate($value, MappingContext $context, array $options = [])
+    public static function hydrate($index, MappingContext $context, array $options = [])
     {
-        $class = $options['generator'];
-
-        return new $class($value);
+        return $options['values'][$index];
     }
 
     public static function extract($value, MappingContext $context, array $options = [])
     {
-        return $value->getValue();
+        return array_search($value, $options['values']);
     }
 
     public static function getDefaultOptions(): array
     {
         return [
-            'generator' => Uuid::class,
+            'values' => [],
         ];
     }
 }

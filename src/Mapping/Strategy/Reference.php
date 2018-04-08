@@ -4,34 +4,27 @@ namespace Igni\Storage\Mapping\Strategy;
 
 use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Entity;
+use Igni\Storage\Hydration\HydratorGenerator\GeneratedHydrator;
+use Igni\Storage\Mapping\MappingContext;
 use Igni\Storage\Mapping\MappingStrategy;
 
+/**
+ * @see GeneratedHydrator
+ */
 final class Reference implements MappingStrategy
 {
-    private $entity;
-
-    public function __construct(string $entity)
+    public static function hydrate($value, MappingContext $context, array $options = [])
     {
-        $this->entity = $entity;
+        /** @var EntityManager $entityManager */
+        $entityManager = $options['entity_manager'];
+
+        return $entityManager->get($options['entity_class'], $value);
     }
 
-    public function hydrate($value, EntityManager $entityManager = null)
-    {
-        try {
-            return $entityManager->get($this->entity, $value);
-        } catch (\Exception $e) {
-            return null;
-        }
-    }
-
-    /**
-     * @param Entity $value
-     * @return mixed
-     */
-    public function extract($value)
+    public static function extract($value, MappingContext $context, array $options = [])
     {
         if ($value instanceof Entity) {
-            return $value->getId();
+            return $value->getId() ? $value->getId()->getValue() : null;
         }
     }
 }

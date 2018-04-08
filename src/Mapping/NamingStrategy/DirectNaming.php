@@ -13,23 +13,6 @@ class DirectNaming implements NamingStrategy
         $this->map = $map;
     }
 
-    public function addRule(string $from, $to): void
-    {
-        $this->map[$from] = $to;
-    }
-
-    public function hasRule(string $from): bool
-    {
-        return isset($this->map[$from]);
-    }
-
-    public function removeRule(string $from): void
-    {
-        if ($this->hasRule($from)) {
-            unset($this->map[$from]);
-        }
-    }
-
     public function map(string $name): string
     {
         return $this->map[$name] ?? $name;

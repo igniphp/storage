@@ -17,13 +17,13 @@ class ArtistRepository extends Repository
         ";
 
         $cursor = $this->connection->execute($query, ['id' => $id]);
-        $cursor->setHydrator($this->hydrator);
+        $cursor->hydrateTo(ArtistEntity::class);
 
         return $cursor->current();
     }
 
-    public function getSchema(): Schema
+    public function getEntity(): Schema
     {
-        return ArtistSchema::instance();
+        return ArtistEntity::class;
     }
 }

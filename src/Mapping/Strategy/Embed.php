@@ -2,66 +2,52 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Exception\MappingException;
-use Igni\Storage\Hydration\Hydrator;
+use Igni\Storage\Mapping\MappingContext;
 use Igni\Storage\Mapping\MappingStrategy;
-use Igni\Storage\Mapping\Schema;
 
-final class Embed implements MappingStrategy
+final class Embed implements MappingStrategy, DefaultOptionsProvider
 {
-    public const STORAGE_PLAIN = 'plain';
-    public const STORAGE_SERIALIZED = 'serialized';
-    public const STORAGE_JSON = 'json';
-
-    private $embedSchema;
-    private $hydrator;
-    private $storageType;
-
-    public function __construct(Schema $schema, string $storeAs = self::STORAGE_PLAIN)
+    public static function hydrate($value, MappingContext $context, array $options = [])
     {
-        $this->embedSchema = $schema;
-        $this->storageType = $storeAs;
-    }
-
-    public function hydrate($value, EntityManager $manager = null)
-    {
-        if (!$this->hydrator) {
-            $this->hydrator = new Hydrator($manager, $this->embedSchema);
-        }
-        switch ($this->storageType) {
-            case self::STORAGE_JSON:
+        switch ($options['store_as']) {
+            case 'json':
                 $value = json_decode($value, true);
                 break;
-            case self::STORAGE_SERIALIZED:
+            case 'serialized':
                 $value = unserialize($value);
                 break;
-            case self::STORAGE_PLAIN:
+            case 'plain':
                 break;
             default:
-                throw MappingException::forUnknownMappingStrategy(Embed::class . '(storage=' . $this->storageType . ')');
+                throw MappingException::forUnknownMappingStrategy(Embed::class . "(store_as {$options['store_as']})");
         }
-        return $this->hydrator->hydrate($value);
+
+        return $context->getEntityHydrator()->hydrate($value);
     }
 
-    public function extract($value, EntityManager $manager = null)
+    public static function extract($value, MappingContext $context, array $options = [])
     {
-        if (!$this->hydrator) {
-            $this->hydrator = new Hydrator($manager, $this->embedSchema);
-        }
-        $value = $this->hydrator->extract($value);
-        switch ($this->storageType) {
-            case self::STORAGE_JSON:
+        $value = $context->getEntityHydrator()->extract($value);
+        switch ($options['store_as']) {
+            case 'json':
                 $value = json_encode($value);
                 break;
-            case self::STORAGE_SERIALIZED:
+            case 'serialized':
                 $value = serialize($value);
                 break;
-            case self::STORAGE_PLAIN:
+            case 'plain':
                 break;
             default:
-                throw MappingException::forUnknownMappingStrategy(Embed::class . '(storage=' . $this->storageType . ')');
+                throw MappingException::forUnknownMappingStrategy(Embed::class . "(store_as {$options['store_as']})");
         }
         return $value;
+    }
+
+    public static function getDefaultOptions(): array
+    {
+        return [
+            'store_as' => 'json',
+        ];
     }
 }

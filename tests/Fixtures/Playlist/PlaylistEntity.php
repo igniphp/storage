@@ -6,13 +6,21 @@ use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use IgniTest\Fixtures\Track\TrackEntity;
 
+/**
+ * @Entity(source="playlists")
+ */
 class PlaylistEntity implements Entity
 {
     use AutoGenerateId;
 
+    /**
+     * @Type\String(name="Name")
+     */
     protected $name;
 
-    /** @var PlaylistDetails */
+    /**
+     * @Type\Embed(PlaylistDetails::class, storeAs="plain")
+     */
     protected $details;
 
     public function __construct(string $name)

@@ -2,39 +2,27 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use Igni\Storage\Exception\HydratorException;
+use Igni\Storage\Mapping\MappingContext;
 use Igni\Storage\Mapping\MappingStrategy;
 
 final class Text implements MappingStrategy
 {
-    private $length;
-
-    public function __construct(int $length = null)
+    public static function hydrate($value, MappingContext $context, array $options = []): string
     {
-        $this->length = $length;
+        return self::trimString($value, $options);
     }
 
-    public function hydrate($value): string
+    public static function extract($value, MappingContext $context, array $options = []): string
     {
-        return (string) $value;
+        return self::trimString($value, $options);
     }
 
-    public function extract($value): string
+    private static function trimString($value, array $options = []): string
     {
-        return (string) $value;
-    }
-
-    public function hasLength(): bool
-    {
-        return $this->length !== null;
-    }
-
-    public function length(): int
-    {
-        if (!$this->hasLength()) {
-            throw HydratorException::forPropertyMissArgument($this, 'length');
+        if (isset($options['length'])) {
+            return substr((string) $value, 0, (int) $options['length']);
         }
 
-        return $this->length;
+        return $value;
     }
 }

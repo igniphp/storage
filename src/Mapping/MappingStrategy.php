@@ -4,6 +4,6 @@ namespace Igni\Storage\Mapping;
 
 interface MappingStrategy
 {
-    public function hydrate($value);
-    public function extract($value);
+    public static function hydrate($value, MappingContext $context, array $options = []);
+    public static function extract($value, MappingContext $context, array $options = []);
 }

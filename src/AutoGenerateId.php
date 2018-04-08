@@ -2,10 +2,12 @@
 
 namespace Igni\Storage;
 
+use Igni\Storage\Mapping\Annotations\Types;
+
 trait AutoGenerateId
 {
     /**
-     * @var Id
+     * @Types\Id()
      */
     protected $id;
 

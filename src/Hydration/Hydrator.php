@@ -4,47 +4,19 @@ namespace Igni\Storage\Hydration;
 
 use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Entity;
-use Igni\Storage\Mapping\IdentityMap;
-use Igni\Storage\Mapping\NamingStrategy;
-use Igni\Storage\Mapping\Schema;
-use Igni\Storage\Mapping\Strategy\DefinedMapping;
+use Igni\Storage\Mapping\Strategy\Delegator;
 use Igni\Utils\ReflectionApi;
 
-class Hydrator implements ObjectHydrator
+/**
+ * @property EntityManager $entityManager
+ */
+trait Hydrator
 {
-    /** @var string|HydrationMode */
     private $mode;
-
-    /** @var IdentityMap */
-    protected $entityManager;
-
-    /** @var NamingStrategy */
-    protected $namingStrategy;
-
-    /** @var Schema */
-    protected $schema;
-
-    public function __construct(EntityManager $entityManager, Schema $schema)
-    {
-        $this->entityManager = $entityManager;
-        $this->schema = $schema;
-        $this->mode = HydrationMode::BY_REFERENCE;
-        $this->namingStrategy = $schema->getNamingStrategy();
-    }
-
-    public function setNamingStrategy(NamingStrategy $strategy)
-    {
-        $this->namingStrategy = $strategy;
-    }
-
-    public function getNamingStrategy(): NamingStrategy
-    {
-        return $this->namingStrategy;
-    }
 
     public function hydrate(array $data)
     {
-        $class = $this->schema->getEntity();
+        $class = $this->getSchema()->getEntity();
         /** @var Entity $entity */
         $entity = ReflectionApi::createInstance($class);
 
@@ -59,7 +31,7 @@ class Hydrator implements ObjectHydrator
                 $key = $namingStrategy->map($property);
                 $value = $data[$key] ?? null;
 
-                if ($strategy instanceof DefinedMapping) {
+                if ($strategy instanceof Delegator) {
                     $entity->{$property} = $strategy->hydrate($data, $manager);
                 } else {
                     $entity->{$property} = $strategy->hydrate($value, $manager);
@@ -88,7 +60,7 @@ class Hydrator implements ObjectHydrator
             }
             $extracted = [];
             foreach($properties as $property => $strategy) {
-                if ($strategy instanceof DefinedMapping) {
+                if ($strategy instanceof Delegator) {
                     if ($strategy->hasExtractor()) {
                         $return = $strategy->extract($entity);
 

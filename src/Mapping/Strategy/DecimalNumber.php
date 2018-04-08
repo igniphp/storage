@@ -2,29 +2,26 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
+use Igni\Storage\Mapping\MappingContext;
 use Igni\Storage\Mapping\MappingStrategy;
 
-final class DecimalNumber implements MappingStrategy
+final class DecimalNumber implements MappingStrategy, DefaultOptionsProvider
 {
-    private const DEFAULT_SCALE = 10;
-    private const DEFAULT_PRECISION = 2;
-
-    private $scale;
-    private $precision;
-
-    public function __construct(int $scale = self::DEFAULT_SCALE, int $precision = self::DEFAULT_PRECISION)
-    {
-        $this->scale = $scale;
-        $this->precision = $precision;
-    }
-
-    public function hydrate($value): string
+    public static function hydrate($value, MappingContext $context, array $options = []): string
     {
         return (string) $value;
     }
 
-    public function extract($value): string
+    public static function extract($value, MappingContext $context, array $options = []): string
     {
         return (string) $value;
+    }
+
+    public static function getDefaultOptions(): array
+    {
+        return [
+            'scale' => 10,
+            'precision' => 2,
+        ];
     }
 }

@@ -11,6 +11,9 @@ class AlbumEntity implements Entity
 {
     use AutoGenerateId;
 
+    /**
+     * @Types\Reference()
+     */
     protected $artist;
 
     protected $title;

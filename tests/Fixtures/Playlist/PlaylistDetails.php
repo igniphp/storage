@@ -4,9 +4,16 @@ namespace IgniTest\Fixtures\Playlist;
 
 use IgniTest\Fixtures\Track\TrackEntity;
 
+/**
+ * @EmbedEntity(hydrator=PlaylistDetailsHydrator::class)
+ */
 class PlaylistDetails
 {
+    /**
+     * @Type\Float()
+     */
     protected $rating = 0.0;
+
     protected $tracks = [];
 
     public function getTracks()

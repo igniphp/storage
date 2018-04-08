@@ -135,9 +135,4 @@ class EntityManager implements IdentityMap, RepositoryContainer
 
         return $this->connections[$name];
     }
-
-    public static function fromConfig(Config $config): EntityManager
-    {
-
-    }
 }

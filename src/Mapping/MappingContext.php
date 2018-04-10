@@ -2,21 +2,17 @@
 
 namespace Igni\Storage\Mapping;
 
-use Igni\Storage\Driver\EntityManager;
-use Igni\Storage\Hydration\HydratorFactory;
-use Igni\Storage\Hydration\ObjectHydrator;
+use Igni\Storage\EntityManager;
 
 final class MappingContext
 {
     private $entityClass;
     private $entityManager;
-    private $hydratorFactory;
 
-    public function __construct(string $entityClass, HydratorFactory $hydratorFactory, EntityManager $entityManager)
+    public function __construct(string $entityClass, EntityManager $entityManager)
     {
-        $this->entityManager = $entityManager;
         $this->entityClass = $entityClass;
-        $this->hydratorFactory = $hydratorFactory;
+        $this->entityManager = $entityManager;
     }
 
     public function getEntityClass(): string
@@ -27,10 +23,5 @@ final class MappingContext
     public function getEntityManager(): EntityManager
     {
         return $this->entityManager;
-    }
-
-    public function getHydratorFor(string $entityClass): ObjectHydrator
-    {
-
     }
 }

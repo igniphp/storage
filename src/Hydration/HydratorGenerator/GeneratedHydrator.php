@@ -14,7 +14,7 @@ final class GeneratedHydrator
 <?php declare(strict_types = 1);
 {namespace}
 
-use Igni\Storage\Driver\EntityManager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Hydration\HydratorFactory;
 use Igni\Storage\Hydration\ObjectHydrator;
 use Igni\Storage\Mapping\MappingContext;
@@ -29,7 +29,7 @@ final class {name}{extends} implements ObjectHydrator
     public function __construct(EntityManager \$entityManager)
     {
         \$this->entityManager = \$entityManager;
-        \$this->mappingContext = new MappingContext({entity}::class, HydratorFactory::instance(), \$entityManager);
+        \$this->mappingContext = new MappingContext({entity}::class, \$entityManager);
         \$this->source = {source} ?? '';
         {properties}
     }
@@ -99,7 +99,7 @@ EOF;
         $this->properties[$name] = [
             'type' => '\\' . Type::get($type),
             'attributes' => $attributes,
-            'field' => $attributes['name'] ?? $name,
+            'field' => $attributes['field'] ?? $name,
         ];
     }
 
@@ -133,11 +133,11 @@ EOF;
 
         foreach ($this->properties as $name => $property) {
             $properties[] = "\$this->reflectionProperties['${name}'] = new \ReflectionProperty('{$this->entityClass}', '${name}');";
-            $properties[] = "\$this->reflectionProperties['${name}']->setAccessible();";
+            $properties[] = "\$this->reflectionProperties['${name}']->setAccessible(true);";
 
             $attributes = preg_replace('/\s+/', '', var_export($property['attributes'], true));
 
-            $value = "{$property['type']}::hydrate(\$data['{$property['field']}'], \$this->mappingContext, {$attributes})";
+            $value = "{$property['type']}::hydrate(\$data['{$property['field']}'] ?? null, \$this->mappingContext, {$attributes})";
             $hydrator[] = "\$this->reflectionProperties['${name}']->setValue(\$entity, ${value});";
 
 
@@ -163,15 +163,18 @@ EOF;
 
     public function load(): void
     {
-        $temp = tmpfile();
-        if (!$temp) {
+        $uri = tempnam(sys_get_temp_dir(), 'igniem');
+        if (!$uri) {
             throw new HydratorException("Could not dynamically load hydrator");
         }
-        $metaData = stream_get_meta_data($temp);
-        fwrite($temp, (string) $this);
+        $temp = fopen($uri, 'w');
+
+        if (!fwrite($temp, (string) $this)) {
+            throw new HydratorException("Could not dynamically load hydrator- cannot write temporary file.");
+        }
         fclose($temp);
 
-        require_once  $metaData['uri'];
+        require_once $uri;
     }
 
     private function createHydratorName(string $className): string

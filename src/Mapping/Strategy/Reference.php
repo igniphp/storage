@@ -14,7 +14,7 @@ final class Reference implements MappingStrategy
 {
     public static function hydrate($value, MappingContext $context, array $options = [])
     {
-        return $context->getEntityManager()->get($context->getEntityClass(), $value);
+        return $context->getEntityManager()->get($options['class'], $value);
     }
 
     public static function extract($value, MappingContext $context, array $options = [])

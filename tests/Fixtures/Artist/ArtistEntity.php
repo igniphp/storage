@@ -3,7 +3,7 @@
 namespace IgniTest\Fixtures\Artist;
 
 use Igni\Storage\AutoGenerateId;
-use Igni\Storage\Driver\EntityManager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Entity;
 use Igni\Storage\Mapping\ImmutableCollection;
 use IgniTest\Fixtures\Album\AlbumEntity;
@@ -17,12 +17,12 @@ class ArtistEntity implements Entity
     use AutoGenerateId;
 
     /**
-     * @Storage\Types\Text(name="Name")
+     * @Types\Text(name="Name")
      */
     protected $name;
 
     /**
-     * @Storage\Delegate()
+     * @Types\ReferenceMany(class=AlbumEntity::class)
      */
     protected $albums;
 

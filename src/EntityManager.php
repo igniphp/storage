@@ -1,16 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Driver;
+namespace Igni\Storage;
 
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Hydration\HydratorFactory;
 use Igni\Storage\Hydration\HydratorGenerator\HydratorAutoGenerate;
 use Igni\Storage\Hydration\ObjectHydrator;
-use Igni\Storage\RepositoryContainer;
-use Igni\Storage\Entity;
 use Igni\Storage\Mapping\IdentityMap;
-use Igni\Storage\Repository;
 use Igni\Utils\ReflectionApi;
 
 class EntityManager implements IdentityMap, RepositoryContainer

@@ -11,4 +11,9 @@ use Igni\Storage\Mapping\Annotations\Type;
 class Id extends Type
 {
     public $strategy = Uuid::class;
+
+    public function getType(): string
+    {
+        return 'id';
+    }
 }

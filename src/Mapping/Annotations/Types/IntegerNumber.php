@@ -9,4 +9,8 @@ use Igni\Storage\Mapping\Annotations\Type;
  */
 class IntegerNumber extends Type
 {
+    public function getType(): string
+    {
+        return 'integer';
+    }
 }

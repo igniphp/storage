@@ -2,7 +2,6 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Entity;
 use Igni\Storage\Hydration\HydratorGenerator\GeneratedHydrator;
 use Igni\Storage\Mapping\MappingContext;
@@ -15,10 +14,7 @@ final class Reference implements MappingStrategy
 {
     public static function hydrate($value, MappingContext $context, array $options = [])
     {
-        /** @var EntityManager $entityManager */
-        $entityManager = $options['entity_manager'];
-
-        return $entityManager->get($options['entity_class'], $value);
+        return $context->getEntityManager()->get($context->getEntityClass(), $value);
     }
 
     public static function extract($value, MappingContext $context, array $options = [])

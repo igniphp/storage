@@ -15,11 +15,6 @@ class Type extends Annotation
     public $name;
 
     /**
-     * @var string
-     */
-    public $type = 'text';
-
-    /**
      * @var mixed[]
      */
     public $options = [];
@@ -28,4 +23,9 @@ class Type extends Annotation
      * @var string
      */
     public $strategy;
+
+    public function getType(): string
+    {
+        return 'text';
+    }
 }

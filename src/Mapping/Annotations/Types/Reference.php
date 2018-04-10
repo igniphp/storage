@@ -11,5 +11,8 @@ class Reference extends Type
 {
     public $target;
 
-    public $type = 'reference';
+    public function getType(): string
+    {
+        return 'reference';
+    }
 }

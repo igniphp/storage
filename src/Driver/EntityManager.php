@@ -2,13 +2,16 @@
 
 namespace Igni\Storage\Driver;
 
-use Igni\Application\Config;
+use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Exception\RepositoryException;
-use Igni\Storage\Exception\StorageException;
+use Igni\Storage\Hydration\HydratorFactory;
+use Igni\Storage\Hydration\HydratorGenerator\HydratorAutoGenerate;
+use Igni\Storage\Hydration\ObjectHydrator;
 use Igni\Storage\RepositoryContainer;
 use Igni\Storage\Entity;
 use Igni\Storage\Mapping\IdentityMap;
 use Igni\Storage\Repository;
+use Igni\Utils\ReflectionApi;
 
 class EntityManager implements IdentityMap, RepositoryContainer
 {
@@ -18,9 +21,38 @@ class EntityManager implements IdentityMap, RepositoryContainer
     /** @var Repository[] */
     private $repositories = [];
 
-    /** @var Connection[] */
-    private $connections = [];
+    /** @var HydratorFactory */
+    private $hydratorFactory;
 
+    /** @var ObjectHydrator[] */
+    private $hydrators = [];
+
+    public function __construct(
+        string $hydratorDir = null,
+        string $hydratorNamespace = null,
+        HydratorAutoGenerate $hydratorAutoGenerate = null
+    ){
+        if ($hydratorDir === null) {
+            $hydratorDir = sys_get_temp_dir();
+        }
+
+        if ($hydratorAutoGenerate === null) {
+            $hydratorAutoGenerate = HydratorAutoGenerate::IF_NOT_EXISTS();
+        }
+
+        if (!is_writable($hydratorDir)) {
+            throw new HydratorException("Hydrators cannot be generated, directory ($hydratorDir) is not writable.");
+        }
+
+        $this->hydratorFactory = new HydratorFactory($hydratorDir, $hydratorAutoGenerate, $hydratorNamespace);
+    }
+
+    /**
+     * Creates new entity in the storage.
+     *
+     * @param Entity $entity
+     * @return Entity
+     */
     public function create(Entity $entity): Entity
     {
         $this->getRepository(get_class($entity))->create($entity);
@@ -28,12 +60,24 @@ class EntityManager implements IdentityMap, RepositoryContainer
         return $entity;
     }
 
+    /**
+     * Updated entity in the storage.
+     *
+     * @param Entity $entity
+     * @return Entity
+     */
     public function update(Entity $entity): Entity
     {
         $this->getRepository(get_class($entity))->update($entity);
         return $entity;
     }
 
+    /**
+     * Removes entity from the storage.
+     *
+     * @param Entity $entity
+     * @return Entity
+     */
     public function remove(Entity $entity): Entity
     {
         $this->getRepository(get_class($entity))->remove($entity);
@@ -42,6 +86,13 @@ class EntityManager implements IdentityMap, RepositoryContainer
         return $entity;
     }
 
+    /**
+     * Retrieves entity by identifier from the storage.
+     *
+     * @param string $entity
+     * @param $id
+     * @return Entity
+     */
     public function get(string $entity, $id): Entity
     {
         $key = $this->getId($entity, $id);
@@ -117,22 +168,49 @@ class EntityManager implements IdentityMap, RepositoryContainer
         return "${entity}@${id}";
     }
 
-    public function addConnection(string $name, Connection $connection): void
+    /**
+     * Creates instance of the entity class and hydrates it with passed data.
+     *
+     * @param string $entityClass
+     * @param array $data
+     * @return object
+     */
+    public function hydrate(string $entityClass, array $data)
     {
-        $this->connections[$name] = $connection;
+        $instance = ReflectionApi::createInstance($entityClass);
+        $hydrator = $this->getHydrator($entityClass);
+
+        return $hydrator->hydrate($instance, $data);
     }
 
-    public function hasConnection(string $name): bool
+    /**
+     * Extracts data from passed entity and returns it.
+     *
+     * @param $entity
+     * @return array
+     */
+    public function extract($entity): array
     {
-        return isset($this->connections[$name]);
+        $entityClass = get_class($entity);
+
+        $hydrator = $this->getHydrator($entityClass);
+
+        return $hydrator->extract($entity);
     }
 
-    public function getConnection(string $name): Connection
+    /**
+     * Returns hydrator for the given entity.
+     *
+     * @param string $entity
+     * @return ObjectHydrator
+     */
+    public function getHydrator(string $entity): ObjectHydrator
     {
-        if (!$this->hasConnection($name)) {
-            throw StorageException::forNotRegisteredConnection($name);
+        if (!isset($this->hydrators[$entity])) {
+            $hydrator = $this->hydratorFactory->get($entity);
+            $this->hydrators[$entity] = new $hydrator($this);
         }
 
-        return $this->connections[$name];
+        return $this->hydrators[$entity];
     }
 }

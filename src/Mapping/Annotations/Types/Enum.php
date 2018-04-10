@@ -10,4 +10,9 @@ use Igni\Storage\Mapping\Annotations\Type;
 class Enum extends Type
 {
     public $values;
+
+    public function getType(): string
+    {
+        return 'enum';
+    }
 }

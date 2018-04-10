@@ -7,8 +7,8 @@ use Doctrine\Common\Annotations\Annotation;
 /**
  * @Annotation
  */
-class Entity extends Annotation
+class EmbeddedEntity extends Annotation
 {
-    public $source;
+    public $storeAs = 'json';
     public $hydrator;
 }

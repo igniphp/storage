@@ -9,4 +9,8 @@ use Igni\Storage\Mapping\Annotations\Type;
  */
 class FloatNumber extends Type
 {
+    public function getType(): string
+    {
+        return 'float';
+    }
 }

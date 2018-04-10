@@ -10,6 +10,10 @@ use Igni\Storage\Mapping\Annotations\Type;
 class Date extends Type
 {
     public $timezone = 'UTC';
-
     public $format = 'Ymd';
+
+    public function getType(): string
+    {
+        return 'date';
+    }
 }

@@ -10,4 +10,9 @@ use Doctrine\Common\Annotations\Annotation;
 class Embed extends Annotation
 {
     public $class;
+
+    public function getType(): string
+    {
+        return 'embed';
+    }
 }

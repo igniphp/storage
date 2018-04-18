@@ -5,10 +5,10 @@ namespace IgniTest\Fixtures\Genre;
 use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Mapping\Type;
 use Igni\Storage\Mapping\NamingStrategy\DirectNaming;
-use Igni\Storage\Mapping\Schema;
+use Igni\Storage\Mapping\EntityMetaData;
 use IgniTest\Fixtures\Track\TrackEntity;
 
-class GenreSchema extends Schema
+class GenreEntityMetaData extends EntityMetaData
 {
     protected function define(): void
     {

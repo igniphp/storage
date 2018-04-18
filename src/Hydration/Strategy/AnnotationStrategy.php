@@ -1,14 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Hydration\HydratorGenerator;
+namespace Igni\Storage\Hydration\Strategy;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\IndexedReader;
-use Igni\Storage\Hydration\HydratorGenerator;
+use Igni\Storage\Hydration\Strategy;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Igni\Storage\Mapping\EntityMetaData;
 use Igni\Utils\ReflectionApi;
 
-class AnnotationStrategy implements HydratorGenerator
+class AnnotationStrategy
 {
     private $annotationReader;
     private $namespace;
@@ -20,7 +21,7 @@ class AnnotationStrategy implements HydratorGenerator
         $this->namespace = $namespace;
     }
 
-    public function generate(string $entityClass): GeneratedHydrator
+    public function create(string $entityClass): EntityMetaData
     {
         $reflection = ReflectionApi::reflectClass($entityClass);
     }

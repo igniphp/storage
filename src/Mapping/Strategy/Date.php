@@ -2,47 +2,31 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use Igni\Storage\Mapping\MappingContext;
-use Igni\Storage\Mapping\MappingStrategy;
-use DateTime;
 use DateTimeZone;
+use Igni\Storage\Mapping\MappingStrategy;
 
-final class Date implements MappingStrategy, DefaultOptionsProvider
+final class Date implements MappingStrategy, DefaultAttributesProvider
 {
-    /**
-     * @param $value
-     * @param MappingContext $context
-     * @param array $options
-     * @return DateTime|null
-     */
-    public static function hydrate($value, MappingContext $context, array $options = []): ?DateTime
+    public static function getHydrator(): string
     {
-        if ($value === null) {
-            return null;
-        }
-
-        return new DateTime($value, new DateTimeZone($options['timezone']));
+        return '
+        if ($value !== null) {
+            $value = new \DateTime($value, new \DateTimeZone($attributes[\'timezone\']));
+        }';
     }
 
-    /**
-     * @param \DateTimeInterface $value
-     * @param MappingContext $context
-     * @param array $options
-     * @return null|string
-     */
-    public static function extract($value, MappingContext $context, array $options = []): ?string
+    public static function getExtractor(): string
     {
-        if ($value === null) {
-            return $value;
-        }
-
-        return $value->format($options['format']);
+        return '
+        if ($value !== null) {
+            $value = $value->format($attributes[\'format\']);
+        }';
     }
 
-    public static function getDefaultOptions(): array
+    public static function getDefaultAttributes(): array
     {
         return [
-            'timezone' => new DateTimeZone('UTC'),
+            'timezone' => 'UTC',
             'format' => 'Ymd',
         ];
     }

@@ -2,11 +2,11 @@
 
 namespace Igni\Storage\Driver\Pdo;
 
-use Igni\Storage\Driver\EntityManager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Entity;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Hydration\Hydrator;
-use Igni\Storage\Mapping\Schema;
+use Igni\Storage\Mapping\EntityMetaData;
 use Igni\Storage\Repository as RepositoryInterface;
 
 abstract class Repository implements RepositoryInterface
@@ -99,6 +99,4 @@ abstract class Repository implements RepositoryInterface
 
         return $this->entityClass = $this->getSchema()->getEntity();
     }
-
-    abstract public function getSchema(): Schema;
 }

@@ -4,7 +4,7 @@ namespace IgniTest\Fixtures\Track;
 
 use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Mapping\ImmutableCollection;
-use Igni\Storage\Mapping\Schema;
+use Igni\Storage\Mapping\EntityMetaData;
 
 class TrackRepository extends Repository
 {
@@ -39,8 +39,8 @@ class TrackRepository extends Repository
         return new ImmutableCollection($cursor);
     }
 
-    public function getSchema(): Schema
+    public function getSchema(): EntityMetaData
     {
-        return TrackSchema::instance();
+        return TrackEntityMetaData::instance();
     }
 }

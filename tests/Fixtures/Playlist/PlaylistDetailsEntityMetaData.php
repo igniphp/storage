@@ -4,10 +4,10 @@ namespace IgniTest\Fixtures\Playlist;
 
 use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Mapping\Type;
-use Igni\Storage\Mapping\Schema;
+use Igni\Storage\Mapping\EntityMetaData;
 use IgniTest\Fixtures\Track\TrackEntity;
 
-class PlaylistDetailsSchema extends Schema
+class PlaylistDetailsEntityMetaData extends EntityMetaData
 {
     protected function define(): void
     {

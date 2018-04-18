@@ -8,7 +8,7 @@ use Igni\Storage\Repository as RepositoryInterface;
 use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Entity;
 use Igni\Storage\Hydration\Hydrator;
-use Igni\Storage\Mapping\Schema;
+use Igni\Storage\Mapping\EntityMetaData;
 
 abstract class Repository implements RepositoryInterface
 {
@@ -69,5 +69,5 @@ abstract class Repository implements RepositoryInterface
         return $this->entityClass = $this->getSchema()->getEntity();
     }
 
-    abstract public function getSchema(): Schema;
+    abstract public function getSchema(): EntityMetaData;
 }

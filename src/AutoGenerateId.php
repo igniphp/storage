@@ -2,16 +2,16 @@
 
 namespace Igni\Storage;
 
-use Igni\Storage\Mapping\Annotations\Types;
+use Igni\Storage\Mapping\Annotations\Types\Id;
 
 trait AutoGenerateId
 {
     /**
-     * @Types\Id()
+     * @Id()
      */
     protected $id;
 
-    public function getId(): Id
+    public function getId(): \Igni\Storage\Id
     {
         if ($this->id === null) {
             $this->id = new Uuid();

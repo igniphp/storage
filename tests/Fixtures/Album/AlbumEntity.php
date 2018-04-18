@@ -16,10 +16,18 @@ class AlbumEntity implements Entity
      */
     protected $artist;
 
+    /**
+     * @Types\Id()
+     */
+    protected $id;
+
     protected $title;
 
     protected $releaseDate;
 
+    /**
+     * @Types\ReferenceMany(TrackEntity::class, repositoryMethod="findByAlbum")
+     */
     protected $tracks;
 
     public function __construct(string $title, ArtistEntity $artist)

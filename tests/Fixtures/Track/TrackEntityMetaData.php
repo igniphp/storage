@@ -4,12 +4,12 @@ namespace IgniTest\Fixtures\Track;
 
 use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Mapping\NamingStrategy\DirectNaming;
-use Igni\Storage\Mapping\Schema;
+use Igni\Storage\Mapping\EntityMetaData;
 use Igni\Storage\Mapping\Type;
 use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Genre\GenreEntity;
 
-class TrackSchema extends Schema
+class TrackEntityMetaData extends EntityMetaData
 {
     protected function define(): void
     {

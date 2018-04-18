@@ -8,7 +8,7 @@ use Igni\Utils\TestCase;
 use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Genre\GenreEntity;
 use IgniTest\Fixtures\Track\TrackEntity;
-use IgniTest\Fixtures\Track\TrackSchema;
+use IgniTest\Fixtures\Track\TrackEntityMetaData;
 use IgniTest\Functional\Storage\StorageTrait;
 
 class GenericHydrationTest extends TestCase
@@ -39,7 +39,7 @@ class GenericHydrationTest extends TestCase
     {
         $album = $this->entityManager->get(AlbumEntity::class, 1);
         $track = new TrackEntity('Test Name', 'Test Composer', $album);
-        $hydrator = new Hydrator($this->entityManager, TrackSchema::instance());
+        $hydrator = new Hydrator($this->entityManager, TrackEntityMetaData::instance());
 
         $data = $hydrator->extract($track);
 

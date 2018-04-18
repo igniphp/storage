@@ -10,19 +10,25 @@
       "email": "dawid.kraczkowski@gmail.com"
     }
   ],
+  "suggest": {
+    "ext-mongodb": "For mongodb support",
+    "ext-pdo_mysql": "For MySQL or MariaDB database support",
+    "ext-pdo_pqsql": "For PostgreSQL database support",
+    "ext-sqlite3": "For SQLite database support"
+  },
   "require": {
     "php": ">=7.1.0",
     "ext-pdo": "*",
     "ext-hash": "*",
     "ext-json": "*",
+    "psr/simple-cache": ">=1.0.0",
     "igniphp/common": ">=1.0.0",
-    "doctrine/annotations": "^1.6"
+    "doctrine/annotations": "^1.6",
+    "symfony/cache": "^4.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~5.7",
-    "mockery/mockery": "^0.9.4",
-    "ext-sqlite3": "*",
-    "ext-mongodb": "*"
+    "mockery/mockery": "^0.9.4"
   },
   "autoload": {
     "psr-4": {

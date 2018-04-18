@@ -3,11 +3,10 @@
 namespace IgniTest\Fixtures\Artist;
 
 use Igni\Storage\AutoGenerateId;
-use Igni\Storage\EntityManager;
 use Igni\Storage\Entity;
-use Igni\Storage\Mapping\ImmutableCollection;
-use IgniTest\Fixtures\Album\AlbumEntity;
 use Igni\Storage\Mapping\Annotations as Storage;
+use Igni\Storage\Mapping\Annotations\Types\Text;
+use Igni\Storage\Mapping\ImmutableCollection;
 
 /**
  * @Storage\Entity(source="artists", hydrator=ArtistHydrator::class)
@@ -17,13 +16,10 @@ class ArtistEntity implements Entity
     use AutoGenerateId;
 
     /**
-     * @Types\Text(name="Name")
+     * @Text(name="Name")
      */
     protected $name;
 
-    /**
-     * @Types\ReferenceMany(class=AlbumEntity::class)
-     */
     protected $albums;
 
     public function __construct(string $name)

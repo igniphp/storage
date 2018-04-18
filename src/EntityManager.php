@@ -5,10 +5,14 @@ namespace Igni\Storage;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Hydration\HydratorFactory;
-use Igni\Storage\Hydration\HydratorGenerator\HydratorAutoGenerate;
+use Igni\Storage\Mapping\MetaData\MappingDriver;
+use Igni\Storage\Hydration\Strategy\HydratorAutoGenerate;
 use Igni\Storage\Hydration\ObjectHydrator;
+use Igni\Storage\Mapping\EntityMetaData;
 use Igni\Storage\Mapping\IdentityMap;
 use Igni\Utils\ReflectionApi;
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Simple\ArrayCache;
 
 class EntityManager implements IdentityMap, RepositoryContainer
 {
@@ -24,10 +28,26 @@ class EntityManager implements IdentityMap, RepositoryContainer
     /** @var ObjectHydrator[] */
     private $hydrators = [];
 
+    /** @var CacheInterface */
+    private $mappingDriver;
+
+    /** @var string */
+    private $hydratorDir;
+
+    /** @var string */
+    private $hydratorNamesapce;
+
+    /**
+     * @param MappingDriver|null $mappingDriver used for generating metadata information for entity
+     * @param string|null $hydratorDir Directory used for storing generated hydrators
+     * @param string|null $hydratorNamespace Namespace where generated hydrators will live
+     * @param HydratorAutoGenerate|null $hydratorAutoGenerate
+     */
     public function __construct(
         string $hydratorDir = null,
         string $hydratorNamespace = null,
-        HydratorAutoGenerate $hydratorAutoGenerate = null
+        HydratorAutoGenerate $hydratorAutoGenerate = null,
+        MappingDriver $mappingDriver = null
     ){
         if ($hydratorDir === null) {
             $hydratorDir = sys_get_temp_dir();
@@ -41,7 +61,25 @@ class EntityManager implements IdentityMap, RepositoryContainer
             throw new HydratorException("Hydrators cannot be generated, directory ($hydratorDir) is not writable.");
         }
 
-        $this->hydratorFactory = new HydratorFactory($hydratorDir, $hydratorAutoGenerate, $hydratorNamespace);
+        if ($mappingDriver === null) {
+            $mappingDriver = new MetaData\Driver\AnnotationMappingDriver();
+        }
+
+        $this->hydratorDir = $hydratorDir;
+        $this->mappingDriver = $mappingDriver;
+        $this->hydratorNamesapce = $hydratorNamespace ?? '\\';
+
+        $this->hydratorFactory = new HydratorFactory($this, $hydratorAutoGenerate);
+    }
+
+    public function getHydratorDir(): string
+    {
+        return $this->hydratorDir;
+    }
+
+    public function getHydratorNamespace(): string
+    {
+        return $this->hydratorNamesapce;
     }
 
     /**
@@ -54,6 +92,7 @@ class EntityManager implements IdentityMap, RepositoryContainer
     {
         $this->getRepository(get_class($entity))->create($entity);
         $this->attach($entity);
+
         return $entity;
     }
 
@@ -66,6 +105,7 @@ class EntityManager implements IdentityMap, RepositoryContainer
     public function update(Entity $entity): Entity
     {
         $this->getRepository(get_class($entity))->update($entity);
+
         return $entity;
     }
 
@@ -209,5 +249,16 @@ class EntityManager implements IdentityMap, RepositoryContainer
         }
 
         return $this->hydrators[$entity];
+    }
+
+    public function getMetaData(string $entity): EntityMetaData
+    {
+        $key = str_replace('\\', '.', $entity) . '.metadata';
+
+        if (!$this->cache->has($key)) {
+
+        }
+
+        return $this->cache->get($key);
     }
 }

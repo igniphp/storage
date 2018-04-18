@@ -3,7 +3,6 @@
 namespace IgniTest\Fixtures\Artist;
 
 use Igni\Storage\Driver\Pdo\Repository;
-use Igni\Storage\Mapping\Schema;
 
 class ArtistRepository extends Repository
 {
@@ -20,10 +19,5 @@ class ArtistRepository extends Repository
         $cursor->hydrateTo(ArtistEntity::class);
 
         return $cursor->current();
-    }
-
-    public function getEntity(): Schema
-    {
-        return ArtistEntity::class;
     }
 }

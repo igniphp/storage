@@ -4,17 +4,17 @@ namespace Igni\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\MappingStrategy;
 
-final class FloatNumber implements MappingStrategy
+final class Integer implements MappingStrategy
 {
     public static function getHydrator(): string
     {
         return '
-        $value = (float) $value;';
+        $value = (int) $value;';
     }
 
     public static function getExtractor(): string
     {
         return '
-        $value = (float) $value;';
+        $value = (int) $value;';
     }
 }

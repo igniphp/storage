@@ -5,19 +5,27 @@ namespace Igni\Storage\Mapping\Strategy;
 use Igni\Storage\Mapping\MappingContext;
 use Igni\Storage\Mapping\MappingStrategy;
 
-final class DecimalNumber implements MappingStrategy, DefaultOptionsProvider
+final class DecimalNumber implements MappingStrategy, DefaultAttributesProvider
 {
-    public static function hydrate($value, MappingContext $context, array $options = []): string
+    public static function getHydrator(): string
     {
-        return (string) $value;
+        return '
+        $value = (string) $value;
+        $value = explode(\'.\', $value);
+        $value = substr($value[0], 0, $options[\'scale\']) . \'.\' . substr($value[1], 0, $attributes[\'precision\']);
+        ';
     }
 
-    public static function extract($value, MappingContext $context, array $options = []): string
+    public static function getExtractor(): string
     {
-        return (string) $value;
+        return '
+        $value = (string) $value;
+        $value = explode(\'.\', $value);
+        $value = substr($value[0], 0, $options[\'scale\']) . \'.\' . substr($value[1], 0, $attributes[\'precision\']);
+        ';
     }
 
-    public static function getDefaultOptions(): array
+    public static function getDefaultAttributes(): array
     {
         return [
             'scale' => 10,

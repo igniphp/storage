@@ -4,7 +4,7 @@ namespace IgniTest\Fixtures\Album;
 
 use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Mapping\ImmutableCollection;
-use Igni\Storage\Mapping\Schema;
+use Igni\Storage\Mapping\EntityMetaData;
 
 class AlbumRepository extends Repository
 {
@@ -28,8 +28,8 @@ class AlbumRepository extends Repository
         return new ImmutableCollection($cursor);
     }
 
-    public function getSchema(): Schema
+    public function getSchema(): EntityMetaData
     {
-        return AlbumSchema::instance();
+        return AlbumMetaData::instance();
     }
 }

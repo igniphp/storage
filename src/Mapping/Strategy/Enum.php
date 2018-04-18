@@ -5,19 +5,21 @@ namespace Igni\Storage\Mapping\Strategy;
 use Igni\Storage\Mapping\MappingContext;
 use Igni\Storage\Mapping\MappingStrategy;
 
-final class Enum implements MappingStrategy, DefaultOptionsProvider
+final class Enum implements MappingStrategy, DefaultAttributesProvider
 {
-    public static function hydrate($index, MappingContext $context, array $options = [])
+    public static function getHydrator(): string
     {
-        return $options['values'][$index];
+        return '
+        $value = $attributes[\'values\'][$value];';
     }
 
-    public static function extract($value, MappingContext $context, array $options = [])
+    public static function getExtractor(): string
     {
-        return array_search($value, $options['values']);
+        return '
+        $value = array_search($value, $attributes[\'values\']);';
     }
 
-    public static function getDefaultOptions(): array
+    public static function getDefaultAttributes(): array
     {
         return [
             'values' => [],

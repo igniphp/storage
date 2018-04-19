@@ -8,16 +8,20 @@ class ArtistRepository extends Repository
 {
     public function findByTrackId($id): ArtistEntity
     {
-        $query = "SELECT 
+        $cursor = $this->query("SELECT 
           artists.* FROM artists 
             JOIN albums ON albums.ArtistId = artists.ArtistId 
             JOIN tracks ON tracks.AlbumId = albums.AlbumId
           WHERE tracks.TrackId = :id
-        ";
-
-        $cursor = $this->connection->execute($query, ['id' => $id]);
-        $cursor->hydrateTo(ArtistEntity::class);
+        ", [
+            'id' => $id
+        ]);
 
         return $cursor->current();
+    }
+
+    public function getEntityClass(): string
+    {
+        return ArtistEntity::class;
     }
 }

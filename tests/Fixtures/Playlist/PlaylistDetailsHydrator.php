@@ -2,18 +2,25 @@
 
 namespace IgniTest\Fixtures\Playlist;
 
-use Igni\Storage\Driver\EntityManager;
+use Igni\Storage\EntityManager;
 use IgniTest\Fixtures\Track\TrackEntity;
 
 class PlaylistDetailsHydrator
 {
-    public function hydrateTracks($row, EntityManager $manager)
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager)
     {
-        return $manager->getRepository(TrackEntity::class)
-            ->getMultiple($row['songs']);
+        $this->entityManager = $entityManager;
     }
 
-    public function extractTracks(PlaylistDetails $entity)
+    public function hydrateTracks(PlaylistDetails $entity, array &$data)
+    {
+        return $this->entityManager->getRepository(TrackEntity::class)
+            ->getMultiple($data['tracks']);
+    }
+
+    public function extractTracks(PlaylistDetails $entity, array &$data): void
     {
         $tracks = [];
         /** @var TrackEntity $track */
@@ -21,6 +28,6 @@ class PlaylistDetailsHydrator
             $tracks[] = $track->getId()->getValue();
         }
 
-        return ['songs' => $tracks];
+        $data['songs'] = $tracks;
     }
 }

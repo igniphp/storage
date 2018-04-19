@@ -4,16 +4,22 @@ namespace IgniTest\Fixtures\Playlist;
 
 use IgniTest\Fixtures\Track\TrackEntity;
 
+use Igni\Storage\Mapping\Annotations as Storage;
+use Igni\Storage\Mapping\Annotations\Types as Property;
+
 /**
- * @EmbedEntity(hydrator=PlaylistDetailsHydrator::class)
+ * @Storage\EmbeddedEntity(hydrator=PlaylistDetailsHydrator::class)
  */
 class PlaylistDetails
 {
     /**
-     * @Type\Float()
+     * @Property\Float()
      */
     protected $rating = 0.0;
 
+    /**
+     * @Property\Delegate()
+     */
     protected $tracks = [];
 
     public function getTracks()

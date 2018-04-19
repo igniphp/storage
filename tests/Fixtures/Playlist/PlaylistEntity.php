@@ -5,21 +5,28 @@ namespace IgniTest\Fixtures\Playlist;
 use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use IgniTest\Fixtures\Track\TrackEntity;
+use Igni\Storage\Mapping\Annotations as Storage;
+use Igni\Storage\Mapping\Annotations\Types as Property;
 
 /**
- * @Entity(source="playlists")
+ * @Storage\Entity(source="playlists")
  */
 class PlaylistEntity implements Entity
 {
     use AutoGenerateId;
 
     /**
-     * @Type\String(name="Name")
+     * @Property\Id()
+     */
+    protected $id;
+
+    /**
+     * @Property\String(name="Name")
      */
     protected $name;
 
     /**
-     * @Type\Embed(PlaylistDetails::class, storeAs="plain")
+     * @Property\Embed(PlaylistDetails::class, storeAs="plain")
      */
     protected $details;
 

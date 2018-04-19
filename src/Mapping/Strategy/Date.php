@@ -2,7 +2,6 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use DateTimeZone;
 use Igni\Storage\Mapping\MappingStrategy;
 
 final class Date implements MappingStrategy, DefaultAttributesProvider

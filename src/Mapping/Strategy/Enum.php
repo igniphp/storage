@@ -2,7 +2,6 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use Igni\Storage\Mapping\MappingContext;
 use Igni\Storage\Mapping\MappingStrategy;
 
 final class Enum implements MappingStrategy, DefaultAttributesProvider

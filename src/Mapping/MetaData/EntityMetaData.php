@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping;
+namespace Igni\Storage\Mapping\MetaData;
 
 use Igni\Storage\Exception\MappingException;
+use Igni\Storage\Mapping\MappingStrategy;
 use Igni\Storage\Mapping\Strategy\Id;
 use ReflectionClass;
 
@@ -13,9 +14,10 @@ final class EntityMetaData
     private $properties;
     private $reflectionClass;
     private $storage;
+    private $embed = true;
     private $parentHydrator;
 
-    public function __construct(string $class, string $storage, array $properties)
+    public function __construct(string $class, array $properties)
     {
         $this->class = $class;
         $this->reflectionClass = new ReflectionClass($class);
@@ -27,6 +29,33 @@ final class EntityMetaData
             }
             $this->addProperty($name, $attributes);
         }
+    }
+
+    public function makeEmbed(): void
+    {
+        $this->storage = null;
+        $this->embed = true;
+    }
+
+    public function isEmbed(): bool
+    {
+        return $this->embed;
+    }
+
+    public function isStorable(): bool
+    {
+        return $this->storage !== null;
+    }
+
+    public function setStorage(string $storage): void
+    {
+        $this->storage = $storage;
+        $this->embed = false;
+    }
+
+    public function getStorage(): string
+    {
+        return $this->storage;
     }
 
     public function setParentHydratorClass(string $className): void
@@ -49,7 +78,7 @@ final class EntityMetaData
 
     /**
      * @param string $name
-     * @param array $attributes<int, array{
+     * @param array $attributes<int, array {
      *     field: string,
      *     type: string,
      *     attributes: array
@@ -69,18 +98,17 @@ final class EntityMetaData
         }
     }
 
-    public function getStorage(): string
-    {
-        return $this->storage;
-    }
-
     public function getHydratorClassName(): string
     {
         return $this->hydratorClassName;
     }
 
     /**
-     * @return string[]|MappingStrategy[]
+     * @return array $attributes<int, array {
+     *     field: string,
+     *     type: string,
+     *     attributes: array
+     * }>
      */
     public function getProperties(): array
     {

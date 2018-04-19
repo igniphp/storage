@@ -2,19 +2,22 @@
 
 namespace Igni\Storage;
 
+use Cache\Adapter\Apc\ApcCachePool;
+use Cache\Adapter\Apcu\ApcuCachePool;
+use Cache\Adapter\PHPArray\ArrayCachePool;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Hydration\HydratorFactory;
-use Igni\Storage\Mapping\MetaData\MappingDriver;
-use Igni\Storage\Hydration\Strategy\HydratorAutoGenerate;
+use Igni\Storage\Mapping\MetaData\MetaDataFactory;
+use Igni\Storage\Hydration\HydratorAutoGenerate;
 use Igni\Storage\Hydration\ObjectHydrator;
-use Igni\Storage\Mapping\EntityMetaData;
+use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Mapping\IdentityMap;
+use Igni\Storage\Mapping\MetaData\Strategy\AnnotationMetaDataFactory;
 use Igni\Utils\ReflectionApi;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Simple\ArrayCache;
 
-class EntityManager implements IdentityMap, RepositoryContainer
+class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
 {
     /** @var Entity[] */
     private $registry;
@@ -28,27 +31,33 @@ class EntityManager implements IdentityMap, RepositoryContainer
     /** @var ObjectHydrator[] */
     private $hydrators = [];
 
-    /** @var CacheInterface */
-    private $mappingDriver;
+    /** @var MetaDataFactory */
+    private $metaDataFactory;
 
     /** @var string */
     private $hydratorDir;
 
     /** @var string */
-    private $hydratorNamesapce;
+    private $hydratorNamespace;
+
+    /** @var CacheInterface */
+    private $cache;
 
     /**
-     * @param MappingDriver|null $mappingDriver used for generating metadata information for entity
-     * @param string|null $hydratorDir Directory used for storing generated hydrators
-     * @param string|null $hydratorNamespace Namespace where generated hydrators will live
+     * EntityManager constructor.
+     * @param string|null $hydratorDir
+     * @param string|null $hydratorNamespace
+     * @param CacheInterface|null $cache
      * @param HydratorAutoGenerate|null $hydratorAutoGenerate
+     * @param MetaDataFactory|null $metaDataFactory
      */
     public function __construct(
         string $hydratorDir = null,
         string $hydratorNamespace = null,
+        CacheInterface $cache = null,
         HydratorAutoGenerate $hydratorAutoGenerate = null,
-        MappingDriver $mappingDriver = null
-    ){
+        MetaDataFactory $metaDataFactory = null
+    ) {
         if ($hydratorDir === null) {
             $hydratorDir = sys_get_temp_dir();
         }
@@ -61,13 +70,24 @@ class EntityManager implements IdentityMap, RepositoryContainer
             throw new HydratorException("Hydrators cannot be generated, directory ($hydratorDir) is not writable.");
         }
 
-        if ($mappingDriver === null) {
-            $mappingDriver = new MetaData\Driver\AnnotationMappingDriver();
+        if ($metaDataFactory === null) {
+            $metaDataFactory = new AnnotationMetaDataFactory();
         }
 
+        if ($cache === null) {
+            if (extension_loaded('apcu') && ini_get('apc.enabled')) {
+                $cache = new ApcuCachePool();
+            } elseif (extension_loaded('apc') && ini_get('apc.enabled')) {
+                $cache = new ApcCachePool();
+            } else {
+                $cache = new ArrayCachePool();
+            }
+        }
+
+        $this->cache = $cache;
         $this->hydratorDir = $hydratorDir;
-        $this->mappingDriver = $mappingDriver;
-        $this->hydratorNamesapce = $hydratorNamespace ?? '\\';
+        $this->metaDataFactory = $metaDataFactory;
+        $this->hydratorNamespace = $hydratorNamespace ?? '\\';
 
         $this->hydratorFactory = new HydratorFactory($this, $hydratorAutoGenerate);
     }
@@ -79,7 +99,7 @@ class EntityManager implements IdentityMap, RepositoryContainer
 
     public function getHydratorNamespace(): string
     {
-        return $this->hydratorNamesapce;
+        return $this->hydratorNamespace;
     }
 
     /**

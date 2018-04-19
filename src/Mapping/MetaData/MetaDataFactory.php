@@ -2,9 +2,7 @@
 
 namespace Igni\Storage\Mapping\MetaData;
 
-use Igni\Storage\Mapping\EntityMetaData;
-
-interface MappingDriver
+interface MetaDataFactory
 {
     public function getMetaData(string $entity): EntityMetaData;
 }

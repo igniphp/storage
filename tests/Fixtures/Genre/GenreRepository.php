@@ -3,12 +3,11 @@
 namespace IgniTest\Fixtures\Genre;
 
 use Igni\Storage\Driver\Pdo\Repository;
-use Igni\Storage\Mapping\EntityMetaData;
 
 class GenreRepository extends Repository
 {
-    public function getSchema(): EntityMetaData
+    public function getEntityClass(): string
     {
-        return GenreEntityMetaData::instance();
+        return GenreEntity::class;
     }
 }

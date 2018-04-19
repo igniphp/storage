@@ -2,13 +2,9 @@
 
 namespace Igni\Storage\Driver\MongoDB;
 
-use Igni\Storage\Mapping\NamingStrategy\DefaultNamingStrategy;
-use Igni\Storage\Mapping\NamingStrategy\DirectNaming;
 use Igni\Storage\Repository as RepositoryInterface;
-use Igni\Storage\Driver\EntityManager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Entity;
-use Igni\Storage\Hydration\Hydrator;
-use Igni\Storage\Mapping\EntityMetaData;
 
 abstract class Repository implements RepositoryInterface
 {
@@ -17,17 +13,11 @@ abstract class Repository implements RepositoryInterface
     protected $entityManager;
     protected $hydrator;
 
-    private $entityClass;
-
     final public function __construct(Connection $connection, EntityManager $entityManager)
     {
         $this->connection = $connection;
         $this->entityManager = $entityManager;
         $this->hydrator = new Hydrator($entityManager, $this->getSchema());
-        if ($this->hydrator->getNamingStrategy() instanceof DefaultNamingStrategy) {
-            $this->hydrator->setNamingStrategy(new DirectNaming([]));
-        }
-        $this->hydrator->getNamingStrategy()->addRule('id', '_id');
     }
 
     public function get($id): Entity
@@ -59,15 +49,5 @@ abstract class Repository implements RepositoryInterface
     {
         $this->connection->update($this->getSchema()->getSource(), $this->hydrator->extract($entity));
     }
-
-    public function getEntityClass(): string
-    {
-        if ($this->entityClass) {
-            return $this->entityClass;
-        }
-
-        return $this->entityClass = $this->getSchema()->getEntity();
-    }
-
-    abstract public function getSchema(): EntityMetaData;
+    abstract public function getEntityClass(): string;
 }

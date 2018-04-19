@@ -6,7 +6,8 @@ use Igni\Storage\EntityManager;
 use Igni\Storage\Entity;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Hydration\Hydrator;
-use Igni\Storage\Mapping\EntityMetaData;
+use Igni\Storage\Hydration\ObjectHydrator;
+use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Repository as RepositoryInterface;
 
 abstract class Repository implements RepositoryInterface
@@ -16,13 +17,11 @@ abstract class Repository implements RepositoryInterface
     protected $entityManager;
     protected $hydrator;
 
-    private $entityClass;
-
     final public function __construct(Connection $connection, EntityManager $entityManager)
     {
         $this->connection = $connection;
         $this->entityManager = $entityManager;
-        $this->hydrator = new Hydrator($entityManager, $this->getSchema());
+        $this->hydrator = $this->entityManager->getHydrator($this->getEntityClass());
     }
 
     public function get($id): Entity
@@ -91,12 +90,13 @@ abstract class Repository implements RepositoryInterface
         return $entity;
     }
 
-    public function getEntityClass(): string
+    protected function query($query, array $parameters = []): Cursor
     {
-        if ($this->entityClass) {
-            return $this->entityClass;
-        }
+        $cursor = $this->connection->execute($query, $parameters);
+        $cursor->setHydrator($this->hydrator);
 
-        return $this->entityClass = $this->getSchema()->getEntity();
+        return $cursor;
     }
+
+    abstract public function getEntityClass(): string;
 }

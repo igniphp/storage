@@ -5,7 +5,7 @@ namespace IgniTest\Fixtures\Artist;
 use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use Igni\Storage\Mapping\Annotations as Storage;
-use Igni\Storage\Mapping\Annotations\Types\Text;
+use Igni\Storage\Mapping\Annotations\Types as Property;
 use Igni\Storage\Mapping\ImmutableCollection;
 
 /**
@@ -16,10 +16,18 @@ class ArtistEntity implements Entity
     use AutoGenerateId;
 
     /**
-     * @Text(name="Name")
+     * @Property\Id(name="ArtistId")
+     */
+    protected $id;
+
+    /**
+     * @Property\Text(name="Name")
      */
     protected $name;
 
+    /**
+     * @Property\Delegate()
+     */
     protected $albums;
 
     public function __construct(string $name)

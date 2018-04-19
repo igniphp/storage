@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Hydration\Strategy;
+namespace Igni\Storage\Hydration;
 
 use Igni\Utils\Enum;
 

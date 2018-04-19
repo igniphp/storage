@@ -5,6 +5,7 @@ namespace IgniTest\Fixtures\Genre;
 use Igni\Storage\AutoGenerateId;
 use Igni\Storage\Entity;
 use Igni\Storage\Mapping\Annotations as Storage;
+use Igni\Storage\Mapping\Annotations\Types as Property;
 use Igni\Storage\Mapping\ImmutableCollection;
 
 /**
@@ -15,7 +16,12 @@ class GenreEntity implements Entity
     use AutoGenerateId;
 
     /**
-     * @Storage\Type\Text(name="Name")
+     * @Property\Id(name="GenreId")
+     */
+    protected $id;
+
+    /**
+     * @Property\Text(name="Name")
      */
     protected $name;
 

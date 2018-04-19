@@ -8,6 +8,7 @@ use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Artist\ArtistEntity;
 use IgniTest\Fixtures\Genre\GenreEntity;
 use Igni\Storage\Mapping\Annotations as Storage;
+use Igni\Storage\Mapping\Annotations\Types as Property;
 
 /**
  * @Storage\Entity("tracks")
@@ -23,47 +24,52 @@ class TrackEntity implements Entity
     const MEDIA_TYPE_AUDIO_AAC = 5;
 
     /**
-     * @Storage\Types\Text(name="Name")
+     * @Property\Id(name="TrackId")
+     */
+    protected $id;
+
+    /**
+     * @Property\Text(name="Name")
      */
     protected $name;
 
     /**
-     * @Storage\Types\Reference(AlbumEntity::class)
+     * @Property\Reference(AlbumEntity::class)
      */
     protected $album;
 
     /**
-     * @Storage\Types\Text(name="Composer")
+     * @Property\Text(name="Composer")
      */
     protected $composer;
 
     /**
-     * @Storage\Type(name="Milliseconds", type="int")
+     * @Property\IntegerNumber(name="Milliseconds")
      */
     protected $length;
 
     /**
-     * @Storage\Types\IntegerNumber(name="Bytes")
+     * @Property\IntegerNumber(name="Bytes")
      */
     protected $size;
 
     /**
-     * @Storage\Types\FloatNumber(name="UnitPrice")
+     * @Property\FloatNumber(name="UnitPrice")
      */
     protected $unitPrice;
 
     /**
-     * @Storage\Types\Enum({"Rock", "Jazz", "Metal", "Alternative", "Rock and Roll", "Blues", "Latin", "Reggae", "Pop"})
+     * @Property\Enum({"Rock", "Jazz", "Metal", "Alternative", "Rock and Roll", "Blues", "Latin", "Reggae", "Pop"})
      */
     protected $mediaType;
 
     /**
-     * @Storage\Types\Reference(GenreEntity::class)
+     * @Property\Reference(GenreEntity::class)
      */
     protected $genre;
 
     /**
-     * @Storage\Types\Reference(ArtistEntity::class)
+     * @Property\Reference(ArtistEntity::class)
      */
     protected $artist;
 

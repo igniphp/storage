@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping\MetaData\Driver;
+namespace Igni\Storage\Mapping\MetaData\Strategy;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
-use Igni\Storage\Mapping\EntityMetaData;
-use Igni\Storage\Mapping\MetaData\MappingDriver;
+use Igni\Storage\Mapping\MetaData\EntityMetaData;
+use Igni\Storage\Mapping\MetaData\MetaDataFactory;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Simple\ArrayCache;
 
-class AnnotationMappingDriver implements MappingDriver
+class AnnotationMetaDataFactory implements MetaDataFactory
 {
     /**
      * @var CacheInterface
@@ -21,18 +21,16 @@ class AnnotationMappingDriver implements MappingDriver
      */
     private $reader;
 
-    public function __construct(CacheInterface $cache = null, Reader $reader = null)
+    public function __construct(CacheInterface $cache = null)
     {
+        AnnotationRegistry::registerUniqueLoader('class_exists');
+        $this->reader = new IndexedReader(new AnnotationReader());
+
         if ($cache === null) {
             $cache = new ArrayCache();
         }
 
-        if ($reader === null) {
-            $reader = new AnnotationReader();
-        }
-
         $this->cache = $cache;
-        $this->reader = $reader;
     }
 
     public function getMetaData(string $entity): EntityMetaData

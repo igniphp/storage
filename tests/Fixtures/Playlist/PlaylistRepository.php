@@ -3,12 +3,12 @@
 namespace IgniTest\Fixtures\Playlist;
 
 use Igni\Storage\Driver\MongoDB\Repository;
-use Igni\Storage\Mapping\EntityMetaData;
+use Igni\Storage\Mapping\MetaData\EntityMetaData;
 
 class PlaylistRepository extends Repository
 {
-    public function getSchema(): EntityMetaData
+    public function getEntityClass(): string
     {
-        return PlaylistEntityMetaData::instance();
+        return PlaylistEntity::class;
     }
 }

@@ -107,7 +107,7 @@ EOF;
         }
     }
 
-    public function create(EntityMetaData $metaData, bool $load = false): string
+    private function create(EntityMetaData $metaData, bool $load = false): string
     {
         $hydrator = [];
         $extractor = [];

@@ -3,6 +3,7 @@
 namespace Igni\Storage\Mapping\MetaData\Strategy;
 
 use Cache\Adapter\PHPArray\ArrayCachePool;
+use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\IndexedReader;
@@ -67,10 +68,13 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         foreach ($classAnnotations as $type => $annotation) {
             switch ($type) {
                 case Entity::class:
-                    $this->parseEntityAnnotation($annotation, $metaData);
+                    $source = $annotation->source ?? $annotation->value;
+                    $metaData->setSource($source);
+                    $this->setParentHydrator($annotation, $metaData);
                     break;
                 case EmbeddedEntity::class:
                     $metaData->makeEmbed();
+                    $this->setParentHydrator($annotation, $metaData);
                     break;
             }
         }
@@ -89,12 +93,8 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         return $metaData;
     }
 
-
-    private function parseEntityAnnotation(Entity $annotation, EntityMetaData $metaData): void
+    private function setParentHydrator(Annotation $annotation, EntityMetaData $metaData)
     {
-        $source = $annotation->source ?? $annotation->value;
-        $metaData->setSource($source);
-
         if ($annotation->hydrator !== null) {
             if (!class_exists($annotation->hydrator)) {
                 throw new MappingException("Cannot use hydrator {$annotation->hydrator} class does not exist.");

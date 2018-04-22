@@ -16,8 +16,10 @@ class PlaylistDetailsHydrator
 
     public function hydrateTracks(PlaylistDetails $entity, array &$data)
     {
-        return $this->entityManager->getRepository(TrackEntity::class)
-            ->getMultiple($data['tracks']);
+        $tracks = $this->entityManager->getRepository(TrackEntity::class)
+            ->getMultiple($data['songs']);
+
+        $entity->setTracks($tracks);
     }
 
     public function extractTracks(PlaylistDetails $entity, array &$data): void

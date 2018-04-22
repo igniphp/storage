@@ -57,7 +57,7 @@ class HydratorFactoryTest extends TestCase
         );
 
 
-        $hydratorFactory->create($metaData, $load = true);
+        $hydratorFactory->get($metaData->getClass());
 
         /** @var ObjectHydrator $hydrator */
         $hydrator = $metaData->getHydratorClassName();

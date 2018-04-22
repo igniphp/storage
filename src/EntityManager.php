@@ -235,10 +235,9 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
      */
     public function hydrate(string $entityClass, array $data)
     {
-        $instance = ReflectionApi::createInstance($entityClass);
         $hydrator = $this->getHydrator($entityClass);
 
-        return $hydrator->hydrate($instance, $data);
+        return $hydrator->hydrate($data);
     }
 
     /**

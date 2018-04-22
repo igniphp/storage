@@ -16,6 +16,11 @@ class Id implements \Igni\Storage\Id
         return new self(new \MongoId());
     }
 
+    public function getValue()
+    {
+        return $this->value;
+    }
+
     public function __toString(): string
     {
         return (string) $this->value;

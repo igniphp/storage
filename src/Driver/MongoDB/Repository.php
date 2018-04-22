@@ -9,45 +9,60 @@ use Igni\Storage\Entity;
 abstract class Repository implements RepositoryInterface
 {
     protected $connection;
-    protected $aggregate;
     protected $entityManager;
     protected $hydrator;
+    protected $metaData;
 
     final public function __construct(Connection $connection, EntityManager $entityManager)
     {
         $this->connection = $connection;
         $this->entityManager = $entityManager;
+        $this->metaData = $entityManager->getMetaData($this->getEntityClass());
         $this->hydrator = $entityManager->getHydrator($this->getEntityClass());
     }
 
     public function get($id): Entity
     {
-        $cursor = $this->connection->find($this->getSchema()->getSource(), ['_id' => $id], ['limit' => 1]);
+        $cursor = $this->connection->find(
+            $this->metaData->getSource(),
+            ['_id' => $id],
+            ['limit' => 1]
+        );
         $cursor->setHydrator($this->hydrator);
 
         $entity = $cursor->current();
         $cursor->close();
+
         return $entity;
     }
 
     public function create(Entity $entity): Entity
     {
         $data = $this->hydrator->extract($entity);
-        $this->connection->insert($this->getSchema()->getSource(), $data);
+        $this->connection->insert(
+            $this->metaData->getSource(),
+            $data
+        );
 
         return $entity;
     }
 
     public function remove(Entity $entity): Entity
     {
-        $this->connection->remove($this->getSchema()->getSource(), $entity->getId()->getValue());
+        $this->connection->remove(
+            $this->metaData->getSource(),
+            $entity->getId()->getValue()
+        );
 
         return $entity;
     }
 
     public function update(Entity $entity): Entity
     {
-        $this->connection->update($this->getSchema()->getSource(), $this->hydrator->extract($entity));
+        $this->connection->update(
+            $this->metaData->getSource(),
+            $this->hydrator->extract($entity)
+        );
     }
 
     abstract public function getEntityClass(): string;

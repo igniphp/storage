@@ -22,13 +22,13 @@ final class Embed implements MappingStrategy, DefaultAttributesProvider
                 throw new HydratorException("Cannot hydrate embed entity, invalid store attribute ({$attributes[\'store_as\']})");
         }
 
-        $value = $this->entityManager->hydrate($attributes[\'class\'], $value);';
+        $value = $entityManager->hydrate($attributes[\'class\'], $value);';
     }
 
     public static function getExtractor(): string
     {
         return '
-        $value = $this->entityManager->extract($value);
+        $value = $entityManager->extract($value);
         switch ($attributes[\'storeAs\']) {
             case \'json\':
                 $value = json_encode($value);

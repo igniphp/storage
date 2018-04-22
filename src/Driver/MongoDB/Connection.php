@@ -100,6 +100,7 @@ final class Connection implements ConnectionInterface
         if (empty($command['filter'])) {
             unset ($command['filter']);
         }
+
         return $this->execute(new MongoDB\Driver\Command($command));
     }
 

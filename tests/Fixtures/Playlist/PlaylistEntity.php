@@ -9,7 +9,7 @@ use Igni\Storage\Mapping\Annotations as Storage;
 use Igni\Storage\Mapping\Annotations\Types as Property;
 
 /**
- * @Storage\Entity(source="playlists")
+ * @Storage\Entity(source="playlist")
  */
 class PlaylistEntity implements Entity
 {

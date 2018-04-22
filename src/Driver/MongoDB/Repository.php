@@ -17,7 +17,7 @@ abstract class Repository implements RepositoryInterface
     {
         $this->connection = $connection;
         $this->entityManager = $entityManager;
-        $this->hydrator = new Hydrator($entityManager, $this->getSchema());
+        $this->hydrator = $entityManager->getHydrator($this->getEntityClass());
     }
 
     public function get($id): Entity
@@ -49,5 +49,6 @@ abstract class Repository implements RepositoryInterface
     {
         $this->connection->update($this->getSchema()->getSource(), $this->hydrator->extract($entity));
     }
+
     abstract public function getEntityClass(): string;
 }

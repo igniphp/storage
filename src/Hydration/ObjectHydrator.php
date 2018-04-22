@@ -4,6 +4,6 @@ namespace Igni\Storage\Hydration;
 
 interface ObjectHydrator
 {
-    public function hydrate($entity, array $data);
+    public function hydrate(array $data);
     public function extract($entity): array;
 }

@@ -2,7 +2,6 @@
 
 namespace Igni\Storage;
 
-use Igni\Storage\Driver\EntityManager;
 use Igni\Storage\Exception\UnitOfWorkException;
 use SplObjectStorage;
 

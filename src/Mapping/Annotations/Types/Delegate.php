@@ -10,6 +10,7 @@ use Doctrine\Common\Annotations\Annotation;
 class Delegate extends Annotation
 {
     public $hydrator;
+
     public $extractor;
 
     public function getType(): string

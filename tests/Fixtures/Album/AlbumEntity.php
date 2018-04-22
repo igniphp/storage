@@ -10,7 +10,7 @@ use Igni\Storage\Mapping\Annotations\Types as Property;
 use IgniTest\Fixtures\Artist\ArtistEntity;
 
 /**
- * @Storage\Entity(source="albums")
+ * @Storage\Entity(source="albums", hydrator=AlbumHydrator::class)
  */
 class AlbumEntity implements Entity
 {
@@ -22,22 +22,22 @@ class AlbumEntity implements Entity
     protected $id;
 
     /**
-     * @Property\Reference()
+     * @Property\Reference(ArtistEntity::class, name="ArtistId")
      */
     protected $artist;
 
     /**
-     * @Property\Text()
+     * @Property\Text(name="Title")
      */
     protected $title;
 
     /**
-     * @Property\Date(format="Ymd")
+     * @Property\Date(format="Ymd", name="ReleaseDate")
      */
     protected $releaseDate;
 
     /**
-     * @Types\ReferenceMany(TrackEntity::class, repositoryMethod="findByAlbum")
+     * @Property\Delegate()
      */
     protected $tracks;
 

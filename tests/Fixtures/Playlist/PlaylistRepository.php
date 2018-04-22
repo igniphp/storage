@@ -3,7 +3,6 @@
 namespace IgniTest\Fixtures\Playlist;
 
 use Igni\Storage\Driver\MongoDB\Repository;
-use Igni\Storage\Mapping\MetaData\EntityMetaData;
 
 class PlaylistRepository extends Repository
 {

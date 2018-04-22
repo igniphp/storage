@@ -2,7 +2,7 @@
 
 namespace IgniTest\Unit\Storage;
 
-use Igni\Storage\Driver\EntityManager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Ink;
 use Igni\Utils\TestCase;
 

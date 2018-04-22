@@ -3,37 +3,45 @@
 namespace Igni\Storage\Mapping\MetaData;
 
 use Igni\Storage\Exception\MappingException;
-use Igni\Storage\Mapping\MappingStrategy;
 use Igni\Storage\Mapping\Strategy\Id;
 use ReflectionClass;
 
 final class EntityMetaData
 {
+    /** @var string */
     private $class;
+    /** @var string string */
     private $hydratorClassName;
+    /** @var PropertyMetaData[] */
     private $properties;
+    /** @var ReflectionClass */
     private $reflectionClass;
-    private $storage;
+    /** @var string */
+    private $source;
+    /** @var bool  */
     private $embed = true;
+    /** @var string */
     private $parentHydrator;
+    /** @var string[] */
+    private $fields = [];
+    /** @var PropertyMetaData */
+    private $identifier;
 
-    public function __construct(string $class, array $properties)
+    /**
+     * @param string $class
+     *
+     * @throws \ReflectionException
+     */
+    public function __construct(string $class)
     {
         $this->class = $class;
         $this->reflectionClass = new ReflectionClass($class);
         $this->hydratorClassName = str_replace('\\', '', $class) . 'Hydrator';
-
-        foreach ($properties as $name => $attributes) {
-            if (!isset($attributes['field'])) {
-                $attributes['field'] = $name;
-            }
-            $this->addProperty($name, $attributes);
-        }
     }
 
     public function makeEmbed(): void
     {
-        $this->storage = null;
+        $this->source = null;
         $this->embed = true;
     }
 
@@ -44,18 +52,18 @@ final class EntityMetaData
 
     public function isStorable(): bool
     {
-        return $this->storage !== null;
+        return $this->source !== null && $this->hasIdentifier();
     }
 
-    public function setStorage(string $storage): void
+    public function setSource(string $source): void
     {
-        $this->storage = $storage;
+        $this->source = $source;
         $this->embed = false;
     }
 
-    public function getStorage(): string
+    public function getSource(): string
     {
-        return $this->storage;
+        return $this->source;
     }
 
     public function setParentHydratorClass(string $className): void
@@ -76,26 +84,34 @@ final class EntityMetaData
         return $this->parentHydrator;
     }
 
-    /**
-     * @param string $name
-     * @param array $attributes<int, array {
-     *     field: string,
-     *     type: string,
-     *     attributes: array
-     * }>
-     */
-    protected function addProperty(string $name, array $attributes)
+    public function getProperty(string $name): PropertyMetaData
     {
-        $this->properties[$name] = $attributes;
+        if (!isset($this->properties[$name])) {
+            throw new MappingException("Property ${name} is undefined.");
+        }
+        return $this->properties[$name];
     }
 
-    public function getIdentifierName(): string
+    public function addProperty(PropertyMetaData $property): void
     {
-        foreach ($this->properties as $name => $strategy) {
-            if ($strategy === Id::class) {
-                return $name;
-            }
+        $this->properties[$property->getName()] = $property;
+        if ($property->getType() === Id::class) {
+            $this->identifier = $property;
         }
+    }
+
+    public function hasIdentifier(): bool
+    {
+        return $this->identifier !== null;
+    }
+
+    public function getIdentifier(): PropertyMetaData
+    {
+        if (!$this->hasIdentifier()) {
+            throw new MappingException("Entity {$this->class} defines no identifier.");
+        }
+
+        return $this->identifier;
     }
 
     public function getHydratorClassName(): string
@@ -104,15 +120,16 @@ final class EntityMetaData
     }
 
     /**
-     * @return array $attributes<int, array {
-     *     field: string,
-     *     type: string,
-     *     attributes: array
-     * }>
+     * @return PropertyMetaData[]
      */
     public function getProperties(): array
     {
         return $this->properties;
+    }
+
+    public function getFields(): array
+    {
+        return $this->fields;
     }
 
     public function getClass(): string
@@ -149,5 +166,12 @@ final class EntityMetaData
     public function __wakeup()
     {
         $this->reflectionClass = new ReflectionClass($this->class);
+
+        foreach ($this->properties as $property) {
+            $this->fields[] = $property->getFieldName();
+            if ($property->getType() === Id::class) {
+                $this->identifier = $property;
+            }
+        }
     }
 }

@@ -9,7 +9,13 @@ final class Reference implements MappingStrategy
     public static function getHydrator(): string
     {
         return '
-        $value = $entityManager->get($attributes[\'class\'], $value);';
+        if ($value) {
+            try {
+                $value = $entityManager->get($attributes[\'target\'], $value);
+            } catch (\Exception $e) {
+                $value = null;
+            }
+        }';
     }
 
     public static function getExtractor(): string

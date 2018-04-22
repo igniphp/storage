@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTestFunctional\Storage\Driver\PDO;
+namespace IgniTest\Functional\Storage\Driver\PDO;
 
 use Igni\Utils\TestCase;
 use IgniTest\Fixtures\Album\AlbumEntity;
@@ -45,7 +45,10 @@ class RepositoryTest extends TestCase
 
         $this->entityManager->create($album);
 
-        $cursor = $this->sqliteConnection->execute('SELECT * FROM albums WHERE AlbumId = :id', ['id' => $album->getId()]);
+        $cursor = $this->sqliteConnection->execute(
+            'SELECT * FROM albums WHERE AlbumId = :id',
+            ['id' => $album->getId()->getValue()]
+        );
         self::assertTrue($cursor->valid());
         $data = $cursor->current();
         self::assertSame(

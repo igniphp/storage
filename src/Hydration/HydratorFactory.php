@@ -24,17 +24,20 @@ use Igni\Storage\Hydration\ObjectHydrator;
 final class {name}{extends} implements ObjectHydrator
 {
     private \$__entityManager__;
-    private \$__reflectionProperties__ = [];
+    private \$__metaData__;
     
     public function __construct(EntityManager \$entityManager)
     {
         \$this->__entityManager__ = \$entityManager;
+        \$this->__metaData__ = \$entityManager->getMetaData({entity}::class);
         {constructor}
     }
     
-    public function hydrate(\$entity, array \$data): {entity}
+    public function hydrate(array \$data): {entity}
     {
         \$entityManager = \$this->__entityManager__;
+        \$metaData = \$this->__metaData__;
+        \$entity = \$metaData->createInstance();
         {hydrator}
         
         return \$entity;
@@ -43,6 +46,7 @@ final class {name}{extends} implements ObjectHydrator
     public function extract(\$entity): array
     {
         \$entityManager = \$this->__entityManager__;
+        \$metaData = \$this->__metaData__;
         \$data = [];
         {extractor}
         
@@ -65,12 +69,13 @@ EOF;
         $this->autoGenerate = $autoGenerate;
     }
 
-    public function get(EntityMetaData $entityMeta): ObjectHydrator
+    public function get(string $entityClass): ObjectHydrator
     {
-        if (isset($this->hydrators[$entityMeta->getClass()])) {
-            return $this->hydrators[$entityMeta->getClass()];
+        if (isset($this->hydrators[$entityClass])) {
+            return $this->hydrators[$entityClass];
         }
 
+        $entityMeta = $this->entityManager->getMetaData($entityClass);
         $hydratorClass = $entityMeta->getHydratorClassName();
 
         // Fix for already loaded but not initialized hydrator.
@@ -84,6 +89,8 @@ EOF;
                 if (!is_readable($fileName)) {
                     $hydrator = $this->create($entityMeta, true);
                     $this->writeHydrator($hydrator, $fileName);
+                } else {
+                    require_once $fileName;
                 }
 
                 return $this->hydrators[$entityMeta->getClass()] = new $hydratorClass($this->entityManager);
@@ -107,7 +114,6 @@ EOF;
         $constructor = [];
         $delegator = [];
 
-        $entityClass = $metaData->getClass();
         $compiled = self::TEMPLATE;
 
         $compiled = str_replace('{name}', $metaData->getHydratorClassName(), $compiled);
@@ -127,54 +133,50 @@ EOF;
             $compiled = str_replace('{extends}', '', $compiled);
         }
 
-
-        foreach ($metaData->getProperties() as $name => $property) {
+        foreach ($metaData->getProperties() as $property) {
             /** @var MappingStrategy $type */
-            $type = $property['type'];
-
-            $constructor[] = "\$this->__reflectionProperties__['${name}'] = new \ReflectionProperty('${entityClass}', '${name}');";
-            $constructor[] = "\$this->__reflectionProperties__['${name}']->setAccessible(true);";
-
-            $attributes = $property['attributes'] ?? [];
-            $attributes = preg_replace('/\s+/', '', var_export($attributes, true));
+            $type = $property->getType();
+            $attributes = $property->getAttributes();
 
             if (method_exists($type, 'getDefaultAttributes')) {
-                $attributes .= " + \\${type}::getDefaultAttributes()";
+                $attributes += $type::getDefaultAttributes();
             }
+
+            $attributes = preg_replace('/\s+/', '', var_export($attributes, true));
 
             // Delegator are handled at the end of the hydration process.
             if ($metaData->hasParentHydratorClass() && $type === Delegate::class) {
-                $delegator[] = $name;
+                $delegator[] = $property;
                 continue;
             }
 
             // Build hydrator for property.
-            $hydrator[] = "// Hydrate ${name}.";
-            $hydrator[] = "\$value = \$data['{$property['field']}'] ?? null;";
+            $hydrator[] = "// Hydrate {$property->getName()}.";
+            $hydrator[] = "\$value = \$data['{$property->getFieldName()}'] ?? null;";
             $hydrator[] = "\$attributes = ${attributes};";
             $hydrator[] = $type::getHydrator();
-            $hydrator[] = "\$this->__reflectionProperties__['${name}']->setValue(\$entity, \$value);";
+            $hydrator[] = "\$metaData->getProperty('{$property->getName()}')->setValue(\$entity, \$value);";
 
             // Build extractor for property.
-            $extractor[] = "// Extract ${name}.";
-            $extractor[] = "\$value = \$this->__reflectionProperties__['${name}']->getValue(\$entity);";
+            $extractor[] = "// Extract {$property->getName()}.";
+            $extractor[] = "\$value = \$metaData->getProperty('{$property->getName()}')->getValue(\$entity);";
             $extractor[] = "\$attributes = ${attributes};";
             $extractor[] = $type::getExtractor();
-            $extractor[] = "\$data['{$property['field']}'] = \$value;";
+            $extractor[] = "\$data['{$property->getFieldName()}'] = \$value;";
         }
 
-        // Handle delegators.
+        // Handle delegator.
         foreach ($delegator as $property) {
-            $hydratorDelegator = 'hydrate' . ucfirst($property);
-            $extractorDelegator = 'extract' . ucfirst($property);
+            $hydratorDelegator = 'hydrate' . ucfirst($property->getName());
+            $extractorDelegator = 'extract' . ucfirst($property->getName());
 
             if (method_exists($parentHydrator, $hydratorDelegator)) {
-                $hydrator[] = "// Hydrate ${property}";
+                $hydrator[] = "// Hydrate {$property->getName()}";
                 $hydrator[] = "\$this->${hydratorDelegator}(\$entity, \$data);";
             }
 
             if (method_exists($parentHydrator, $extractorDelegator)) {
-                $extractor[] = "// Extract ${property}";
+                $extractor[] = "// Extract {$property->getName()}";
                 $extractor[] = "\$this->${extractorDelegator}(\$entity, \$data);";
             }
         }

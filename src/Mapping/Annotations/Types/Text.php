@@ -9,8 +9,6 @@ use Igni\Storage\Mapping\Annotations\Type;
  */
 class Text extends Type
 {
-    public $strategy;
-
     public function getType(): string
     {
         return 'string';

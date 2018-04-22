@@ -11,6 +11,11 @@ class Reference extends Type
 {
     public $target;
 
+    public function getTarget(): string
+    {
+        return $this->target ?? $this->value;
+    }
+
     public function getType(): string
     {
         return 'reference';

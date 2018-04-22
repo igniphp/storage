@@ -10,6 +10,7 @@ use Igni\Storage\Mapping\Annotations\Type;
 class DecimalNumber extends Type
 {
     public $scale;
+
     public $precision;
 
     public function getType(): string

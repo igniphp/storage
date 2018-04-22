@@ -153,11 +153,12 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
     public function get(string $entity, $id): Entity
     {
         $key = $this->getId($entity, $id);
+
         if ($this->has($entity, $id)) {
             return $this->registry[$key];
         }
 
-        return $this->registry[$key] = $this->getRepository($entity)->get($id);
+        return $this->getRepository($entity)->get($id);
     }
 
     public function getRepository(string $entity): Repository
@@ -276,7 +277,8 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
         $key = str_replace('\\', '.', $entity) . '.metadata';
 
         if (!$this->cache->has($key)) {
-
+            $metaData = $this->metaDataFactory->getMetaData($entity);
+            $this->cache->set($key, $metaData);
         }
 
         return $this->cache->get($key);

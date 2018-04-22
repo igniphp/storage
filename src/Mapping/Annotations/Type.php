@@ -15,17 +15,26 @@ class Type extends Annotation
     public $name;
 
     /**
-     * @var mixed[]
-     */
-    public $options = [];
-
-    /**
      * @var string
      */
-    public $strategy;
+    public $type = 'text';
 
     public function getType(): string
     {
-        return 'text';
+        return $this->type;
+    }
+
+    public function getAttributes(): array
+    {
+        $attributes = get_object_vars($this);
+        foreach ($attributes as $name => $value) {
+            $method = 'get' . ucfirst($name);
+            if (method_exists($this, $method)) {
+                $attributes[$name] = $this->$method();
+            }
+        }
+        unset($attributes['type'], $attributes['value'], $attributes['name']);
+
+        return $attributes;
     }
 }

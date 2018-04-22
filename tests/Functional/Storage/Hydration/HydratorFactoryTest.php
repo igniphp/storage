@@ -8,6 +8,7 @@ use Igni\Storage\Hydration\ObjectHydrator;
 use Igni\Storage\Hydration\HydratorAutoGenerate;
 use Igni\Storage\Mapping\ImmutableCollection;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
+use Igni\Storage\Mapping\MetaData\PropertyMetaData;
 use Igni\Storage\Mapping\Strategy\Date;
 use Igni\Storage\Mapping\Strategy\Delegate;
 use Igni\Storage\Mapping\Strategy\FloatNumber;
@@ -35,6 +36,7 @@ class HydratorFactoryTest extends TestCase
 
     public function testHydratorCreation(): void
     {
+        $metaData = $this->provideAlbumMetaData();
         $entityManager = self::mock(EntityManager::class);
         $entityManager
             ->shouldReceive('getHydratorNamespace')
@@ -45,12 +47,16 @@ class HydratorFactoryTest extends TestCase
             ->withArgs([ArtistEntity::class, 12])
             ->andReturn(self::mock(ArtistEntity::class));
 
+        $entityManager
+            ->shouldReceive('getMetaData')
+            ->andReturn($metaData);
+
         $hydratorFactory = new HydratorFactory(
             $entityManager,
             HydratorAutoGenerate::ALWAYS()
         );
 
-        $metaData = $this->provideAlbumMetaData();
+
         $hydratorFactory->create($metaData, $load = true);
 
         /** @var ObjectHydrator $hydrator */
@@ -60,7 +66,7 @@ class HydratorFactoryTest extends TestCase
         self::assertInstanceOf(ObjectHydrator::class, $hydrator);
 
         /** @var AlbumEntity $album */
-        $album = $hydrator->hydrate($metaData->createInstance(), $this->provideAlbumData());
+        $album = $hydrator->hydrate($this->provideAlbumData());
 
         self::assertInstanceOf(AlbumEntity::class, $album);
         self::assertSame('Test Album', $album->getTitle());
@@ -72,6 +78,7 @@ class HydratorFactoryTest extends TestCase
     public function testGetHydrator(): void
     {
         $hydratorDir = __DIR__ . '/../../../tmp';
+        $metaData = $this->provideAlbumMetaData();
 
         $entityManager = self::mock(EntityManager::class);
         $entityManager
@@ -87,17 +94,20 @@ class HydratorFactoryTest extends TestCase
             ->shouldReceive('getHydratorDir')
             ->andReturn($hydratorDir);
 
+        $entityManager
+            ->shouldReceive('getMetaData')
+            ->andReturn($metaData);
+
         $hydratorFactory = new HydratorFactory(
             $entityManager,
             HydratorAutoGenerate::ALWAYS()
         );
 
-        $metaData = $this->provideAlbumMetaData();
-        $hydrator = $hydratorFactory->get($metaData);
+        $hydrator = $hydratorFactory->get($metaData->getClass());
         self::assertInstanceOf(ObjectHydrator::class, $hydrator);
 
         /** @var AlbumEntity $album */
-        $album = $hydrator->hydrate($metaData->createInstance(), $this->provideAlbumData());
+        $album = $hydrator->hydrate($this->provideAlbumData());
 
         self::assertInstanceOf(AlbumEntity::class, $album);
         self::assertSame('Test Album', $album->getTitle());
@@ -110,6 +120,7 @@ class HydratorFactoryTest extends TestCase
     public function testHydratorAsSubclass(): void
     {
         $hydratorDir = __DIR__ . '/../../../tmp';
+        $metaData = $this->providePlayListDetailsMetaData();
 
         $trackRepository = self::mock(TrackRepository::class);
         $trackRepository
@@ -127,66 +138,59 @@ class HydratorFactoryTest extends TestCase
         $entityManager
             ->shouldReceive('getRepository')
             ->andReturn($trackRepository);
+        $entityManager
+            ->shouldReceive('getMetaData')
+            ->andReturn($metaData);
 
         $hydratorFactory = new HydratorFactory(
             $entityManager,
             HydratorAutoGenerate::ALWAYS()
         );
 
-        $metaData = $this->providePlayListDetailsMetaData();
+        $playlistDetailsHydrator = $hydratorFactory->get($metaData->getClass());
 
-        $playlistDetailsHydrator = $hydratorFactory->get($metaData);
-
-        $playlistDetailsHydrator->hydrate($metaData->createInstance(), [
+        $playlistDetailsHydrator->hydrate([
             'rating' => '4.2',
             'tracks' => [1, 2, 3, 8]
         ]);
-
     }
 
     private function providePlayListDetailsMetaData(): EntityMetaData
     {
-        $metaData = new EntityMetaData(PlaylistDetails::class, [
-            'rating' => [
-                'field' => 'rating',
-                'type' => FloatNumber::class,
-            ],
-            'tracks' => [
-                'field' => 'tracks',
-                'type' => Delegate::class,
-            ],
-        ]);
+        $metaData = new EntityMetaData(PlaylistDetails::class);
         $metaData->setParentHydratorClass(PlaylistDetailsHydrator::class);
+
+        $rating = new PropertyMetaData(PlaylistDetails::class, 'rating', FloatNumber::class);
+        $metaData->addProperty($rating);
+
+        $tracks = new PropertyMetaData(PlaylistDetails::class, 'tracks', Delegate::class);
+        $metaData->addProperty($tracks);
 
         return $metaData;
     }
 
     private function provideAlbumMetaData(): EntityMetaData
     {
-        return new EntityMetaData(AlbumEntity::class, [
-            'id' => [
-                'field' => 'AlbumId',
-                'type' => Id::class,
-            ],
-            'artist' => [
-                'field' => 'ArtistId',
-                'type' => Reference::class,
-                'attributes' => [
-                    'class' => ArtistEntity::class,
-                ]
-            ],
-            'title' => [
-                'field' => 'Title',
-                'type' => Text::class,
-            ],
-            'releaseDate' => [
-                'field' => 'ReleaseDate',
-                'type' => Date::class,
-                'attributes' => [
-                    'format' => 'Ymd',
-                ]
-            ],
-        ]);
+        $metaData = new EntityMetaData(AlbumEntity::class);
+
+        $id = new PropertyMetaData(AlbumEntity::class, 'id', Id::class);
+        $id->setFieldName('AlbumId');
+        $metaData->addProperty($id);
+
+        $artist = new PropertyMetaData(AlbumEntity::class, 'artist', Reference::class);
+        $artist->setFieldName('ArtistId');
+        $artist->setAttributes(['target' => ArtistEntity::class]);
+        $metaData->addProperty($artist);
+
+        $title = new PropertyMetaData(AlbumEntity::class, 'title', Text::class);
+        $title->setFieldName('Title');
+        $metaData->addProperty($title);
+
+        $releaseDate = new PropertyMetaData(AlbumEntity::class, 'releaseDate', Date::class);
+        $releaseDate->setFieldName('ReleaseDate');
+        $metaData->addProperty($releaseDate);
+
+        return $metaData;
     }
 
     private function provideAlbumData(): array

@@ -9,6 +9,7 @@ final class Type
     private static $types = [
         'date' => Strategy\Date::class,
         'decimal' => Strategy\DecimalNumber::class,
+        'enum' => Strategy\Enum::class,
         'embed' => Strategy\Embed::class,
         'float' => Strategy\FloatNumber::class,
         'id' => Strategy\Id::class,

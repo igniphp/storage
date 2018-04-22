@@ -21,7 +21,7 @@ class PlaylistEntity implements Entity
     protected $id;
 
     /**
-     * @Property\String(name="Name")
+     * @Property\Text()
      */
     protected $name;
 

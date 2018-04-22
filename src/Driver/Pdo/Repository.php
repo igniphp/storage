@@ -2,25 +2,24 @@
 
 namespace Igni\Storage\Driver\Pdo;
 
-use Igni\Storage\EntityManager;
 use Igni\Storage\Entity;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Hydration\Hydrator;
-use Igni\Storage\Hydration\ObjectHydrator;
-use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Repository as RepositoryInterface;
 
 abstract class Repository implements RepositoryInterface
 {
     protected $connection;
-    protected $aggregate;
     protected $entityManager;
     protected $hydrator;
+    protected $metaData;
 
     final public function __construct(Connection $connection, EntityManager $entityManager)
     {
         $this->connection = $connection;
         $this->entityManager = $entityManager;
+        $this->metaData = $this->entityManager->getMetaData($this->getEntityClass());
         $this->hydrator = $this->entityManager->getHydrator($this->getEntityClass());
     }
 
@@ -29,8 +28,11 @@ abstract class Repository implements RepositoryInterface
         if ($this->entityManager->has($this->getEntityClass(), $id)) {
             return $this->entityManager->get($this->getEntityClass(), $id);
         }
-        $schema = $this->getSchema();
-        $query = sprintf('SELECT *FROM %s WHERE %s = :__id__', $schema->getSource(), $schema->getId());
+        $query = sprintf(
+            'SELECT *FROM %s WHERE %s = :__id__',
+            $this->metaData->getSource(),
+            $this->metaData->getIdentifier()->getFieldName()
+        );
 
         $cursor = $this->connection->execute($query, ['__id__' => $id]);
         $cursor->setHydrator($this->hydrator);
@@ -38,13 +40,15 @@ abstract class Repository implements RepositoryInterface
         if (!$entity) {
             throw RepositoryException::forNotFound($id);
         }
+        $this->entityManager->attach($entity);
 
         return $entity;
     }
 
     public function create(Entity $entity): Entity
     {
-        $schema = $this->getSchema();
+        // Execute id autogeneration.
+        $entity->getId();
         $data = $this->hydrator->extract($entity);
         $fields = array_keys($data);
         $binds = [];
@@ -55,19 +59,23 @@ abstract class Repository implements RepositoryInterface
         }
         $sql = sprintf(
             'INSERT INTO %s (%s) VALUES(%s)',
-            $schema->getSource(),
+            $this->metaData->getSource(),
             implode(',', $columns),
             implode(',', $binds)
         );
         $cursor = $this->connection->execute($sql, $data);
         $cursor->execute();
+
         return $entity;
     }
 
     public function remove(Entity $entity): Entity
     {
-        $schema = $this->getSchema();
-        $query = sprintf('DELETE FROM %s WHERE %s = :__id__', $schema->getSource(), $schema->getId());
+        $query = sprintf(
+            'DELETE FROM %s WHERE %s = :__id__',
+            $this->metaData->getSource(),
+            $this->metaData->getIdentifier()->getFieldName()
+        );
         $cursor = $this->connection->execute($query, ['__id__' => $entity->getId()]);
         $cursor->execute();
 
@@ -76,13 +84,17 @@ abstract class Repository implements RepositoryInterface
 
     public function update(Entity $entity): Entity
     {
-        $schema = $this->getSchema();
         $data = $this->hydrator->extract($entity);
         $fields = array_keys($data);
         foreach ($fields as $columnName) {
             $columns[] = "\"${columnName}\" = :${columnName}";
         }
-        $sql = sprintf('UPDATE %s SET %s WHERE %s = :__id__', $schema->getSource(), implode(', ', $columns), $schema->getId());
+        $sql = sprintf(
+            'UPDATE %s SET %s WHERE %s = :__id__',
+            $this->metaData->getSource(),
+            implode(', ', $columns),
+            $this->metaData->getIdentifier()->getFieldName()
+        );
         $cursor = $this->connection->execute($sql, array_merge($data, ['__id__' => $entity->getId()]));
         $cursor->execute();
         $cursor->close();

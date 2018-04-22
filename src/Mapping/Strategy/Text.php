@@ -24,6 +24,6 @@ final class Text implements MappingStrategy
             return substr((string) $value, 0, (int) $attributes['length']);
         }
 
-        return $value;
+        return (string) $value;
     }
 }

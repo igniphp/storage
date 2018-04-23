@@ -38,7 +38,13 @@ abstract class Repository implements RepositoryInterface
 
     public function create(Entity $entity): Entity
     {
+        // Support id autogeneration
+        $entity->getId();
         $data = $this->hydrator->extract($entity);
+        if (isset($data['id'])) {
+            $data['_id'] = $data['id'];
+            unset($data['id']);
+        }
         $this->connection->insert(
             $this->metaData->getSource(),
             $data

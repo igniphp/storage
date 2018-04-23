@@ -49,4 +49,9 @@ class ArtistEntity implements Entity
     {
         return $this->albums;
     }
+
+    public function setAlbums(ImmutableCollection $albums): void
+    {
+        $this->albums = $albums;
+    }
 }

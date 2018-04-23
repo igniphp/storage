@@ -89,7 +89,7 @@ class Collection implements Iterator, Countable
             return $this->items[$offset];
         }
 
-        throw OutOfBoundsException::forInvalidOffset($offset);
+        throw new OutOfBoundsException("Invalid offset: ${offset}");
     }
 
     public function current()

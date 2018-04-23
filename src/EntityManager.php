@@ -220,7 +220,7 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
     private function getId($entity, $id = null): string
     {
         if ($entity instanceof Entity) {
-            return get_class($entity) . '@' . $entity->getId();
+            return get_class($entity) . '@' . $entity->getId()->getValue();
         }
 
         return "${entity}@${id}";

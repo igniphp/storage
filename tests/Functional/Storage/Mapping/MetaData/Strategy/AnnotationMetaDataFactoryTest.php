@@ -23,7 +23,7 @@ final class AnnotationMetaDataFactoryTest extends TestCase
         $metaData = $factory->getMetaData(PlaylistEntity::class);
 
         self::assertCount(3, $metaData->getProperties());
-        self::assertSame('playlists', $metaData->getSource());
+        self::assertSame('playlist', $metaData->getSource());
         self::assertSame(PlaylistEntity::class, $metaData->getClass());
         self::assertFalse($metaData->isEmbed());
 

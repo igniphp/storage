@@ -136,6 +136,10 @@ class Cursor implements CursorInterface
     private function fetch()
     {
         $fetched = $this->iterator->current();
+        if (isset($fetched['_id'])) {
+            $fetched['id'] = $fetched['_id'];
+            unset($fetched['_id']);
+        }
         if ($this->hydrator && $fetched !== null) {
             $fetched = $this->hydrator->hydrate($fetched);
         }

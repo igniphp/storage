@@ -7,10 +7,19 @@ use IgniTest\Fixtures\Album\AlbumEntity;
 
 class ArtistHydrator
 {
-    public function hydrateAlbums(array $data, EntityManager $manager)
+    private $entityManager;
+
+    public function __construct(EntityManager $manager)
     {
-        return $manager
-            ->getRepository(AlbumEntity::class)
-            ->findByArtistId($data['ArtistId']);
+        $this->entityManager = $manager;
+    }
+
+    public function hydrateAlbums(ArtistEntity $artistEntity)
+    {
+        $artistEntity->setAlbums(
+            $this->entityManager
+                ->getRepository(AlbumEntity::class)
+                ->findByArtist($artistEntity)
+        );
     }
 }

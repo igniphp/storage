@@ -5,19 +5,23 @@ namespace IgniTest\Fixtures\Album;
 use Igni\Storage\EntityManager;
 use Igni\Storage\Mapping\ImmutableCollection;
 use IgniTest\Fixtures\Track\TrackEntity;
+use IgniTest\Fixtures\Track\TrackRepository;
 
 class AlbumHydrator
 {
     private $entityManager;
+    private $metaData;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+        $this->metaData = $entityManager->getMetaData(AlbumEntity::class);
     }
 
-    public function hydrateTracks(array $data, AlbumEntity $entity): ImmutableCollection
+    public function hydrateTracks(AlbumEntity $entity): void
     {
-        return $this->entityManager->getRepository(TrackEntity::class)
-            ->getMultiple();
+        /** @var TrackRepository $repository */
+        $repository = $this->entityManager->getRepository(TrackEntity::class);
+        $this->metaData->getProperty('tracks')->setValue($entity, $repository->findByAlbum($entity));
     }
 }

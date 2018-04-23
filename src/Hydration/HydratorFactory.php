@@ -19,15 +19,18 @@ final class HydratorFactory
 use Igni\Storage\Entity;
 use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\HydratorException;
+use Igni\Storage\Hydration\HydrationMode;
 use Igni\Storage\Hydration\ObjectHydrator;
 
 final class {name}{extends} implements ObjectHydrator
 {
     private \$__entityManager__;
     private \$__metaData__;
+    private \$__mode__;
     
     public function __construct(EntityManager \$entityManager)
     {
+        \$this->__mode__ = HydrationMode::BY_REFERENCE;
         \$this->__entityManager__ = \$entityManager;
         \$this->__metaData__ = \$entityManager->getMetaData({entity}::class);
         {constructor}
@@ -39,7 +42,9 @@ final class {name}{extends} implements ObjectHydrator
         \$metaData = \$this->__metaData__;
         \$entity = \$metaData->createInstance();
         {hydrator}
-        
+        if (\$this->__mode__ === HydrationMode::BY_REFERENCE && \$entity instanceof Entity) {
+            \$this->__entityManager__->attach(\$entity);
+        }
         return \$entity;
     }
     
@@ -51,6 +56,16 @@ final class {name}{extends} implements ObjectHydrator
         {extractor}
         
         return \$data;
+    }
+    
+    public function setMode(string \$mode): void
+    {
+        \$this->__mode__ = \$mode;
+    }
+    
+    public function getMode(): string
+    {
+        return \$this->__mode__;
     }
 }
 EOF;

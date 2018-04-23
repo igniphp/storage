@@ -60,7 +60,7 @@ class RepositoryTest extends TestCase
         $cursor = new Collection($this->mongoConnection->find('playlist', ['_id' => $playlist->getId()->getValue()]));
         self::assertEquals(
             [
-                '_id' => $playlist->getId()->getValue(),
+                'id' => $playlist->getId()->getValue(),
                 'name' => 'playlistname',
                 'details' => [
                     'rating' => 0,

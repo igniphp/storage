@@ -40,7 +40,6 @@ abstract class Repository implements RepositoryInterface
         if (!$entity) {
             throw RepositoryException::forNotFound($id);
         }
-        $this->entityManager->attach($entity);
 
         return $entity;
     }

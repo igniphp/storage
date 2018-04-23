@@ -5,6 +5,7 @@ namespace IgniTest\Fixtures\Track;
 use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Mapping\ImmutableCollection;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
+use IgniTest\Fixtures\Album\AlbumEntity;
 
 class TrackRepository extends Repository
 {
@@ -29,11 +30,11 @@ class TrackRepository extends Repository
         return new ImmutableCollection($cursor);
     }
 
-    public function findByAlbumId($id): ImmutableCollection
+    public function findByAlbum(AlbumEntity $album): ImmutableCollection
     {
         $query = "SELECT * FROM albums WHERE AlbumId = :id";
 
-        $cursor = $this->connection->execute($query, ['id' => $id]);
+        $cursor = $this->connection->execute($query, ['id' => $album->getId()->getValue()]);
         $cursor->setHydrator($this->hydrator);
 
         return new ImmutableCollection($cursor);

@@ -20,7 +20,7 @@ use Psr\SimpleCache\CacheInterface;
 class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
 {
     /** @var Entity[] */
-    private $registry;
+    private $registry = [];
 
     /** @var Repository[] */
     private $repositories = [];

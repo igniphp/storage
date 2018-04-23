@@ -5,7 +5,7 @@ namespace Igni\Storage;
 use Igni\Storage\Exception\UnitOfWorkException;
 use SplObjectStorage;
 
-class Ink implements UnitOfWork, RepositoryContainer
+class EntityStorage implements UnitOfWork, RepositoryContainer
 {
     private const STATE_NEW = 1;
     private const STATE_DIRTY = 2;

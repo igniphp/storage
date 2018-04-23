@@ -8,7 +8,7 @@ use Igni\Storage\Driver\Pdo\ConnectionOptions as SqliteOptions;
 use Igni\Storage\Driver\MongoDB\Connection as MongoDBConnection;
 use Igni\Storage\Driver\MongoDB\ConnectionOptions as MongoDBOptions;
 use Igni\Storage\Driver\Pdo\Cursor;
-use Igni\Storage\Ink;
+use Igni\Storage\EntityStorage;
 use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Album\AlbumRepository;
 use IgniTest\Fixtures\Artist\ArtistEntity;
@@ -22,7 +22,7 @@ use IgniTest\Fixtures\Track\TrackRepository;
 
 trait StorageTrait
 {
-    /** @var Ink */
+    /** @var EntityStorage */
     private $unitOfWork;
 
     /** @var string */
@@ -51,7 +51,7 @@ trait StorageTrait
         $this->sqliteConnection = new SqliteConnection($this->sqliteDbPath, new SqliteOptions('sqlite'));
         $this->sqliteConnection->open();
         $this->entityManager = new EntityManager($tmpDir);
-        $this->unitOfWork = new Ink($this->entityManager);
+        $this->unitOfWork = new EntityStorage($this->entityManager);
 
         $this->mongoConnection = new MongoDBConnection('localhost', new MongoDBOptions('test', 'travis', 'test'));
         $this->mongoConnection->open();

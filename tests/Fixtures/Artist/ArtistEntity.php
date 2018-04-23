@@ -25,9 +25,6 @@ class ArtistEntity implements Entity
      */
     protected $name;
 
-    /**
-     * @Property\Delegate()
-     */
     protected $albums;
 
     public function __construct(string $name)

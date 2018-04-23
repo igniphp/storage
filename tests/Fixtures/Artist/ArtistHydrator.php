@@ -2,22 +2,36 @@
 
 namespace IgniTest\Fixtures\Artist;
 
-use Igni\Storage\EntityManager;
+use Igni\Storage\Hydration\GenericHydrator;
+use Igni\Storage\Hydration\ObjectHydrator;
 use IgniTest\Fixtures\Album\AlbumEntity;
 
-class ArtistHydrator
+class ArtistHydrator implements ObjectHydrator
 {
-    private $entityManager;
+    private $baseHydrator;
 
-    public function __construct(EntityManager $manager)
+    public function __construct(GenericHydrator $hydrator)
     {
-        $this->entityManager = $manager;
+        $this->baseHydrator = $hydrator;
     }
 
-    public function hydrateAlbums(ArtistEntity $artistEntity)
+    public function hydrate(array $data): ArtistEntity
+    {
+        $entity = $this->baseHydrator->hydrate($data);
+        $this->hydrateAlbums($entity);
+
+        return $entity;
+    }
+
+    public function extract($entity): array
+    {
+        return $this->baseHydrator->extract($entity);
+    }
+
+    private function hydrateAlbums(ArtistEntity $artistEntity)
     {
         $artistEntity->setAlbums(
-            $this->entityManager
+            $this->baseHydrator->getEntityManager()
                 ->getRepository(AlbumEntity::class)
                 ->findByArtist($artistEntity)
         );

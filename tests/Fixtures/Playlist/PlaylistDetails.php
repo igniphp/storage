@@ -18,9 +18,6 @@ class PlaylistDetails
      */
     protected $rating = 0.0;
 
-    /**
-     * @Property\Delegate()
-     */
     protected $tracks = [];
 
     public function setTracks(ImmutableCollection $tracks): void

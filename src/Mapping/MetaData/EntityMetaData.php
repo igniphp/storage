@@ -21,7 +21,7 @@ final class EntityMetaData
     /** @var bool  */
     private $embed = true;
     /** @var string */
-    private $parentHydrator;
+    private $customHydrator;
     /** @var string[] */
     private $fields = [];
     /** @var PropertyMetaData */
@@ -66,22 +66,22 @@ final class EntityMetaData
         return $this->source;
     }
 
-    public function setParentHydratorClass(string $className): void
+    public function setCustomHydratorClass(string $className): void
     {
         if (!class_exists($className)) {
             throw new MappingException("Cannot set parent hydrator, class (${className}) does not exists.");
         }
-        $this->parentHydrator = $className;
+        $this->customHydrator = $className;
     }
 
-    public function hasParentHydratorClass(): bool
+    public function definesCustomHydrator(): bool
     {
-        return $this->parentHydrator !== null;
+        return $this->customHydrator !== null;
     }
 
-    public function getParentHydratorClass(): string
+    public function getCustomHydratorClass(): string
     {
-        return $this->parentHydrator;
+        return $this->customHydrator;
     }
 
     public function getProperty(string $name): PropertyMetaData

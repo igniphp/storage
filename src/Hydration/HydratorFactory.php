@@ -4,11 +4,8 @@ namespace Igni\Storage\Hydration;
 
 use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\HydratorException;
-use Igni\Storage\Hydration\HydratorAutoGenerate;
-use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Mapping\MappingStrategy;
-use Igni\Storage\Mapping\Strategy\Delegate;
-use Igni\Utils\ReflectionApi;
+use Igni\Storage\Mapping\MetaData\EntityMetaData;
 
 final class HydratorFactory
 {
@@ -17,55 +14,36 @@ final class HydratorFactory
 {namespace}
 
 use Igni\Storage\Entity;
-use Igni\Storage\EntityManager;
-use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Hydration\HydrationMode;
-use Igni\Storage\Hydration\ObjectHydrator;
+use Igni\Storage\Hydration\GenericHydrator;
 
-final class {name}{extends} implements ObjectHydrator
+final class {name} extends GenericHydrator
 {
-    private \$__entityManager__;
-    private \$__metaData__;
-    private \$__mode__;
-    
-    public function __construct(EntityManager \$entityManager)
+    public function hydrate(array \$data): \\{entity}
     {
-        \$this->__mode__ = HydrationMode::BY_REFERENCE;
-        \$this->__entityManager__ = \$entityManager;
-        \$this->__metaData__ = \$entityManager->getMetaData({entity}::class);
-        {constructor}
-    }
-    
-    public function hydrate(array \$data): {entity}
-    {
-        \$entityManager = \$this->__entityManager__;
-        \$metaData = \$this->__metaData__;
+        \$entityManager = \$this->entityManager;
+        \$metaData = \$this->metaData;
         \$entity = \$metaData->createInstance();
         {hydrator}
-        if (\$this->__mode__ === HydrationMode::BY_REFERENCE && \$entity instanceof Entity) {
-            \$this->__entityManager__->attach(\$entity);
+        if (\$this->getMode() === HydrationMode::BY_REFERENCE && \$entity instanceof Entity) {
+            \$this->entityManager->attach(\$entity);
         }
         return \$entity;
     }
     
     public function extract(\$entity): array
     {
-        \$entityManager = \$this->__entityManager__;
-        \$metaData = \$this->__metaData__;
+        \$entityManager = \$this->entityManager;
+        \$metaData = \$this->metaData;
         \$data = [];
         {extractor}
         
         return \$data;
     }
     
-    public function setMode(string \$mode): void
+    public function getEntityClass(): string
     {
-        \$this->__mode__ = \$mode;
-    }
-    
-    public function getMode(): string
-    {
-        return \$this->__mode__;
+        return \\{entity}::class;
     }
 }
 EOF;
@@ -91,35 +69,51 @@ EOF;
         }
 
         $entityMeta = $this->entityManager->getMetaData($entityClass);
-        $hydratorClass = $entityMeta->getHydratorClassName();
+        $hydratorClassName = $entityMeta->getHydratorClassName();
+        $namespace = $this->entityManager->getHydratorNamespace();
+        $hydratorClass = $namespace . '\\' . $hydratorClassName;
 
         // Fix for already loaded but not initialized hydrator.
         if (class_exists($hydratorClass)) {
-            return $this->hydrators[$entityMeta->getClass()] = new $hydratorClass($this->entityManager);
+            $objectHydrator = new $hydratorClass($this->entityManager);
+            if ($entityMeta->definesCustomHydrator()) {
+                $customHydratorClass = $entityMeta->getCustomHydratorClass();
+                $objectHydrator = new $customHydratorClass($objectHydrator);
+            }
+            return $this->hydrators[$entityMeta->getClass()] = $objectHydrator;
         }
 
-        $fileName = $this->entityManager->getHydratorDir() . DIRECTORY_SEPARATOR . str_replace('\\', '', $hydratorClass) . '.php';
+        $fileName = $this->entityManager->getHydratorDir() . DIRECTORY_SEPARATOR . str_replace('\\', '', $hydratorClassName) . '.php';
         switch ($this->autoGenerate->value()) {
+            case HydratorAutoGenerate::ALWAYS:
+                $this->create($entityMeta, true);
+                break;
+
+            case HydratorAutoGenerate::NEVER:
+
+                require_once  $fileName;
+                break;
+
             case HydratorAutoGenerate::IF_NOT_EXISTS:
+            default:
+
                 if (!is_readable($fileName)) {
                     $hydrator = $this->create($entityMeta, true);
                     $this->writeHydrator($hydrator, $fileName);
                 } else {
                     require_once $fileName;
                 }
-
-                return $this->hydrators[$entityMeta->getClass()] = new $hydratorClass($this->entityManager);
-
-            case HydratorAutoGenerate::ALWAYS:
-                $this->create($entityMeta, true);
-
-                return $this->hydrators[$entityMeta->getClass()] = new $hydratorClass($this->entityManager);
-
-            case HydratorAutoGenerate::NEVER:
-
-                require_once  $fileName;
-                return $this->hydrators[$entityMeta->getClass()] = new $hydratorClass($this->entityManager);
+                break;
         }
+
+        $objectHydrator =  new $hydratorClass($this->entityManager);
+
+        if ($entityMeta->definesCustomHydrator()) {
+            $customHydratorClass = $entityMeta->getCustomHydratorClass();
+            $objectHydrator = new $customHydratorClass($objectHydrator);
+        }
+
+        return $this->hydrators[$entityMeta->getClass()] = $objectHydrator;
     }
 
     private function create(EntityMetaData $metaData, bool $load = false): string
@@ -127,7 +121,6 @@ EOF;
         $hydrator = [];
         $extractor = [];
         $constructor = [];
-        $delegator = [];
 
         $compiled = self::TEMPLATE;
 
@@ -135,18 +128,13 @@ EOF;
         $compiled = str_replace('{entity}', $metaData->getClass(), $compiled);
 
         $namespace = $this->entityManager->getHydratorNamespace();
-        $namespace = $namespace === '\\' ? '' : "namespace ${namespace}";
-        $compiled = str_replace('{namespace}', $namespace, $compiled);
-
-        if ($metaData->hasParentHydratorClass()) {
-            $parentHydrator = $metaData->getParentHydratorClass();
-            $compiled = str_replace('{extends}', " extends \\${parentHydrator}", $compiled);
-            if (method_exists($parentHydrator, '__construct')) {
-                $constructor[] = 'parent::__construct($entityManager);';
-            }
+        if ($namespace !== '') {
+            $namespace = "namespace ${namespace};";
         } else {
-            $compiled = str_replace('{extends}', '', $compiled);
+            $namespace = '';
         }
+
+        $compiled = str_replace('{namespace}', $namespace, $compiled);
 
         foreach ($metaData->getProperties() as $property) {
             /** @var MappingStrategy $type */
@@ -158,12 +146,6 @@ EOF;
             }
 
             $attributes = preg_replace('/\s+/', '', var_export($attributes, true));
-
-            // Delegator are handled at the end of the hydration process.
-            if ($metaData->hasParentHydratorClass() && $type === Delegate::class) {
-                $delegator[] = $property;
-                continue;
-            }
 
             // Build hydrator for property.
             $hydrator[] = "// Hydrate {$property->getName()}.";
@@ -179,23 +161,6 @@ EOF;
             $extractor[] = $type::getExtractor();
             $extractor[] = "\$data['{$property->getFieldName()}'] = \$value;";
         }
-
-        // Handle delegator.
-        foreach ($delegator as $property) {
-            $hydratorDelegator = 'hydrate' . ucfirst($property->getName());
-            $extractorDelegator = 'extract' . ucfirst($property->getName());
-
-            if (method_exists($parentHydrator, $hydratorDelegator)) {
-                $hydrator[] = "// Hydrate {$property->getName()}";
-                $hydrator[] = "\$this->${hydratorDelegator}(\$entity, \$data);";
-            }
-
-            if (method_exists($parentHydrator, $extractorDelegator)) {
-                $extractor[] = "// Extract {$property->getName()}";
-                $extractor[] = "\$this->${extractorDelegator}(\$entity, \$data);";
-            }
-        }
-
 
         $compiled = str_replace('{constructor}', implode("\n        ", $constructor), $compiled);
         $compiled = str_replace('{hydrator}', implode("\n        ", $hydrator), $compiled);

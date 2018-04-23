@@ -10,7 +10,6 @@ use Igni\Storage\Mapping\ImmutableCollection;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Mapping\MetaData\PropertyMetaData;
 use Igni\Storage\Mapping\Strategy\Date;
-use Igni\Storage\Mapping\Strategy\Delegate;
 use Igni\Storage\Mapping\Strategy\FloatNumber;
 use Igni\Storage\Mapping\Strategy\Id;
 use Igni\Storage\Mapping\Strategy\Reference;
@@ -47,7 +46,11 @@ class HydratorFactoryTest extends TestCase
         $entityManager->shouldReceive('attach');
         $entityManager
             ->shouldReceive('getHydratorNamespace')
-            ->andReturn('\\');
+            ->andReturn('');
+
+        $entityManager
+            ->shouldReceive('getHydratorDir')
+            ->andReturn(__DIR__ . '/../../../tmp/');
 
         $entityManager
             ->shouldReceive('get')
@@ -100,7 +103,45 @@ class HydratorFactoryTest extends TestCase
         $entityManager = self::mock(EntityManager::class);
         $entityManager
             ->shouldReceive('getHydratorNamespace')
-            ->andReturn('\\');
+            ->andReturn('');
+        $entityManager
+            ->shouldReceive('getHydratorDir')
+            ->andReturn($hydratorDir);
+
+        $entityManager
+            ->shouldReceive('getRepository')
+            ->andReturn($trackRepository);
+        $entityManager
+            ->shouldReceive('getMetaData')
+            ->andReturn($metaData);
+
+        $hydratorFactory = new HydratorFactory(
+            $entityManager,
+            HydratorAutoGenerate::ALWAYS()
+        );
+
+        $playlistDetailsHydrator = $hydratorFactory->get($metaData->getClass());
+
+        $playlistDetailsHydrator->hydrate([
+            'rating' => '4.2',
+            'songs' => [1, 2, 3, 8]
+        ]);
+    }
+
+    public function testHydratorsFromCustomNamespace(): void
+    {
+        $hydratorDir = __DIR__ . '/../../../tmp';
+        $metaData = $this->providePlayListDetailsMetaData();
+
+        $trackRepository = self::mock(TrackRepository::class);
+        $trackRepository
+            ->shouldReceive('getMultiple')
+            ->andReturn(self::mock(ImmutableCollection::class));
+
+        $entityManager = self::mock(EntityManager::class);
+        $entityManager
+            ->shouldReceive('getHydratorNamespace')
+            ->andReturn('TestNamespace');
         $entityManager
             ->shouldReceive('getHydratorDir')
             ->andReturn($hydratorDir);
@@ -128,13 +169,10 @@ class HydratorFactoryTest extends TestCase
     private function providePlayListDetailsMetaData(): EntityMetaData
     {
         $metaData = new EntityMetaData(PlaylistDetails::class);
-        $metaData->setParentHydratorClass(PlaylistDetailsHydrator::class);
+        $metaData->setCustomHydratorClass(PlaylistDetailsHydrator::class);
 
         $rating = new PropertyMetaData(PlaylistDetails::class, 'rating', FloatNumber::class);
         $metaData->addProperty($rating);
-
-        $tracks = new PropertyMetaData(PlaylistDetails::class, 'tracks', Delegate::class);
-        $metaData->addProperty($tracks);
 
         return $metaData;
     }
@@ -159,9 +197,6 @@ class HydratorFactoryTest extends TestCase
         $releaseDate = new PropertyMetaData(AlbumEntity::class, 'releaseDate', Date::class);
         $releaseDate->setFieldName('ReleaseDate');
         $metaData->addProperty($releaseDate);
-
-        $tracks = new PropertyMetaData(AlbumEntity::class, 'tracks', Delegate::class);
-        $metaData->addProperty($tracks);
 
         return $metaData;
     }

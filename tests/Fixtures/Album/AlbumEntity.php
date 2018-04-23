@@ -36,9 +36,6 @@ class AlbumEntity implements Entity
      */
     protected $releaseDate;
 
-    /**
-     * @Property\Delegate()
-     */
     protected $tracks;
 
     public function __construct(string $title, ArtistEntity $artist)
@@ -65,6 +62,11 @@ class AlbumEntity implements Entity
     public function getArtist(): ArtistEntity
     {
         return $this->artist;
+    }
+
+    public function setTracks($tracks): void
+    {
+        $this->tracks = $tracks;
     }
 
     public function getTracks(): iterable

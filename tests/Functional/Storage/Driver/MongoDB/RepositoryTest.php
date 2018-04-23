@@ -63,7 +63,7 @@ class RepositoryTest extends TestCase
                 'id' => $playlist->getId()->getValue(),
                 'name' => 'playlistname',
                 'details' => [
-                    'rating' => 0,
+                    'rating' => 0.0,
                     'songs' => [1, 2, 3],
                 ],
             ],

@@ -2,27 +2,45 @@
 
 namespace IgniTest\Fixtures\Playlist;
 
-use Igni\Storage\EntityManager;
+use Igni\Storage\Hydration\GenericHydrator;
+use Igni\Storage\Hydration\ObjectHydrator;
 use IgniTest\Fixtures\Track\TrackEntity;
 
-class PlaylistDetailsHydrator
+class PlaylistDetailsHydrator implements ObjectHydrator
 {
-    private $entityManager;
+    private $baseHydrator;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct(GenericHydrator $baseHydrator)
     {
-        $this->entityManager = $entityManager;
+        $this->baseHydrator = $baseHydrator;
     }
 
-    public function hydrateTracks(PlaylistDetails $entity, array &$data)
+    public function hydrate(array $data)
     {
-        $tracks = $this->entityManager->getRepository(TrackEntity::class)
-            ->getMultiple($data['songs']);
+        $entity = $this->baseHydrator->hydrate($data);
+        $this->hydrateTracks($entity, $data['songs']);
+
+        return $entity;
+    }
+
+    public function extract($entity): array
+    {
+        $data = $this->baseHydrator->extract($entity);
+        $data['songs'] = $this->extractTracks($entity);
+
+        return $data;
+    }
+
+
+    private function hydrateTracks(PlaylistDetails $entity, array $songs)
+    {
+        $tracks = $this->baseHydrator->getEntityManager()->getRepository(TrackEntity::class)
+            ->getMultiple($songs);
 
         $entity->setTracks($tracks);
     }
 
-    public function extractTracks(PlaylistDetails $entity, array &$data): void
+    private function extractTracks(PlaylistDetails $entity): array
     {
         $tracks = [];
         /** @var TrackEntity $track */
@@ -30,6 +48,6 @@ class PlaylistDetailsHydrator
             $tracks[] = $track->getId()->getValue();
         }
 
-        $data['songs'] = $tracks;
+        return $tracks;
     }
 }

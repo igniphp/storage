@@ -70,11 +70,11 @@ class AnnotationMetaDataFactory implements MetaDataFactory
                 case Entity::class:
                     $source = $annotation->source ?? $annotation->value;
                     $metaData->setSource($source);
-                    $this->setParentHydrator($annotation, $metaData);
+                    $this->setCustomHydrator($annotation, $metaData);
                     break;
                 case EmbeddedEntity::class:
                     $metaData->makeEmbed();
-                    $this->setParentHydrator($annotation, $metaData);
+                    $this->setCustomHydrator($annotation, $metaData);
                     break;
             }
         }
@@ -93,14 +93,14 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         return $metaData;
     }
 
-    private function setParentHydrator(Annotation $annotation, EntityMetaData $metaData)
+    private function setCustomHydrator(Annotation $annotation, EntityMetaData $metaData)
     {
         if ($annotation->hydrator !== null) {
             if (!class_exists($annotation->hydrator)) {
                 throw new MappingException("Cannot use hydrator {$annotation->hydrator} class does not exist.");
             }
 
-            $metaData->setParentHydratorClass($annotation->hydrator);
+            $metaData->setCustomHydratorClass($annotation->hydrator);
         }
     }
 

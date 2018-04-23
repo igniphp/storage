@@ -87,7 +87,7 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
         $this->cache = $cache;
         $this->hydratorDir = $hydratorDir;
         $this->metaDataFactory = $metaDataFactory;
-        $this->hydratorNamespace = $hydratorNamespace ?? '\\';
+        $this->hydratorNamespace = $hydratorNamespace ?? '';
 
         $this->hydratorFactory = new HydratorFactory($this, $hydratorAutoGenerate);
     }
@@ -264,8 +264,7 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
     public function getHydrator(string $entity): ObjectHydrator
     {
         if (!isset($this->hydrators[$entity])) {
-            $hydrator = $this->hydratorFactory->get($entity);
-            $this->hydrators[$entity] = new $hydrator($this);
+            $this->hydrators[$entity] = $this->hydratorFactory->get($entity);
         }
 
         return $this->hydrators[$entity];

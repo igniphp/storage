@@ -2,26 +2,38 @@
 
 namespace IgniTest\Fixtures\Album;
 
-use Igni\Storage\EntityManager;
-use Igni\Storage\Mapping\ImmutableCollection;
+use Igni\Storage\Hydration\GenericHydrator;
+use Igni\Storage\Hydration\ObjectHydrator;
 use IgniTest\Fixtures\Track\TrackEntity;
 use IgniTest\Fixtures\Track\TrackRepository;
 
-class AlbumHydrator
+class AlbumHydrator implements ObjectHydrator
 {
-    private $entityManager;
-    private $metaData;
+    private $baseHydrator;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct(GenericHydrator $baseHydrator)
     {
-        $this->entityManager = $entityManager;
-        $this->metaData = $entityManager->getMetaData(AlbumEntity::class);
+        $this->baseHydrator = $baseHydrator;
     }
 
-    public function hydrateTracks(AlbumEntity $entity): void
+    public function hydrate(array $data): AlbumEntity
+    {
+        /** @var AlbumEntity $entity */
+        $entity = $this->baseHydrator->hydrate($data);
+        $this->hydrateTracks($entity);
+
+        return $entity;
+    }
+
+    public function extract($entity): array
+    {
+        return $this->baseHydrator->extract($entity);
+    }
+
+    private function hydrateTracks(AlbumEntity $entity): void
     {
         /** @var TrackRepository $repository */
-        $repository = $this->entityManager->getRepository(TrackEntity::class);
-        $this->metaData->getProperty('tracks')->setValue($entity, $repository->findByAlbum($entity));
+        $repository = $this->baseHydrator->getEntityManager()->getRepository(TrackEntity::class);
+        $entity->setTracks($repository->findByAlbum($entity));
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Exception;
 
-use Igni\Exception\RuntimeException;
+use RuntimeException;
 
 class StorageException extends RuntimeException
 {

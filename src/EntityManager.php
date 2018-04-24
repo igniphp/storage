@@ -7,14 +7,13 @@ use Cache\Adapter\Apcu\ApcuCachePool;
 use Cache\Adapter\PHPArray\ArrayCachePool;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Exception\RepositoryException;
-use Igni\Storage\Hydration\HydratorFactory;
-use Igni\Storage\Mapping\MetaData\MetaDataFactory;
 use Igni\Storage\Hydration\HydratorAutoGenerate;
+use Igni\Storage\Hydration\HydratorFactory;
 use Igni\Storage\Hydration\ObjectHydrator;
-use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Mapping\IdentityMap;
+use Igni\Storage\Mapping\MetaData\EntityMetaData;
+use Igni\Storage\Mapping\MetaData\MetaDataFactory;
 use Igni\Storage\Mapping\MetaData\Strategy\AnnotationMetaDataFactory;
-use Igni\Utils\ReflectionApi;
 use Psr\SimpleCache\CacheInterface;
 
 class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
@@ -201,22 +200,45 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
         return $entity;
     }
 
+    /**
+     *
+     * @param string $class
+     * @param $id
+     * @return bool
+     */
     public function has(string $class, $id): bool
     {
         $key = $this->getId($class, $id);
         return isset($this->registry[$key]);
     }
 
+    /**
+     * Checks if entity lives in the identity map.
+     *
+     * @param Entity $entity
+     * @return bool
+     */
     public function contains(Entity $entity): bool
     {
         return in_array($entity, $this->registry, true);
     }
 
+    /**
+     * Clears identity map.
+     */
     public function clear(): void
     {
         $this->registry = [];
     }
 
+    /**
+     * Gets global id for entity which is used for
+     * later storage in the identity map.
+     *
+     * @param $entity
+     * @param null $id
+     * @return string
+     */
     private function getId($entity, $id = null): string
     {
         if ($entity instanceof Entity) {
@@ -270,6 +292,12 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
         return $this->hydrators[$entity];
     }
 
+    /**
+     * Returns entity's mapping metadata information.
+     *
+     * @param string|class $entity
+     * @return EntityMetaData
+     */
     public function getMetaData(string $entity): EntityMetaData
     {
         $key = str_replace('\\', '.', $entity) . '.metadata';

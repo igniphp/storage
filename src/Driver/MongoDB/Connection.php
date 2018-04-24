@@ -48,25 +48,25 @@ final class Connection implements ConnectionInterface
 
     public function execute(...$parameters): Cursor
     {
-        $command = $parameters[0];
+        $command = new MongoDB\Driver\Command($parameters[0]);
 
         return new Cursor($this, $this->options, $command);
     }
 
     public function dropCollection(string $collection): void
     {
-        $cursor = $this->execute(new MongoDB\Driver\Command([
+        $cursor = $this->execute([
             'drop' => $collection,
-        ]));
+        ]);
         $cursor->execute();
     }
 
     public function insert(string $collection, array ...$documents): void
     {
-        $cursor = $this->execute(new MongoDB\Driver\Command([
+        $cursor = $this->execute([
             'insert' => $collection,
             'documents' => $documents,
-        ]));
+        ]);
         $cursor->execute();
     }
 
@@ -81,10 +81,10 @@ final class Connection implements ConnectionInterface
                 'limit' => 1,
             ];
         }
-        $cursor = $this->execute(new MongoDB\Driver\Command([
+        $cursor = $this->execute([
             'delete' => $collection,
             'deletes' => $deletes,
-        ]));
+        ]);
         $cursor->execute();
     }
 
@@ -101,7 +101,15 @@ final class Connection implements ConnectionInterface
             unset ($command['filter']);
         }
 
-        return $this->execute(new MongoDB\Driver\Command($command));
+        return $this->execute($command);
+    }
+
+    public function count(string $collection, array $query): Cursor
+    {
+        return $this->execute([
+            'count' => $collection,
+            'query' => $query,
+        ]);
     }
 
     public function update(string $collection, array ...$documents): void
@@ -128,10 +136,10 @@ final class Connection implements ConnectionInterface
                 'upsert' => true,
             ];
         }
-        $cursor = $this->execute(new MongoDB\Driver\Command([
+        $cursor = $this->execute([
             'update' => $collection,
             'updates' => $updates,
-        ]));
+        ]);
         $cursor->execute();
     }
 

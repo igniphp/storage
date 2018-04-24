@@ -8,12 +8,18 @@ use SplObjectStorage;
 class EntityStorage implements UnitOfWork, RepositoryContainer
 {
     private const STATE_NEW = 1;
-    private const STATE_DIRTY = 2;
+    private const STATE_MANAGED = 2;
     private const STATE_REMOVED = 3;
     private const STATE_DETACHED = 4;
     private const ACTION_CREATE = 'create';
     private const ACTION_REMOVE = 'remove';
     private const ACTION_UPDATE = 'update';
+
+    /**
+     * Contains calculated states for entities.
+     * @var array<string, int>
+     */
+    private $states = [];
 
     /**
      * Contains grouped by class name entities that should be saved.
@@ -33,6 +39,9 @@ class EntityStorage implements UnitOfWork, RepositoryContainer
      */
     private $update = [];
 
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
     public function __construct(EntityManager $manager)
@@ -57,7 +66,10 @@ class EntityStorage implements UnitOfWork, RepositoryContainer
 
     public function get(string $entity, $id): Entity
     {
-        return $this->entityManager->get($entity, $id);
+        $entity = $this->entityManager->get($entity, $id);
+        $this->states[spl_object_hash($entity)] = self::STATE_MANAGED;
+
+        return $entity;
     }
 
     /**
@@ -108,7 +120,7 @@ class EntityStorage implements UnitOfWork, RepositoryContainer
         $namespace = get_class($entity);
 
         switch ($this->getState($entity)) {
-            case self::STATE_DIRTY:
+            case self::STATE_MANAGED:
                 if (!isset($this->update[$namespace])) {
                     $this->update[$namespace] = new SplObjectStorage();
                 }
@@ -129,27 +141,37 @@ class EntityStorage implements UnitOfWork, RepositoryContainer
 
     public function getState(Entity $entity): int
     {
+        $oid = spl_object_hash($entity);
+        if (isset($this->states[$oid])) {
+            return $this->states[$oid];
+        }
+
         $namespace = get_class($entity);
 
         if (isset($this->remove[$namespace]) && $this->remove[$namespace]->contains($entity)) {
-            return self::STATE_REMOVED;
+            return $this->states[$oid] = self::STATE_REMOVED;
         }
 
         if ($this->entityManager->contains($entity)) {
-            return self::STATE_DIRTY;
+            return $this->states[$oid] = self::STATE_MANAGED;
         }
 
         try {
             $this->entityManager->getRepository($namespace)->get($entity->getId());
-            return self::STATE_DETACHED;
+            return $this->states[$oid] = self::STATE_DETACHED;
         } catch (\Exception $exception) {
-            return self::STATE_NEW;
+            return $this->states[$oid] = self::STATE_NEW;
         }
     }
 
     private function removeOne(Entity $entity): void
     {
         $namespace = get_class($entity);
+        $oid = spl_object_hash($entity);
+
+        if (isset($this->states[$oid]) && $this->states[$oid] === self::STATE_MANAGED) {
+            $this->states[$oid] = self::STATE_REMOVED;
+        }
 
         if (!isset($this->remove[$namespace])) {
             $this->remove[$namespace] = new SplObjectStorage();
@@ -175,7 +197,11 @@ class EntityStorage implements UnitOfWork, RepositoryContainer
 
     public function contains(Entity $entity): bool
     {
-        return $this->entityManager->contains($entity);
+        $contains = $this->entityManager->contains($entity);
+        $oid = spl_object_hash($entity);
+        $this->states[$oid] = self::STATE_MANAGED;
+
+        return $contains;
     }
 
     public function detach(Entity ...$entities): void
@@ -187,6 +213,7 @@ class EntityStorage implements UnitOfWork, RepositoryContainer
 
     private function detachOne(Entity $entity): void
     {
+        $this->states[spl_object_hash($entity)] = self::STATE_DETACHED;
         $namespace = get_class($entity);
 
         if (isset($this->update[$namespace])) {

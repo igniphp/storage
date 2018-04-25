@@ -122,10 +122,12 @@ class HydratorFactoryTest extends TestCase
 
         $playlistDetailsHydrator = $hydratorFactory->get($metaData->getClass());
 
-        $playlistDetailsHydrator->hydrate([
+        $playlistDetails = $playlistDetailsHydrator->hydrate([
             'rating' => '4.2',
             'songs' => [1, 2, 3, 8]
         ]);
+
+        self::assertInstanceOf(PlaylistDetails::class, $playlistDetails);
     }
 
     public function testHydratorsFromCustomNamespace(): void
@@ -160,10 +162,12 @@ class HydratorFactoryTest extends TestCase
 
         $playlistDetailsHydrator = $hydratorFactory->get($metaData->getClass());
 
-        $playlistDetailsHydrator->hydrate([
+        $playlistDetails = $playlistDetailsHydrator->hydrate([
             'rating' => '4.2',
             'songs' => [1, 2, 3, 8]
         ]);
+
+        self::assertInstanceOf(PlaylistDetails::class, $playlistDetails);
     }
 
     private function providePlayListDetailsMetaData(): EntityMetaData

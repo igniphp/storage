@@ -26,7 +26,7 @@ install:
   - composer update
 
 script:
-  - vendor/bin/phpunit --coverage-clover=coverage.clover
+  - vendor/bin/phpunit
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

@@ -1,4 +1,7 @@
-# ![Igni logo](https://github.com/igniphp/common/blob/master/logo/full.svg)![Build Status](https://travis-ci.org/igniphp/storage.svg?branch=master)
+# ![Igni logo](https://github.com/igniphp/common/blob/master/logo/full.svg)
+[![Build Status](https://travis-ci.org/igniphp/storage.svg?branch=master)](https://travis-ci.org/igniphp/storage)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/igniphp/storage/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/igniphp/storage/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/igniphp/storage/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/igniphp/storage/?branch=master)
 
 ## Igni Storage
 Licensed under MIT License.

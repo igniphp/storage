@@ -2,6 +2,11 @@ checks:
   php:
     code_rating: true
 
+build:
+  tests:
+    override:
+      command: "php -v"
+
 tools:
   external_code_coverage: true
   php_analyzer: true

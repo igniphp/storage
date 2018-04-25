@@ -1,18 +1,28 @@
+build:
+  environment:
+    mongodb: '3.2'
+    php: '7.1'
+  dependencies:
+    override:
+        - composer install --no-interaction --prefer-dist
+    before: 
+        - mongo test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
+
 checks:
-    php:
-        code_rating: true
+  php:
+    code_rating: true
 
 tools:
-    external_code_coverage: true
-    php_analyzer: true
-    php_changetracking: true
-    php_code_sniffer:
-        config:
-            standard: "PSR2"
-    php_mess_detector: true
-    
+  external_code_coverage: true
+  php_analyzer: true
+  php_changetracking: true
+  php_code_sniffer:
+    config:
+      standard: "PSR2"
+  php_mess_detector: true
+
 filter:
-    excluded_paths:
-        - docs/*
-        - tests/*
-        - src/Exception/*
+  excluded_paths:
+    - docs/*
+    - tests/*
+    - src/Exception/*

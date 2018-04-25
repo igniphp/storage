@@ -8,5 +8,4 @@ interface Connection
     public function open(): void;
     public function isOpen(): bool;
     public function execute(...$parameters);
-    public function getBaseConnection();
 }

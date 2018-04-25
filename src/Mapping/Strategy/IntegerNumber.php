@@ -4,7 +4,7 @@ namespace Igni\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\MappingStrategy;
 
-final class Integer implements MappingStrategy
+final class IntegerNumber implements MappingStrategy
 {
     public static function getHydrator(): string
     {

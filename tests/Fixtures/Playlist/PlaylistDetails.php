@@ -20,6 +20,11 @@ class PlaylistDetails
 
     protected $tracks = [];
 
+    public function __construct(float $rating = 0.0)
+    {
+        $this->rating = $rating;
+    }
+
     public function setTracks(ImmutableCollection $tracks): void
     {
         $this->tracks = $tracks;

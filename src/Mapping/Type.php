@@ -13,7 +13,7 @@ final class Type
         'embed' => Strategy\Embed::class,
         'float' => Strategy\FloatNumber::class,
         'id' => Strategy\Id::class,
-        'integer' => Strategy\Integer::class,
+        'integer' => Strategy\IntegerNumber::class,
         'text' => Strategy\Text::class,
         'string' => Strategy\Text::class,
         'reference' => Strategy\Reference::class,

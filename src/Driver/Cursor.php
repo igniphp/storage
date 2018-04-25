@@ -6,6 +6,5 @@ interface Cursor extends \Iterator
 {
     public function close(): void;
     public function open(): void;
-    public function getBaseCursor();
     public function getConnection(): Connection;
 }

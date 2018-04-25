@@ -6,25 +6,65 @@ use Igni\Storage\Exception\MappingException;
 use Igni\Storage\Mapping\Strategy\Id;
 use ReflectionClass;
 
+/**
+ * Keeps information how entity should be mapped.
+ *
+ * @package Igni\Storage\Mapping\MetaData
+ */
 final class EntityMetaData
 {
-    /** @var string */
+    /**
+     * Entity class (FQCN)
+     * @var string
+     */
     private $class;
-    /** @var string string */
+
+    /**
+     * Generated hydrator class name (not FQCN)
+     * @var string string
+     */
     private $hydratorClassName;
-    /** @var PropertyMetaData[] */
+
+    /**
+     * Entity's mapped properties metadata.
+     * @var PropertyMetaData[]
+     */
     private $properties;
-    /** @var ReflectionClass */
+
+    /**
+     * @var ReflectionClass
+     */
     private $reflectionClass;
-    /** @var string */
+
+    /**
+     * Either name of table or connection or any other namespace
+     * where entity is stored.
+     * @var string
+     */
     private $source;
-    /** @var bool  */
+
+    /**
+     * Provides information if entity is embed entity.
+     * @var bool
+     */
     private $embed = true;
-    /** @var string */
+
+    /**
+     * Keeps user defined hydrator's class (FQCN).
+     * @var string
+     */
     private $customHydrator;
-    /** @var string[] */
+
+    /**
+     * Keeps mapped properties to storage fields.
+     * @var string[]
+     */
     private $fields = [];
-    /** @var PropertyMetaData */
+
+    /**
+     * Contains identifier property.
+     * @var PropertyMetaData|null
+     */
     private $identifier;
 
     /**
@@ -137,11 +177,6 @@ final class EntityMetaData
         return $this->class;
     }
 
-    public function getReflection(): ReflectionClass
-    {
-        return $this->reflectionClass;
-    }
-
     public function createInstance(...$arguments)
     {
         if ($arguments) {
@@ -156,10 +191,9 @@ final class EntityMetaData
         return [
             'class',
             'hydratorClassName',
-            'namingStrategy',
             'properties',
-            'storage',
-            'parentHydrator',
+            'source',
+            'customHydrator',
         ];
     }
 

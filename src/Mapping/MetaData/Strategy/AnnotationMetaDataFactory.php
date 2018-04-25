@@ -111,7 +111,6 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         }
 
         $property = new PropertyMetaData(
-            $property->getDeclaringClass()->getName(),
             $property->getName(),
             Type::get($annotation->getType())
         );

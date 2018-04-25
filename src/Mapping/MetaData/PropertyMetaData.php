@@ -3,7 +3,7 @@
 namespace Igni\Storage\Mapping\MetaData;
 
 use Igni\Storage\Mapping\Strategy\Text;
-use ReflectionProperty;
+use Closure;
 
 final class PropertyMetaData
 {
@@ -11,21 +11,19 @@ final class PropertyMetaData
     private $propertyName;
     private $fieldName;
     private $type;
-    private $entityClass;
-    private $propertyReflection;
+    private $accessor;
+    private $writer;
 
-    public function __construct(string $entityClass, string $propertyName, string $type = Text::class)
+    public function __construct(string $propertyName, string $type = Text::class)
     {
         $this->propertyName = $propertyName;
         $this->type = $type;
-        $this->entityClass = $entityClass;
-        $this->propertyReflection = new ReflectionProperty($entityClass, $propertyName);
-        $this->propertyReflection->setAccessible(true);
-    }
-
-    public function getClass(): string
-    {
-        return $this->entityClass;
+        $this->accessor = function () use ($propertyName) {
+            return $this->$propertyName;
+        };
+        $this->writer = function ($value) use ($propertyName)  {
+            $this->$propertyName = $value;
+        };
     }
 
     public function getType(): string
@@ -60,12 +58,12 @@ final class PropertyMetaData
 
     public function setValue($object, $value): void
     {
-        $this->propertyReflection->setValue($object, $value);
+        Closure::bind($this->writer, $object, $object)($value);
     }
 
     public function getValue($object)
     {
-        return $this->propertyReflection->getValue($object);
+        return Closure::bind($this->accessor, $object, $object)();
     }
 
     public function __sleep()
@@ -75,12 +73,18 @@ final class PropertyMetaData
             'propertyName',
             'fieldName',
             'type',
-            'entityClass',
         ];
     }
 
     public function __wakeup()
     {
-        $this->propertyReflection = new ReflectionProperty($this->entityClass, $this->propertyName);
+        $propertyName = $this->propertyName;
+
+        $this->accessor = function () use ($propertyName) {
+            return $this->$propertyName;
+        };
+        $this->writer = function ($value) use ($propertyName)  {
+            $this->$propertyName = $value;
+        };
     }
 }

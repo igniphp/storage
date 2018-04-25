@@ -171,7 +171,7 @@ class HydratorFactoryTest extends TestCase
         $metaData = new EntityMetaData(PlaylistDetails::class);
         $metaData->setCustomHydratorClass(PlaylistDetailsHydrator::class);
 
-        $rating = new PropertyMetaData(PlaylistDetails::class, 'rating', FloatNumber::class);
+        $rating = new PropertyMetaData('rating', FloatNumber::class);
         $metaData->addProperty($rating);
 
         return $metaData;
@@ -181,20 +181,20 @@ class HydratorFactoryTest extends TestCase
     {
         $metaData = new EntityMetaData(AlbumEntity::class);
 
-        $id = new PropertyMetaData(AlbumEntity::class, 'id', Id::class);
+        $id = new PropertyMetaData('id', Id::class);
         $id->setFieldName('AlbumId');
         $metaData->addProperty($id);
 
-        $artist = new PropertyMetaData(AlbumEntity::class, 'artist', Reference::class);
+        $artist = new PropertyMetaData('artist', Reference::class);
         $artist->setFieldName('ArtistId');
         $artist->setAttributes(['target' => ArtistEntity::class]);
         $metaData->addProperty($artist);
 
-        $title = new PropertyMetaData(AlbumEntity::class, 'title', Text::class);
+        $title = new PropertyMetaData('title', Text::class);
         $title->setFieldName('Title');
         $metaData->addProperty($title);
 
-        $releaseDate = new PropertyMetaData(AlbumEntity::class, 'releaseDate', Date::class);
+        $releaseDate = new PropertyMetaData('releaseDate', Date::class);
         $releaseDate->setFieldName('ReleaseDate');
         $metaData->addProperty($releaseDate);
 

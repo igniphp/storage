@@ -11,13 +11,21 @@
          bootstrap="tests/bootstrap.php"
 >
     <testsuites>
-        <testsuite name="Igni Storage Tests">
-            <directory suffix=".php">./tests/</directory>
+        <testsuite name="All Tests">
+            <directory suffix=".php">./tests</directory>
         </testsuite>
     </testsuites>
     <filter>
-        <whitelist>
+        <whitelist processUncoveredFilesFromWhitelist="true">
             <directory>./src/</directory>
+            <exclude>
+                <directory suffix=".php">./src/Exception</directory>
+                <directory suffix=".php">./src/Driver/Rest</directory>
+                <directory suffix=".php">./tests</directory>
+            </exclude>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-html" target="./metrics" charset="UTF-8" yui="true" highlight="false" lowUpperBound="35" highLowerBound="70"/>
+    </logging>
 </phpunit>

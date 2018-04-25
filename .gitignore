@@ -4,3 +4,4 @@
 /vendor
 /tests/cache/*
 /tests/tmp/*
+/metrics

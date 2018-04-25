@@ -9,18 +9,14 @@ final class DecimalNumber implements MappingStrategy, DefaultAttributesProvider
     public static function getHydrator(): string
     {
         return '
-        $value = (string) $value;
-        $value = explode(\'.\', $value);
-        $value = substr($value[0], 0, $options[\'scale\']) . \'.\' . substr($value[1], 0, $attributes[\'precision\']);
+        $value = \Igni\Storage\Mapping\Strategy\DecimalNumber::formatDecimalNumber((string) $value, $attributes);
         ';
     }
 
     public static function getExtractor(): string
     {
         return '
-        $value = (string) $value;
-        $value = explode(\'.\', $value);
-        $value = substr($value[0], 0, $options[\'scale\']) . \'.\' . substr($value[1], 0, $attributes[\'precision\']);
+        $value = \Igni\Storage\Mapping\Strategy\DecimalNumber::formatDecimalNumber((string) $value, $attributes);
         ';
     }
 
@@ -30,5 +26,16 @@ final class DecimalNumber implements MappingStrategy, DefaultAttributesProvider
             'scale' => 10,
             'precision' => 2,
         ];
+    }
+
+    public static function formatDecimalNumber(string $number, array $attributes): string
+    {
+        $parts = explode('.', $number);
+        if (strlen($parts[0]) > $attributes['scale']) {
+            $parts[0] = str_repeat('9', $attributes['scale']);
+        }
+        $number = $parts[0] . '.' . ($parts[1] ?? '');
+
+        return bcadd($number, '0', $attributes['precision']);
     }
 }

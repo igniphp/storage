@@ -19,6 +19,7 @@ use Igni\Storage\Mapping\Type;
 use Igni\Utils\ReflectionApi;
 use Psr\SimpleCache\CacheInterface;
 use ReflectionProperty;
+use ReflectionClass;
 
 class AnnotationMetaDataFactory implements MetaDataFactory
 {
@@ -62,9 +63,16 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         $metaData = new EntityMetaData($entityClass);
         $reflection = ReflectionApi::reflectClass($entityClass);
 
+        $this->parseClassAnnotations($reflection, $metaData);
+        $this->parseProperties($reflection, $metaData);
+
+        return $metaData;
+    }
+
+    private function parseClassAnnotations(ReflectionClass $reflection, EntityMetaData $metaData): void
+    {
         $classAnnotations = $this->reader->getClassAnnotations($reflection);
 
-        // Parse class annotations
         foreach ($classAnnotations as $type => $annotation) {
             switch ($type) {
                 case Entity::class:
@@ -78,8 +86,10 @@ class AnnotationMetaDataFactory implements MetaDataFactory
                     break;
             }
         }
+    }
 
-        // Parse property annotations
+    private function parseProperties(ReflectionClass $reflection, EntityMetaData $metaData): void
+    {
         foreach ($reflection->getProperties() as $property) {
             $annotations = $this->reader->getPropertyAnnotations($property);
             foreach ($annotations as $annotation) {
@@ -89,8 +99,6 @@ class AnnotationMetaDataFactory implements MetaDataFactory
                 }
             }
         }
-
-        return $metaData;
     }
 
     private function setCustomHydrator(Annotation $annotation, EntityMetaData $metaData)

@@ -25,7 +25,7 @@ Why considering this libraries among others, here are couple reasons:
 
 ## Requirements
 
- - PHP 7.1
+ - >= PHP 7.1
  - PDO for mysql, sqlite and/or pgsql support
  - MongoDB extenstion for mongo support
 

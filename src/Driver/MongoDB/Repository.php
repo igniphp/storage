@@ -2,6 +2,7 @@
 
 namespace Igni\Storage\Driver\MongoDB;
 
+use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Repository as RepositoryInterface;
 use Igni\Storage\EntityManager;
 use Igni\Storage\Entity;
@@ -32,6 +33,10 @@ abstract class Repository implements RepositoryInterface
 
         $entity = $cursor->current();
         $cursor->close();
+
+        if (!$entity) {
+            throw RepositoryException::forNotFound($id);
+        }
 
         return $entity;
     }

@@ -3,7 +3,7 @@
 namespace Igni\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\MappingStrategy;
-use Igni\Storage\Uuid;
+use Igni\Storage\Mapping\Uuid;
 
 final class Id implements MappingStrategy, DefaultAttributesProvider
 {

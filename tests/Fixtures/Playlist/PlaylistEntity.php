@@ -2,7 +2,7 @@
 
 namespace IgniTest\Fixtures\Playlist;
 
-use Igni\Storage\AutoGenerateId;
+use Igni\Storage\Mapping\AutoGenerateId;
 use Igni\Storage\Entity;
 use IgniTest\Fixtures\Track\TrackEntity;
 use Igni\Storage\Mapping\Annotations as Storage;

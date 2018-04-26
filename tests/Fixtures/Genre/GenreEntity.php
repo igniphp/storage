@@ -2,7 +2,7 @@
 
 namespace IgniTest\Fixtures\Genre;
 
-use Igni\Storage\AutoGenerateId;
+use Igni\Storage\Mapping\AutoGenerateId;
 use Igni\Storage\Entity;
 use Igni\Storage\Mapping\Annotations as Storage;
 use Igni\Storage\Mapping\Annotations\Types as Property;

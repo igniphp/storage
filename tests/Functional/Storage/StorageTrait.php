@@ -2,12 +2,12 @@
 
 namespace IgniTest\Functional\Storage;
 
-use Igni\Storage\EntityManager;
-use Igni\Storage\Driver\Pdo\Connection as SqliteConnection;
-use Igni\Storage\Driver\Pdo\ConnectionOptions as SqliteOptions;
 use Igni\Storage\Driver\MongoDB\Connection as MongoDBConnection;
 use Igni\Storage\Driver\MongoDB\ConnectionOptions as MongoDBOptions;
+use Igni\Storage\Driver\Pdo\Connection as SqliteConnection;
+use Igni\Storage\Driver\Pdo\ConnectionOptions as SqliteOptions;
 use Igni\Storage\Driver\Pdo\Cursor;
+use Igni\Storage\EntityManager;
 use Igni\Storage\EntityStorage;
 use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Album\AlbumRepository;

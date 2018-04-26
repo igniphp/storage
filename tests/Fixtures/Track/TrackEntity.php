@@ -2,7 +2,7 @@
 
 namespace IgniTest\Fixtures\Track;
 
-use Igni\Storage\AutoGenerateId;
+use Igni\Storage\Mapping\AutoGenerateId;
 use Igni\Storage\Entity;
 use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Artist\ArtistEntity;

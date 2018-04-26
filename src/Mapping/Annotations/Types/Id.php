@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Mapping\Annotations\Types;
 
-use Igni\Storage\Uuid;
+use Igni\Storage\Mapping\Uuid;
 use Igni\Storage\Mapping\Annotations\Type;
 
 /**

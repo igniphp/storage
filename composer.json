@@ -14,8 +14,7 @@
     "ext-mongodb": "For mongodb support",
     "ext-pdo_mysql": "For MySQL or MariaDB database support",
     "ext-pdo_pqsql": "For PostgreSQL database support",
-    "ext-sqlite3": "For SQLite database support",
-    "guzzlehttp/guzzle": "For rest/http storage support"
+    "ext-sqlite3": "For SQLite database support"
   },
   "require": {
     "php": ">=7.1.0",

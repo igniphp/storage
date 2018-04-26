@@ -34,7 +34,7 @@ abstract class Repository implements RepositoryInterface
         $entity = $cursor->current();
         $cursor->close();
 
-        if (!$entity) {
+        if (!$entity instanceof Entity) {
             throw RepositoryException::forNotFound($id);
         }
 

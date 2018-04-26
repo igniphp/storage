@@ -3,9 +3,7 @@
 namespace Igni\Storage\Driver\MongoDB;
 
 use MongoDB\Driver\Command;
-use Igni\Storage\Driver\Connection;
 use Igni\Storage\Driver\Cursor as CursorInterface;
-use Igni\Storage\Driver\MongoDB\Connection as MongoDBConnection;
 use Igni\Storage\Entity;
 use Igni\Storage\Exception\CursorException;
 use Igni\Storage\Hydration\ObjectHydrator;
@@ -13,7 +11,7 @@ use IteratorIterator;
 
 class Cursor implements CursorInterface
 {
-    /** @var MongoDBConnection  */
+    /** @var Connection  */
     private $connection;
     /** @var Command */
     private $command;
@@ -29,7 +27,7 @@ class Cursor implements CursorInterface
     private $iterator;
 
     public function __construct(
-        MongoDBConnection $connection,
+        Connection $connection,
         ConnectionOptions $options,
         Command $command
     ) {
@@ -49,7 +47,7 @@ class Cursor implements CursorInterface
         return $this->baseCursor;
     }
 
-    public function getConnection(): Connection
+    public function getConnection(): \Igni\Storage\Driver\Connection
     {
         return $this->connection;
     }

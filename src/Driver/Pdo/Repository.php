@@ -37,7 +37,8 @@ abstract class Repository implements RepositoryInterface
         $cursor = $this->connection->execute($query, ['__id__' => $id]);
         $cursor->setHydrator($this->hydrator);
         $entity = $cursor->current();
-        if (!$entity) {
+
+        if (!$entity instanceof Entity) {
             throw RepositoryException::forNotFound($id);
         }
 
@@ -85,6 +86,7 @@ abstract class Repository implements RepositoryInterface
     {
         $data = $this->hydrator->extract($entity);
         $fields = array_keys($data);
+        $columns = [];
         foreach ($fields as $columnName) {
             $columns[] = "\"${columnName}\" = :${columnName}";
         }

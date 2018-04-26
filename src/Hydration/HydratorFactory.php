@@ -177,9 +177,10 @@ EOF;
     {
         $temp = fopen($uri, 'w');
 
-        if (!fwrite($temp, $hydrator)) {
+        if ($temp === false || !fwrite($temp, $hydrator)) {
             throw new HydratorException("Could not write hydrator (${uri}) on disk - check for directory permissions.");
         }
+        
         fclose($temp);
     }
 

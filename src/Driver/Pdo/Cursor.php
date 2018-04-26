@@ -2,17 +2,14 @@
 
 namespace Igni\Storage\Driver\Pdo;
 
-use Igni\Storage\Driver\Connection;
-use Igni\Storage\Driver\Cursor as CursorInterface;
-use Igni\Storage\Driver\Pdo\Connection as PdoConnection;
 use Igni\Storage\Entity;
 use Igni\Storage\Exception\CursorException;
 use Igni\Storage\Hydration\ObjectHydrator;
 use IteratorIterator;
 
-class Cursor implements CursorInterface
+class Cursor implements \Igni\Storage\Driver\Cursor
 {
-    /** @var PdoConnection  */
+    /** @var Connection  */
     private $connection;
     /** @var string */
     private $query;
@@ -28,7 +25,7 @@ class Cursor implements CursorInterface
     private $iterator;
 
     public function __construct(
-        PdoConnection $connection,
+        Connection $connection,
         string $query,
         array $params = null
     ) {
@@ -43,7 +40,7 @@ class Cursor implements CursorInterface
         return $this->baseCursor;
     }
 
-    public function getConnection(): Connection
+    public function getConnection(): \Igni\Storage\Driver\Connection
     {
         return $this->connection;
     }

@@ -2,10 +2,10 @@
 
 namespace Igni\Storage\Mapping;
 
-use Iterator;
 use Countable;
-use Igni\Exception\OutOfBoundsException;
 use Igni\Utils\ArrayUtil;
+use Iterator;
+use OutOfBoundsException;
 
 class Collection implements Iterator, Countable
 {

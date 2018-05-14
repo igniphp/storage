@@ -3,7 +3,7 @@
 namespace IgniTest\Functional\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\Strategy\IntegerNumber;
-use Igni\Utils\TestCase;
+use PHPUnit\Framework\TestCase;
 
 final class IntegerNumberTest extends TestCase
 {
@@ -11,7 +11,7 @@ final class IntegerNumberTest extends TestCase
     {
         $value = '1';
         $attributes = [];
-        eval(IntegerNumber::getExtractor());
+        IntegerNumber::extract($value, $attributes);
 
         self::assertSame(1, $value);
     }
@@ -20,7 +20,7 @@ final class IntegerNumberTest extends TestCase
     {
         $value = null;
         $attributes = [];
-        eval(IntegerNumber::getExtractor());
+        IntegerNumber::extract($value, $attributes);
 
         self::assertSame(0, $value);
     }
@@ -29,7 +29,7 @@ final class IntegerNumberTest extends TestCase
     {
         $value = 1.0;
         $attributes = [];
-        eval(IntegerNumber::getHydrator());
+        IntegerNumber::hydrate($value, $attributes);
 
         self::assertSame(1, $value);
     }
@@ -38,7 +38,7 @@ final class IntegerNumberTest extends TestCase
     {
         $value = null;
         $attributes = [];
-        eval(IntegerNumber::getHydrator());
+        IntegerNumber::hydrate($value, $attributes);
 
         self::assertSame(0, $value);
     }

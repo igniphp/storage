@@ -6,20 +6,20 @@ use Igni\Storage\Mapping\MappingStrategy;
 
 final class Date implements MappingStrategy, DefaultAttributesProvider
 {
-    public static function getHydrator(): string
+    public static function hydrate(&$value, array $attributes = []): void
     {
-        return '
         if ($value !== null) {
-            $value = new \DateTime($value, new \DateTimeZone($attributes[\'timezone\']));
-        }';
+            $value = new \DateTime($value, new \DateTimeZone($attributes['timezone']));
+        }
     }
 
-    public static function getExtractor(): string
+    public static function extract(&$value, array $attributes = []): void
     {
-        return '
-        if ($value !== null) {
-            $value = $value->format($attributes[\'format\']);
-        }';
+        if ($value instanceof \DateTimeInterface) {
+            $value = $value->format($attributes['format']);
+        } else {
+            $value = null;
+        }
     }
 
     public static function getDefaultAttributes(): array

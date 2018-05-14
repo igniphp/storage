@@ -6,15 +6,13 @@ use Igni\Storage\Mapping\MappingStrategy;
 
 final class FloatNumber implements MappingStrategy
 {
-    public static function getHydrator(): string
+    public static function hydrate(&$value): void
     {
-        return '
-        $value = (float) $value;';
+        $value = (float) $value;;
     }
 
-    public static function getExtractor(): string
+    public static function extract(&$value): void
     {
-        return '
-        $value = (float) $value;';
+        $value = (float) $value;
     }
 }

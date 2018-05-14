@@ -6,16 +6,14 @@ use Igni\Storage\Mapping\MappingStrategy;
 
 final class Enum implements MappingStrategy, DefaultAttributesProvider
 {
-    public static function getHydrator(): string
+    public static function hydrate(&$value, array $attributes = []): void
     {
-        return '
-        $value = $attributes[\'values\'][$value];';
+        $value = $attributes['values'][$value];
     }
 
-    public static function getExtractor(): string
+    public static function extract(&$value, array $attributes = []): void
     {
-        return '
-        $value = array_search($value, $attributes[\'values\']);';
+        $value = array_search($value, $attributes['values']);
     }
 
     public static function getDefaultAttributes(): array

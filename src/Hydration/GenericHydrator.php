@@ -38,5 +38,5 @@ abstract class GenericHydrator implements ObjectHydrator
         return $this->metaData;
     }
 
-    abstract public function getEntityClass(): string;
+    abstract public static function getEntityClass(): string;
 }

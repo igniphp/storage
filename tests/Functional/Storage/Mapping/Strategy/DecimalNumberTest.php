@@ -3,7 +3,7 @@
 namespace IgniTest\Functional\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\Strategy\DecimalNumber;
-use Igni\Utils\TestCase;
+use PHPUnit\Framework\TestCase;
 
 final class DecimalNumberTest extends TestCase
 {
@@ -11,7 +11,7 @@ final class DecimalNumberTest extends TestCase
     {
         $value = '10.00';
         $attributes = DecimalNumber::getDefaultAttributes();
-        eval(DecimalNumber::getExtractor());
+        DecimalNumber::extract($value, $attributes);
 
         self::assertSame('10.00', $value);
     }
@@ -20,7 +20,7 @@ final class DecimalNumberTest extends TestCase
     {
         $value = null;
         $attributes = DecimalNumber::getDefaultAttributes();
-        eval(DecimalNumber::getExtractor());
+        DecimalNumber::extract($value, $attributes);
 
         self::assertSame('0.00', $value);
     }
@@ -30,7 +30,7 @@ final class DecimalNumberTest extends TestCase
         $decimal = '10.000';
         $value = $decimal;
         $attributes = DecimalNumber::getDefaultAttributes();
-        eval(DecimalNumber::getHydrator());
+        DecimalNumber::hydrate($value, $attributes);
 
         self::assertEquals('10.00', $value);
     }
@@ -39,7 +39,7 @@ final class DecimalNumberTest extends TestCase
     {
         $value = null;
         $attributes = DecimalNumber::getDefaultAttributes();
-        eval(DecimalNumber::getHydrator());
+        DecimalNumber::hydrate($value, $attributes);
 
         self::assertSame('0.00', $value);
     }
@@ -51,7 +51,7 @@ final class DecimalNumberTest extends TestCase
             'scale' => 2,
             'precision' => 2,
         ];
-        eval(DecimalNumber::getHydrator());
+        DecimalNumber::hydrate($value, $attributes);
 
         self::assertSame('99.00', $value);
     }

@@ -6,48 +6,10 @@ use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Mapping\MappingStrategy;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
+use Igni\Utils\ReflectionApi;
 
 final class HydratorFactory
 {
-    private const TEMPLATE = <<<EOF
-<?php declare(strict_types = 1);
-{namespace}
-
-use Igni\Storage\Entity;
-use Igni\Storage\Hydration\HydrationMode;
-use Igni\Storage\Hydration\GenericHydrator;
-
-final class {name} extends GenericHydrator
-{
-    public function hydrate(array \$data): \\{entity}
-    {
-        \$entityManager = \$this->entityManager;
-        \$metaData = \$this->metaData;
-        \$entity = \$metaData->createInstance();
-        {hydrator}
-        if (\$this->getMode() === HydrationMode::BY_REFERENCE && \$entity instanceof Entity) {
-            \$this->entityManager->attach(\$entity);
-        }
-        return \$entity;
-    }
-    
-    public function extract(\$entity): array
-    {
-        \$entityManager = \$this->entityManager;
-        \$metaData = \$this->metaData;
-        \$data = [];
-        {extractor}
-        
-        return \$data;
-    }
-    
-    public function getEntityClass(): string
-    {
-        return \\{entity}::class;
-    }
-}
-EOF;
-
     public const STRATEGY_ANNOTATION = 1;
 
     private $entityManager;
@@ -56,7 +18,7 @@ EOF;
 
     public function __construct(
         EntityManager $entityManager,
-        HydratorAutoGenerate $autoGenerate
+        $autoGenerate = HydratorAutoGenerate::IF_NOT_EXISTS
     ) {
         $this->entityManager = $entityManager;
         $this->autoGenerate = $autoGenerate;
@@ -84,14 +46,14 @@ EOF;
         }
 
         $fileName = $this->entityManager->getHydratorDir() . DIRECTORY_SEPARATOR . str_replace('\\', '', $hydratorClassName) . '.php';
-        switch ($this->autoGenerate->value()) {
+        switch ($this->autoGenerate) {
             case HydratorAutoGenerate::ALWAYS:
                 $this->create($entityMeta, true);
                 break;
 
             case HydratorAutoGenerate::NEVER:
 
-                require_once  $fileName;
+                require_once $fileName;
                 break;
 
             case HydratorAutoGenerate::IF_NOT_EXISTS:
@@ -116,25 +78,34 @@ EOF;
         return $this->hydrators[$entityMeta->getClass()] = $objectHydrator;
     }
 
-    private function create(EntityMetaData $metaData, bool $load = false): string
+    private function create(EntityMetaData $metaData, bool $load = false): ReflectionApi\RuntimeClass
     {
-        $hydrator = [];
-        $extractor = [];
-        $constructor = [];
-
-        $compiled = self::TEMPLATE;
-
-        $compiled = str_replace('{name}', $metaData->getHydratorClassName(), $compiled);
-        $compiled = str_replace('{entity}', $metaData->getClass(), $compiled);
-
-        $namespace = $this->entityManager->getHydratorNamespace();
-        if ($namespace !== '') {
-            $namespace = "namespace ${namespace};";
+        if ($this->entityManager->getHydratorNamespace() !== '') {
+            $hydratorClass = ReflectionApi::createClass($this->entityManager->getHydratorNamespace() . '\\' . $metaData->getHydratorClassName());
         } else {
-            $namespace = '';
+            $hydratorClass = ReflectionApi::createClass($metaData->getHydratorClassName());
         }
+        $hydratorClass->extends(GenericHydrator::class);
 
-        $compiled = str_replace('{namespace}', $namespace, $compiled);
+        $getEntityClassMethod = new ReflectionApi\RuntimeMethod('getEntityClass');
+        $getEntityClassMethod->makeStatic();
+        $getEntityClassMethod->makeFinal();
+        $getEntityClassMethod->setReturnType('string');
+        $getEntityClassMethod->setBody(
+            'return \\' . $metaData->getClass() . '::class;'
+        );
+        $hydratorClass->addMethod($getEntityClassMethod);
+
+        $hydrateMethod = new ReflectionApi\RuntimeMethod('hydrate');
+        $hydrateMethod->addArgument(new ReflectionApi\RuntimeArgument('data', 'array'));
+        $hydrateMethod->setReturnType($metaData->getClass());
+        $hydrateMethod->addLine('$entity = \\' . ReflectionApi::class . '::createInstance(self::getEntityClass());');
+        $hydratorClass->addMethod($hydrateMethod);
+
+        $extractMethod = new ReflectionApi\RuntimeMethod('extract');
+        $extractMethod->addArgument(new ReflectionApi\RuntimeArgument('entity'));
+        $extractMethod->setReturnType('array');
+        $hydratorClass->addMethod($extractMethod);
 
         foreach ($metaData->getProperties() as $property) {
             /** @var MappingStrategy $type */
@@ -148,50 +119,41 @@ EOF;
             $attributes = preg_replace('/\s+/', '', var_export($attributes, true));
 
             // Build hydrator for property.
-            $hydrator[] = "// Hydrate {$property->getName()}.";
-            $hydrator[] = "\$value = \$data['{$property->getFieldName()}'] ?? null;";
-            $hydrator[] = "\$attributes = ${attributes};";
-            $hydrator[] = $type::getHydrator();
-            $hydrator[] = "\$metaData->getProperty('{$property->getName()}')->setValue(\$entity, \$value);";
+            $hydrateMethod->addLine("// Hydrate {$property->getName()}.");
+            $hydrateMethod->addLine("\$value = \$data['{$property->getFieldName()}'] ?? null;");
+            $hydrateMethod->addLine("\\{$type}::hydrate(\$value, ${attributes}, \$this->entityManager);");
+            $hydrateMethod->addLine('\\' . ReflectionApi::class . "::writeProperty(\$entity, '{$property->getName()}', \$value);");
+
+            // Store objects hydrated by reference
+            $hydrateMethod->addLine("if (\$this->mode === \Igni\Storage\Hydration\HydrationMode::BY_REFERENCE && \$entity instanceof \Igni\Storage\Entity) {");
+            $hydrateMethod->addLine("\t\$this->entityManager->attach(\$entity);");
+            $hydrateMethod->addLine("}");
 
             // Build extractor for property.
-            $extractor[] = "// Extract {$property->getName()}.";
-            $extractor[] = "\$value = \$metaData->getProperty('{$property->getName()}')->getValue(\$entity);";
-            $extractor[] = "\$attributes = ${attributes};";
-            $extractor[] = $type::getExtractor();
-            $extractor[] = "\$data['{$property->getFieldName()}'] = \$value;";
+            $extractMethod->addLine("// Extract {$property->getName()}.");
+            $extractMethod->addLine('$value = \\' . ReflectionApi::class . "::readProperty(\$entity, '{$property->getName()}');");
+            $extractMethod->addLine("\\{$type}::extract(\$value, ${attributes}, \$this->entityManager);");
+            $extractMethod->addLine("\$data['{$property->getFieldName()}'] = \$value;");
         }
 
-        $compiled = str_replace('{constructor}', implode("\n        ", $constructor), $compiled);
-        $compiled = str_replace('{hydrator}', implode("\n        ", $hydrator), $compiled);
-        $compiled = str_replace('{extractor}', implode("\n        ", $extractor), $compiled);
+        $hydrateMethod->addLine('return $entity;');
+        $extractMethod->addLine('return $data;');
 
         if ($load) {
-            $this->loadHydrator($compiled);
+            $hydratorClass->load();
         }
 
-        return $compiled;
+        return $hydratorClass;
     }
 
-    private function writeHydrator(string $hydrator, string $uri): void
+    private function writeHydrator(ReflectionApi\RuntimeClass $hydrator, string $uri): void
     {
         $temp = fopen($uri, 'w');
 
-        if ($temp === false || !fwrite($temp, $hydrator)) {
+        if ($temp === false || !fwrite($temp, '<?php declare(strict_types=1);' . PHP_EOL . (string) $hydrator)) {
             throw new HydratorException("Could not write hydrator (${uri}) on disk - check for directory permissions.");
         }
         
         fclose($temp);
-    }
-
-    private function loadHydrator(string $hydrator): void
-    {
-        $uri = tempnam(sys_get_temp_dir(), 'igni');
-        if (!$uri) {
-            throw new HydratorException("Could not dynamically load hydrator");
-        }
-        $this->writeHydrator($hydrator, $uri);
-
-        require_once $uri;
     }
 }

@@ -6,19 +6,17 @@ use Igni\Storage\Mapping\MappingStrategy;
 
 final class Text implements MappingStrategy
 {
-    public static function getHydrator(): string
+    public static function hydrate(&$value, array $attributes = []): void
     {
-        return '
-        $value = \Igni\Storage\Mapping\Strategy\Text::trimString($value, $attributes);';
+        $value = self::trimString($value, $attributes);
     }
 
-    public static function getExtractor(): string
+    public static function extract(&$value, array $attributes = []): void
     {
-        return '
-        $value = \Igni\Storage\Mapping\Strategy\Text::trimString($value, $attributes);';
+        $value = self::trimString($value, $attributes);
     }
 
-    public static function trimString($value, array $attributes = []): string
+    private static function trimString($value, array $attributes = []): string
     {
         if (isset($attributes['length'])) {
             return substr((string) $value, 0, (int) $attributes['length']);

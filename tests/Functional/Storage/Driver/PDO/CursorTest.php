@@ -3,8 +3,8 @@
 namespace OcotpusTest\Functional\Storage\Driver\PDO;
 
 use Igni\Storage\Driver\PDO\Cursor;
-use Igni\Utils\TestCase;
 use IgniTest\Functional\Storage\StorageTrait;
+use PHPUnit\Framework\TestCase;
 
 class CursorTest extends TestCase
 {

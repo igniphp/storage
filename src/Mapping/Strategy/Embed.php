@@ -2,35 +2,35 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
+use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Mapping\MappingStrategy;
 
 final class Embed implements MappingStrategy, DefaultAttributesProvider
 {
-    public static function getHydrator(): string
+    public static function hydrate(&$value, array $attributes = [], EntityManager $manager = null): void
     {
-        return '
         if (!empty($value)) {
-            $value = \Igni\Storage\Mapping\Strategy\Embed::deserializeValue($value, $attributes[\'storeAs\']);
+            $value = self::deserializeValue($value, $attributes['storeAs']);
             if (!empty($value)) {
-                $value = $entityManager->hydrate($attributes[\'class\'], $value);
+                $value = $manager->hydrate($attributes['class'], $value);
             } else {
                 $value = null;
             }
         } else {
             $value = null;
-        }';
+        }
     }
 
-    public static function getExtractor(): string
+    public static function extract(&$value, array $attributes = [], EntityManager $manager = null): void
     {
-        return '
-        if ($value instanceof $attributes[\'class\']) {
-            $value = $entityManager->extract($value);
-            $value = \Igni\Storage\Mapping\Strategy\Embed::serializeValue($value, $attributes[\'storeAs\']);
+
+        if ($value instanceof $attributes['class']) {
+            $value = $manager->extract($value);
+            $value = self::serializeValue($value, $attributes['storeAs']);
         } else {
             $value = null;
-        }';
+        }
     }
 
     public static function getDefaultAttributes(): array
@@ -40,7 +40,7 @@ final class Embed implements MappingStrategy, DefaultAttributesProvider
         ];
     }
 
-    public static function deserializeValue($value, string $strategy)
+    private static function deserializeValue($value, string $strategy)
     {
         switch ($strategy) {
             case 'json':
@@ -58,7 +58,7 @@ final class Embed implements MappingStrategy, DefaultAttributesProvider
         return $value;
     }
 
-    public static function serializeValue($value, string $strategy)
+    private static function serializeValue($value, string $strategy)
     {
         switch ($strategy) {
             case 'json':

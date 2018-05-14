@@ -5,8 +5,8 @@ namespace IgniTest\Functional\Storage\Mapping;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Mapping\MetaData\PropertyMetaData;
 use Igni\Storage\Mapping\Strategy\Text;
-use Igni\Utils\TestCase;
 use IgniTest\Fixtures\Artist\ArtistEntity;
+use PHPUnit\Framework\TestCase;
 
 final class EntityMetaDataTest extends TestCase
 {

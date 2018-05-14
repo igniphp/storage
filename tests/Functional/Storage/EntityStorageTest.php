@@ -4,8 +4,8 @@ namespace IgniTest\Functional\Storage;
 
 use Igni\Storage\EntityManager;
 use Igni\Storage\EntityStorage;
-use Igni\Utils\TestCase;
 use IgniTest\Fixtures\Artist\ArtistEntity;
+use PHPUnit\Framework\TestCase;
 
 final class EntityStorageTest extends TestCase
 {

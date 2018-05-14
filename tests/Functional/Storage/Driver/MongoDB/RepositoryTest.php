@@ -3,10 +3,10 @@
 namespace IgniTestFunctional\Storage\Driver\MongoDB;
 
 use Igni\Storage\Mapping\Collection;
-use Igni\Utils\TestCase;
 use IgniTest\Fixtures\Playlist\PlaylistEntity;
 use IgniTest\Fixtures\Track\TrackEntity;
 use IgniTest\Functional\Storage\StorageTrait;
+use PHPUnit\Framework\TestCase;
 
 class RepositoryTest extends TestCase
 {

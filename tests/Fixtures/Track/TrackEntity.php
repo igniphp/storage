@@ -34,7 +34,7 @@ class TrackEntity implements Entity
     protected $name;
 
     /**
-     * @Property\Reference(AlbumEntity::class)
+     * @Property\Reference(AlbumEntity::class, name="AlbumId")
      */
     protected $album;
 
@@ -59,7 +59,7 @@ class TrackEntity implements Entity
     protected $unitPrice;
 
     /**
-     * @Property\Enum({"Rock", "Jazz", "Metal", "Alternative", "Rock and Roll", "Blues", "Latin", "Reggae", "Pop"})
+     * @Property\Enum({"MPEG", "Protected AAC", "MPEG-4", "Purchased AAC", "AAC"})
      */
     protected $mediaType;
 

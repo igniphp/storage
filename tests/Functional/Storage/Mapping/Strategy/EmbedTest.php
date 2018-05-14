@@ -4,8 +4,9 @@ namespace IgniTest\Functional\Storage\Mapping\Strategy;
 
 use Igni\Storage\EntityManager;
 use Igni\Storage\Mapping\Strategy\Embed;
-use Igni\Utils\TestCase;
 use IgniTest\Fixtures\Playlist\PlaylistDetails;
+use Mockery;
+use PHPUnit\Framework\TestCase;
 
 final class EmbedTest extends TestCase
 {
@@ -15,7 +16,7 @@ final class EmbedTest extends TestCase
         $extracted = [
             'rating' => 2.0,
         ];
-        $entityManager = self::mock(EntityManager::class);
+        $entityManager = Mockery::mock(EntityManager::class);
         $entityManager
             ->shouldReceive('extract')
             ->withArgs([$playlistDetails])
@@ -25,9 +26,9 @@ final class EmbedTest extends TestCase
         $attributes = [
             'class' => PlaylistDetails::class,
         ] + Embed::getDefaultAttributes();
-        eval(Embed::getExtractor());
+        Embed::extract($value, $attributes, $entityManager);
 
-        self::assertSame(Embed::serializeValue($extracted, 'json'), $value);
+        self::assertSame(json_encode($extracted, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION), $value);
     }
 
     public function testExtractNull(): void
@@ -37,7 +38,7 @@ final class EmbedTest extends TestCase
         $attributes = [
                 'class' => PlaylistDetails::class,
             ] + Embed::getDefaultAttributes();
-        eval(Embed::getExtractor());
+        Embed::extract($value, $attributes);
 
         self::assertNull($value);
     }
@@ -48,8 +49,8 @@ final class EmbedTest extends TestCase
         $extracted = [
             'rating' => 2.0,
         ];
-        $serialized = Embed::serializeValue($extracted, 'json');
-        $entityManager = self::mock(EntityManager::class);
+        $serialized = json_encode($extracted, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
+        $entityManager = Mockery::mock(EntityManager::class);
         $entityManager
             ->shouldReceive('hydrate')
             ->withArgs([PlaylistDetails::class, $extracted])
@@ -59,7 +60,7 @@ final class EmbedTest extends TestCase
         $attributes = [
                 'class' => PlaylistDetails::class,
             ] + Embed::getDefaultAttributes();
-        eval(Embed::getHydrator());
+        Embed::hydrate($value, $attributes, $entityManager);
 
         self::assertSame($playlistDetails, $value);
     }
@@ -71,7 +72,7 @@ final class EmbedTest extends TestCase
         $attributes = [
                 'class' => PlaylistDetails::class,
             ] + Embed::getDefaultAttributes();
-        eval(Embed::getHydrator());
+        Embed::hydrate($value, $attributes);
 
         self::assertNull($value);
     }

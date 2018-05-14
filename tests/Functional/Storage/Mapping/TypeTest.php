@@ -4,7 +4,7 @@ namespace IgniTest\Functional\Storage\Mapping;
 
 use Igni\Storage\Mapping\Strategy\Text;
 use Igni\Storage\Mapping\Type;
-use Igni\Utils\TestCase;
+use PHPUnit\Framework\TestCase;
 
 final class TypeTest extends TestCase
 {

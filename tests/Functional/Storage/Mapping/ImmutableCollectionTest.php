@@ -3,8 +3,8 @@
 namespace IgniTest\Functional\Storage\Mapping;
 
 use Igni\Storage\Mapping\ImmutableCollection;
-use Igni\Utils\TestCase;
 use IgniTest\Functional\Storage\StorageTrait;
+use PHPUnit\Framework\TestCase;
 
 final class ImmutableCollectionTest extends TestCase
 {

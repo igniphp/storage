@@ -62,7 +62,7 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
         }
 
         if ($hydratorAutoGenerate === null) {
-            $hydratorAutoGenerate = HydratorAutoGenerate::IF_NOT_EXISTS();
+            $hydratorAutoGenerate = HydratorAutoGenerate::IF_NOT_EXISTS;
         }
 
         if (!is_writable($hydratorDir)) {

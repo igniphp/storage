@@ -7,21 +7,19 @@ use Igni\Storage\Mapping\Uuid;
 
 final class Id implements MappingStrategy, DefaultAttributesProvider
 {
-    public static function getHydrator(): string
+    public static function hydrate(&$value, $attributes = []): void
     {
-        return '
-        $generator = $attributes[\'generator\'];
-        $value = new $generator($value);';
+        $generator = $attributes['generator'];
+        $value = new $generator($value);
     }
 
-    public static function getExtractor(): string
+    public static function extract(&$value, $attributes = []): void
     {
-        return '
         if ($value instanceof \Igni\Storage\Id) {
             $value = $value->getValue();
         } else {
             $value = (string) $value;
-        }';
+        }
     }
 
     public static function getDefaultAttributes(): array

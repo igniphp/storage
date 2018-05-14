@@ -3,7 +3,7 @@
 namespace IgniTest\Functional\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\Strategy\Date;
-use Igni\Utils\TestCase;
+use PHPUnit\Framework\TestCase;
 
 final class DateTest extends TestCase
 {
@@ -13,7 +13,7 @@ final class DateTest extends TestCase
         $attributes = [
             'format' => 'd-Y-m',
         ] + Date::getDefaultAttributes();
-        eval(Date::getExtractor());
+        Date::extract($value, $attributes);
 
         self::assertSame('01-2017-01', $value);
     }
@@ -22,7 +22,7 @@ final class DateTest extends TestCase
     {
         $value = null;
         $attributes = Date::getDefaultAttributes();
-        eval(Date::getExtractor());
+        Date::extract($value, $attributes);
 
         self::assertNull($value);
     }
@@ -32,7 +32,7 @@ final class DateTest extends TestCase
         $date = '2017-01-01';
         $value = $date;
         $attributes = Date::getDefaultAttributes();
-        eval(Date::getHydrator());
+        Date::hydrate($value, $attributes);
 
         self::assertEquals(new \DateTime($date), $value);
     }
@@ -41,7 +41,7 @@ final class DateTest extends TestCase
     {
         $value = null;
         $attributes = Date::getDefaultAttributes();
-        eval(Date::getHydrator());
+        Date::hydrate($value, $attributes);
 
         self::assertNull($value);
     }

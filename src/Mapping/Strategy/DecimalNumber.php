@@ -3,21 +3,18 @@
 namespace Igni\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\MappingStrategy;
+use Igni\Utils\ReflectionApi\RuntimeMethod;
 
 final class DecimalNumber implements MappingStrategy, DefaultAttributesProvider
 {
-    public static function getHydrator(): string
+    public static function hydrate(&$value, array $attributes = []): void
     {
-        return '
-        $value = \Igni\Storage\Mapping\Strategy\DecimalNumber::formatDecimalNumber((string) $value, $attributes);
-        ';
+        $value = self::formatDecimalNumber((string) $value, $attributes);
     }
 
-    public static function getExtractor(): string
+    public static function extract(&$value, array $attributes = []): void
     {
-        return '
-        $value = \Igni\Storage\Mapping\Strategy\DecimalNumber::formatDecimalNumber((string) $value, $attributes);
-        ';
+        $value = self::formatDecimalNumber((string) $value, $attributes);
     }
 
     public static function getDefaultAttributes(): array
@@ -28,7 +25,7 @@ final class DecimalNumber implements MappingStrategy, DefaultAttributesProvider
         ];
     }
 
-    public static function formatDecimalNumber(string $number, array $attributes): string
+    private static function formatDecimalNumber(string $number, array $attributes): string
     {
         $parts = explode('.', $number);
         if (strlen($parts[0]) > $attributes['scale']) {

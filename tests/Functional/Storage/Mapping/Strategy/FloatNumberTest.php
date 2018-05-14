@@ -3,7 +3,7 @@
 namespace IgniTest\Functional\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\Strategy\FloatNumber;
-use Igni\Utils\TestCase;
+use PHPUnit\Framework\TestCase;
 
 final class FloatNumberTest extends TestCase
 {
@@ -11,7 +11,7 @@ final class FloatNumberTest extends TestCase
     {
         $value = 1;
         $attributes = [];
-        eval(FloatNumber::getExtractor());
+        FloatNumber::extract($value, $attributes);
 
         self::assertSame(1.0, $value);
     }
@@ -20,7 +20,7 @@ final class FloatNumberTest extends TestCase
     {
         $value = null;
         $attributes = [];
-        eval(FloatNumber::getExtractor());
+        FloatNumber::extract($value, $attributes);
 
         self::assertSame(0.0, $value);
     }
@@ -29,7 +29,7 @@ final class FloatNumberTest extends TestCase
     {
         $value = 1;
         $attributes = [];
-        eval(FloatNumber::getHydrator());
+        FloatNumber::hydrate($value, $attributes);
 
         self::assertSame(1.0, $value);
     }
@@ -38,7 +38,7 @@ final class FloatNumberTest extends TestCase
     {
         $value = null;
         $attributes = [];
-        eval(FloatNumber::getHydrator());
+        FloatNumber::hydrate($value, $attributes);
 
         self::assertSame(0.0, $value);
     }

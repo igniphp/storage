@@ -6,8 +6,8 @@ use Igni\Storage\Mapping\MetaData\Strategy\AnnotationMetaDataFactory;
 use Igni\Storage\Mapping\Strategy\Embed;
 use Igni\Storage\Mapping\Strategy\Id;
 use Igni\Storage\Mapping\Strategy\Text;
-use Igni\Utils\TestCase;
 use IgniTest\Fixtures\Playlist\PlaylistEntity;
+use PHPUnit\Framework\TestCase;
 
 final class AnnotationMetaDataFactoryTest extends TestCase
 {

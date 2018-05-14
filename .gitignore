@@ -5,3 +5,4 @@
 /tests/cache/*
 /tests/tmp/*
 /metrics
+/coverage.clover

@@ -12,7 +12,6 @@ services:
 
 before_install:
   - composer self-update
-  - pecl install mongodb
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "CREATE SCHEMA test; GRANT ALL PRIVILEGES ON test.* to travis@'%'"; fi
   - mongo test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
 

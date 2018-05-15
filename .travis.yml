@@ -12,7 +12,7 @@ services:
 
 before_install:
   - composer self-update
-  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "CREATE SCHEMA test; GRANT ALL PRIVILEGES ON test.* to travis@'%'"; fi
+  - mysql -e "CREATE SCHEMA test; GRANT ALL PRIVILEGES ON test.* to travis@'%'"
   - pecl install mongodb
   - mongo test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
 
@@ -25,6 +25,7 @@ script:
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - pecl uninstall mongodb
 
 cache:
   directories:

@@ -5,9 +5,9 @@ namespace IgniTest\Fixtures\Genre;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\AutoGenerateId;
 use Igni\Storage\Entity;
-use Igni\Storage\Mapping\Annotations as Storage;
-use Igni\Storage\Mapping\Annotations\Types as Property;
-use Igni\Storage\Mapping\ImmutableCollection;
+use Igni\Storage\Mapping\Annotation as Storage;
+use Igni\Storage\Mapping\Annotation\Types as Property;
+use Igni\Storage\Mapping\Collection\LazyCollection;
 
 /**
  * @Storage\Entity(source="genres")
@@ -39,7 +39,7 @@ class GenreEntity implements Entity
         return $this->name;
     }
 
-    public function getTracks(): ImmutableCollection
+    public function getTracks(): LazyCollection
     {
         return $this->tracks;
     }

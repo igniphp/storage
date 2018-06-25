@@ -2,6 +2,7 @@
 
 namespace IgniTest\Functional\Storage\Mapping\Strategy;
 
+use Igni\Storage\Exception\MappingException;
 use Igni\Storage\Mapping\Strategy\DecimalNumber;
 use PHPUnit\Framework\TestCase;
 
@@ -44,15 +45,26 @@ final class DecimalNumberTest extends TestCase
         self::assertSame('0.00', $value);
     }
 
-    public function testOverflowScale(): void
+    public function testOverflowPrecision(): void
     {
         $value = '100.001';
         $attributes = [
             'scale' => 2,
-            'precision' => 2,
+            'precision' => 4,
         ];
         DecimalNumber::hydrate($value, $attributes);
 
         self::assertSame('99.00', $value);
+    }
+
+    public function testScaleExcessPrecision(): void
+    {
+        $this->expectException(MappingException::class);
+        $value = '1';
+        $attributes = [
+            'scale' => 9,
+            'precision' => 4,
+        ];
+        DecimalNumber::hydrate($value, $attributes);
     }
 }

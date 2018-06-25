@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping;
+namespace Igni\Storage\Mapping\Collection;
 
 use Igni\Exception\OutOfBoundsException;
 use Igni\Storage\Driver\Cursor;
 
-class ImmutableCollection implements \Iterator, \Countable
+class LazyCollection implements \Igni\Storage\Mapping\Collection
 {
     protected $cursor;
     protected $length;

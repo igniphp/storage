@@ -8,9 +8,16 @@ final class Date implements MappingStrategy, DefaultAttributesProvider
 {
     public static function hydrate(&$value, array $attributes = []): void
     {
-        if ($value !== null) {
-            $value = new \DateTime($value, new \DateTimeZone($attributes['timezone']));
+        if ($value === null) {
+            return;
         }
+
+        if ($attributes['immutable']) {
+            $value = new \DateTimeImmutable($value, new \DateTimeZone($attributes['timezone']));
+            return;
+        }
+
+        $value = new \DateTime($value, new \DateTimeZone($attributes['timezone']));
     }
 
     public static function extract(&$value, array $attributes = []): void
@@ -27,6 +34,7 @@ final class Date implements MappingStrategy, DefaultAttributesProvider
         return [
             'timezone' => 'UTC',
             'format' => 'Ymd',
+            'immutable' => false,
         ];
     }
 }

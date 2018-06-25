@@ -4,8 +4,8 @@ namespace IgniTest\Fixtures\Track;
 
 use Igni\Storage\Entity;
 use Igni\Storage\Id\GenericId;
-use Igni\Storage\Mapping\Annotations as Storage;
-use Igni\Storage\Mapping\Annotations\Types as Property;
+use Igni\Storage\Mapping\Annotation as Storage;
+use Igni\Storage\Mapping\Annotation\Types as Property;
 use Igni\Storage\Mapping\AutoGenerateId;
 use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Artist\ArtistEntity;

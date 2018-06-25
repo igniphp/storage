@@ -2,11 +2,11 @@
 
 namespace IgniTest\Functional\Storage\Mapping;
 
-use Igni\Storage\Mapping\ImmutableCollection;
+use Igni\Storage\Mapping\Collection\LazyCollection;
 use IgniTest\Functional\Storage\StorageTrait;
 use PHPUnit\Framework\TestCase;
 
-final class ImmutableCollectionTest extends TestCase
+final class LazyCollectionTest extends TestCase
 {
     use StorageTrait;
 
@@ -25,16 +25,16 @@ final class ImmutableCollectionTest extends TestCase
 
         $cursor = $this->createCursorForSql('SELECT *FROM tracks');
 
-        $collection = new ImmutableCollection($cursor);
+        $collection = new LazyCollection($cursor);
 
-        self::assertInstanceOf(ImmutableCollection::class, $collection);
+        self::assertInstanceOf(LazyCollection::class, $collection);
     }
 
     public function testCount(): void
     {
         $cursor = $this->createCursorForSql('SELECT *FROM tracks WHERE AlbumId = 1;');
 
-        $collection = new ImmutableCollection($cursor);
+        $collection = new LazyCollection($cursor);
         self::assertCount(10, $collection);
     }
 
@@ -42,7 +42,7 @@ final class ImmutableCollectionTest extends TestCase
     {
         $cursor = $this->createCursorForSql('SELECT *FROM tracks WHERE AlbumId = 1;');
 
-        $collection = new ImmutableCollection($cursor);
+        $collection = new LazyCollection($cursor);
         $items = $collection->toArray();
 
         self::assertCount(10, $items);
@@ -56,7 +56,7 @@ final class ImmutableCollectionTest extends TestCase
     {
         $cursor = $this->createCursorForSql('SELECT *FROM tracks WHERE AlbumId = 1;');
 
-        $collection = new ImmutableCollection($cursor);
+        $collection = new LazyCollection($cursor);
         $current = $collection->current();
 
         self::assertEquals(1,$current['TrackId']);

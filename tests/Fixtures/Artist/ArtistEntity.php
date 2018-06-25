@@ -4,10 +4,10 @@ namespace IgniTest\Fixtures\Artist;
 
 use Igni\Storage\Entity;
 use Igni\Storage\Id\GenericId;
-use Igni\Storage\Mapping\Annotations as Storage;
-use Igni\Storage\Mapping\Annotations\Types as Property;
+use Igni\Storage\Mapping\Annotation as Storage;
+use Igni\Storage\Mapping\Annotation\Types as Property;
 use Igni\Storage\Mapping\AutoGenerateId;
-use Igni\Storage\Mapping\ImmutableCollection;
+use Igni\Storage\Mapping\Collection\LazyCollection;
 
 /**
  * @Storage\Entity(source="artists", hydrator=ArtistHydrator::class)
@@ -43,12 +43,12 @@ class ArtistEntity implements Entity
         $this->name = $name;
     }
 
-    public function getAlbums(): ImmutableCollection
+    public function getAlbums(): LazyCollection
     {
         return $this->albums;
     }
 
-    public function setAlbums(ImmutableCollection $albums): void
+    public function setAlbums(LazyCollection $albums): void
     {
         $this->albums = $albums;
     }

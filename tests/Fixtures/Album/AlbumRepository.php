@@ -3,7 +3,7 @@
 namespace IgniTest\Fixtures\Album;
 
 use Igni\Storage\Driver\Pdo\Repository;
-use Igni\Storage\Mapping\ImmutableCollection;
+use Igni\Storage\Mapping\Collection\LazyCollection;
 use IgniTest\Fixtures\Artist\ArtistEntity;
 
 class AlbumRepository extends Repository
@@ -13,11 +13,11 @@ class AlbumRepository extends Repository
         return $this->query('SELECT * FROM albums');
     }
 
-    public function findByArtist(ArtistEntity $artist): ImmutableCollection
+    public function findByArtist(ArtistEntity $artist): LazyCollection
     {
         $query = "SELECT * FROM albums WHERE ArtistId = :id";
 
-        return new ImmutableCollection($this->query($query, ['id' => $artist->getId()->getValue()]));
+        return new LazyCollection($this->query($query, ['id' => $artist->getId()->getValue()]));
     }
 
     public function getEntityClass(): string

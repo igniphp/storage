@@ -5,7 +5,6 @@ namespace Igni\Storage\Driver\Pdo;
 use Igni\Storage\Entity;
 use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\RepositoryException;
-use Igni\Storage\Hydration\Hydrator;
 use Igni\Storage\Repository as RepositoryInterface;
 
 abstract class Repository implements RepositoryInterface
@@ -47,7 +46,7 @@ abstract class Repository implements RepositoryInterface
 
     public function create(Entity $entity): Entity
     {
-        // Execute id autogeneration.
+        // Execute id auto-generation.
         $entity->getId();
         $data = $this->hydrator->extract($entity);
         $fields = array_keys($data);

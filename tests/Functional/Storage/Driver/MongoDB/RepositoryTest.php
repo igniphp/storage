@@ -2,7 +2,7 @@
 
 namespace IgniTestFunctional\Storage\Driver\MongoDB;
 
-use Igni\Storage\Mapping\Collection;
+use Igni\Storage\Mapping\Collection\Collection;
 use IgniTest\Fixtures\Playlist\PlaylistEntity;
 use IgniTest\Fixtures\Track\TrackEntity;
 use IgniTest\Functional\Storage\StorageTrait;

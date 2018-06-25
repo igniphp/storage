@@ -18,4 +18,10 @@ class MappingException extends StorageException
     {
         return new self("Passed value({$value}) is not valid uuid string");
     }
+
+    public static function forInvalidAttributeValue(string $name, $value, string $message = ''): self
+    {
+        $dump = var_export($value, true);
+        return new self("Invalid value ({$dump}) for attribute `{$name}`. {$message}");
+    }
 }

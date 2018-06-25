@@ -2,7 +2,7 @@
 
 namespace IgniTest\Functional\Storage\Mapping;
 
-use Igni\Storage\Mapping\Collection;
+use Igni\Storage\Mapping\Collection\Collection;
 use IgniTest\Functional\Storage\StorageTrait;
 use PHPUnit\Framework\TestCase;
 

@@ -9,9 +9,9 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\Common\Annotations\Reader;
 use Igni\Storage\Exception\MappingException;
-use Igni\Storage\Mapping\Annotations\EmbeddedEntity;
-use Igni\Storage\Mapping\Annotations\Entity;
-use Igni\Storage\Mapping\Annotations;
+use Igni\Storage\Mapping\Annotation\EmbeddedEntity;
+use Igni\Storage\Mapping\Annotation\Entity;
+use Igni\Storage\Mapping\Annotation\Type as Property;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Mapping\MetaData\MetaDataFactory;
 use Igni\Storage\Mapping\MetaData\PropertyMetaData;
@@ -93,7 +93,7 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         foreach ($reflection->getProperties() as $property) {
             $annotations = $this->reader->getPropertyAnnotations($property);
             foreach ($annotations as $annotation) {
-                if ($annotation instanceof Annotations\Type) {
+                if ($annotation instanceof Property) {
                     $this->addProperty($property, $annotation, $metaData);
                     break;
                 }
@@ -112,7 +112,7 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         }
     }
 
-    private function addProperty(ReflectionProperty $property, Annotations\Type $annotation, EntityMetaData $metaData): void
+    private function addProperty(ReflectionProperty $property, Property $annotation, EntityMetaData $metaData): void
     {
         if (!Type::has($annotation->getType())) {
             throw new MappingException("Cannot map property {$property->getDeclaringClass()->getName()}::{$property->getName()} - unknown type {$annotation->getType()}.");

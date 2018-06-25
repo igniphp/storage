@@ -2,8 +2,8 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
+use Igni\Storage\Exception\MappingException;
 use Igni\Storage\Mapping\MappingStrategy;
-use Igni\Utils\ReflectionApi\RuntimeMethod;
 
 final class DecimalNumber implements MappingStrategy, DefaultAttributesProvider
 {
@@ -20,19 +20,30 @@ final class DecimalNumber implements MappingStrategy, DefaultAttributesProvider
     public static function getDefaultAttributes(): array
     {
         return [
-            'scale' => 10,
-            'precision' => 2,
+            'scale' => 2,
+            'precision' => 10,
         ];
     }
 
     private static function formatDecimalNumber(string $number, array $attributes): string
     {
-        $parts = explode('.', $number);
-        if (strlen($parts[0]) > $attributes['scale']) {
-            $parts[0] = str_repeat('9', $attributes['scale']);
+        if ($attributes['scale'] > $attributes['precision']) {
+            throw MappingException::forInvalidAttributeValue(
+                'scale',
+                $attributes['scale'],
+                'Attribute `scale` must be lower than `precision`.'
+            );
         }
+
+        $parts = explode('.', $number);
+        $decimals = $attributes['precision'] - $attributes['scale'];
+
+        if (strlen($parts[0]) > $decimals) {
+            $parts[0] = str_repeat('9', $decimals);
+        }
+
         $number = $parts[0] . '.' . ($parts[1] ?? '');
 
-        return bcadd($number, '0', $attributes['precision']);
+        return bcadd($number, '0', $attributes['scale']);
     }
 }

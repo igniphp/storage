@@ -6,7 +6,7 @@ use Igni\Storage\EntityManager;
 use Igni\Storage\Hydration\HydratorAutoGenerate;
 use Igni\Storage\Hydration\HydratorFactory;
 use Igni\Storage\Hydration\ObjectHydrator;
-use Igni\Storage\Mapping\ImmutableCollection;
+use Igni\Storage\Mapping\Collection\LazyCollection;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Mapping\MetaData\PropertyMetaData;
 use Igni\Storage\Mapping\Strategy\Date;
@@ -41,7 +41,7 @@ class HydratorFactoryTest extends TestCase
         $metaData = $this->provideAlbumMetaData();
         $trackRepository = Mockery::mock(Repository::class);
         $trackRepository->shouldReceive('findByAlbum')
-            ->andReturn(Mockery::mock(ImmutableCollection::class));
+            ->andReturn(Mockery::mock(LazyCollection::class));
 
         $entityManager = Mockery::mock(EntityManager::class);
         $entityManager->shouldReceive('attach');
@@ -99,7 +99,7 @@ class HydratorFactoryTest extends TestCase
         $trackRepository = Mockery::mock(TrackRepository::class);
         $trackRepository
             ->shouldReceive('getMultiple')
-            ->andReturn(Mockery::mock(ImmutableCollection::class));
+            ->andReturn(Mockery::mock(LazyCollection::class));
 
         $entityManager = Mockery::mock(EntityManager::class);
         $entityManager
@@ -139,7 +139,7 @@ class HydratorFactoryTest extends TestCase
         $trackRepository = Mockery::mock(TrackRepository::class);
         $trackRepository
             ->shouldReceive('getMultiple')
-            ->andReturn(Mockery::mock(ImmutableCollection::class));
+            ->andReturn(Mockery::mock(LazyCollection::class));
 
         $entityManager = Mockery::mock(EntityManager::class);
         $entityManager

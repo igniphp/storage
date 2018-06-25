@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping\Annotations;
+namespace Igni\Storage\Mapping\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation
  */
-class EmbeddedEntity extends Annotation
+class Entity extends Annotation
 {
-    public $storeAs = 'json';
+    public $source;
     public $hydrator;
 }

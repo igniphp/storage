@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping\Annotations\Types;
+namespace Igni\Storage\Mapping\Annotation\Types;
 
 use Igni\Storage\Id\Uuid;
-use Igni\Storage\Mapping\Annotations\Type;
+use Igni\Storage\Mapping\Annotation\Type;
 
 /**
  * @Annotation

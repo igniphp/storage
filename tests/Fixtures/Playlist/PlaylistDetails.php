@@ -2,9 +2,9 @@
 
 namespace IgniTest\Fixtures\Playlist;
 
-use Igni\Storage\Mapping\Annotations as Storage;
-use Igni\Storage\Mapping\Annotations\Types as Property;
-use Igni\Storage\Mapping\ImmutableCollection;
+use Igni\Storage\Mapping\Annotation as Storage;
+use Igni\Storage\Mapping\Annotation\Types as Property;
+use Igni\Storage\Mapping\Collection\LazyCollection;
 use IgniTest\Fixtures\Track\TrackEntity;
 
 /**
@@ -24,7 +24,7 @@ class PlaylistDetails
         $this->rating = $rating;
     }
 
-    public function setTracks(ImmutableCollection $tracks): void
+    public function setTracks(LazyCollection $tracks): void
     {
         $this->tracks = $tracks;
     }

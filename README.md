@@ -258,7 +258,7 @@ class Example implements Igni\Storage\Entity
 ```
 
 ##### Embed
-Embed is a partial entity that contains no identity that creates composition with the holding entity.
+Embed is an object that is not entity itself.
 
 ###### _Accepted attributes:_
 

@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Mapping\Annotations\Types;
 
-use Igni\Storage\Mapping\Uuid;
+use Igni\Storage\Id\Uuid;
 use Igni\Storage\Mapping\Annotations\Type;
 
 /**
@@ -10,7 +10,7 @@ use Igni\Storage\Mapping\Annotations\Type;
  */
 class Id extends Type
 {
-    public $strategy = Uuid::class;
+    public $class = Uuid::class;
 
     public function getType(): string
     {

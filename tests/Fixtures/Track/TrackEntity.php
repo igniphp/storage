@@ -2,13 +2,14 @@
 
 namespace IgniTest\Fixtures\Track;
 
-use Igni\Storage\Mapping\AutoGenerateId;
 use Igni\Storage\Entity;
+use Igni\Storage\Id\GenericId;
+use Igni\Storage\Mapping\Annotations as Storage;
+use Igni\Storage\Mapping\Annotations\Types as Property;
+use Igni\Storage\Mapping\AutoGenerateId;
 use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Artist\ArtistEntity;
 use IgniTest\Fixtures\Genre\GenreEntity;
-use Igni\Storage\Mapping\Annotations as Storage;
-use Igni\Storage\Mapping\Annotations\Types as Property;
 
 /**
  * @Storage\Entity("tracks")
@@ -19,12 +20,12 @@ class TrackEntity implements Entity
 
     const MEDIA_TYPE_AUDIO_MPEG = 1;
     const MEDIA_TYPE_PROTECTED_AAC = 2;
-    const MEDIA_TYPE_VIDEO_MPEG= 3;
+    const MEDIA_TYPE_VIDEO_MPEG = 3;
     const MEDIA_TYPE_UNLOCKED_AAC = 4;
     const MEDIA_TYPE_AUDIO_AAC = 5;
 
     /**
-     * @Property\Id(name="TrackId")
+     * @Property\Id(name="TrackId", class=GenericId::class)
      */
     protected $id;
 

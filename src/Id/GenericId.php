@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping;
+namespace Igni\Storage\Id;
 
 use Igni\Storage\Id;
 
-class Uuid implements Id
+class GenericId implements Id
 {
     private $value;
 
-    public function __construct($value = null)
+    public function __construct($value)
     {
-        $this->value = $value ?? \Igni\Utils\Uuid::generateShort();
+        $this->value = $value;
     }
 
     public function getValue()
@@ -20,6 +20,6 @@ class Uuid implements Id
 
     public function __toString(): string
     {
-        return (string) $this->getValue();
+        return (string) $this->value;
     }
 }

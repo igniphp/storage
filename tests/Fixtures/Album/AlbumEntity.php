@@ -3,10 +3,11 @@
 namespace IgniTest\Fixtures\Album;
 
 use DateTime;
-use Igni\Storage\Mapping\AutoGenerateId;
 use Igni\Storage\Entity;
+use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotations as Storage;
 use Igni\Storage\Mapping\Annotations\Types as Property;
+use Igni\Storage\Mapping\AutoGenerateId;
 use IgniTest\Fixtures\Artist\ArtistEntity;
 
 /**
@@ -17,7 +18,7 @@ class AlbumEntity implements Entity
     use AutoGenerateId;
 
     /**
-     * @Property\Id(name="AlbumId")
+     * @Property\Id(name="AlbumId", class=GenericId::class)
      */
     protected $id;
 

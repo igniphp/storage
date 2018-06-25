@@ -3,6 +3,7 @@
 namespace Igni\Storage\Mapping;
 
 use Igni\Storage\Id;
+use Igni\Storage\Id\Uuid;
 
 /**
  * @property Id $id

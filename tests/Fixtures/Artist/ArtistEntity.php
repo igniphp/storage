@@ -17,7 +17,7 @@ class ArtistEntity implements Entity
     use AutoGenerateId;
 
     /**
-     * @Property\Id(name="ArtistId", class=GenericId::class)
+     * @Property\Id(GenericId::class, name="ArtistId")
      */
     protected $id;
 

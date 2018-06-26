@@ -10,10 +10,15 @@ use Igni\Storage\Mapping\Annotation\Type;
  */
 class Id extends Type
 {
-    public $class = Uuid::class;
+    public $class;
 
     public function getType(): string
     {
         return 'id';
+    }
+
+    public function getClass(): string
+    {
+        return $this->class ?? $this->value ?? Uuid::class;
     }
 }

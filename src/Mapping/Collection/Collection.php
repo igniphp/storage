@@ -9,7 +9,7 @@ class Collection implements \Igni\Storage\Mapping\Collection
 {
     protected $length = 0;
     protected $current;
-    protected $index;
+    protected $index = 0;
     protected $persisted;
     protected $items = [];
     protected $removed = [];

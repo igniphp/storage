@@ -60,7 +60,7 @@ class TrackEntity implements Entity
     protected $unitPrice;
 
     /**
-     * @Property\Enum({"MPEG", "Protected AAC", "MPEG-4", "Purchased AAC", "AAC"})
+     * @Property\Enum({"MPEG", "Protected AAC", "MPEG-4", "Purchased AAC", "AAC"}, name="MediaTypeId")
      */
     protected $mediaType;
 

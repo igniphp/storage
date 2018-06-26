@@ -15,4 +15,9 @@ class Enum extends Type
     {
         return 'enum';
     }
+
+    public function getValues(): array
+    {
+        return $this->values ?? (array) $this->value;
+    }
 }

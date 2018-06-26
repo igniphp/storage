@@ -12,12 +12,17 @@ class Date extends Type
 {
     public $timezone = 'UTC';
 
-    public $format = 'Ymd';
+    public $format;
 
     public $immutable = false;
 
     public function getType(): string
     {
         return 'date';
+    }
+
+    public function getFormat(): string
+    {
+        return $this->format ?? $this->value ?? 'Ymd';
     }
 }

@@ -6,12 +6,12 @@
 ## Igni Storage
 Licensed under MIT License.
 
-## Introduction
+# Introduction
 
 Igni/storage is minimalistic mapping/hydration library with support for PDO and MongoDB databases with cross database
 access. 
 
-### Features
+## Features
 ###### Works with native queries
 Just pass your query to the driver, you are no longer limited to custom query builders api, or complex setup and hacks
 to force library to work with your input.
@@ -30,20 +30,20 @@ Allows you to store complex data in your database
 It does not matter if you use mongo with sqlite or mysql or any other database, you can keep references to entities stored
 in different types of databases with ease. 
 
-### Requirements
+## Requirements
 
  - >= PHP 7.1
  - PDO for mysql, sqlite and/or pgsql support
  - MongoDB extension for mongo support
  
  
-### Installation
+## Installation
 
 ```
 composer install igniphp/storage
 ```
 
-### Basic Concepts
+## Basic Concepts
 
 Igni strongly bases on repository and unit of work patterns. This two patterns are intended to create an abstraction 
 layer between the data access layer and the business logic layer of your application. 
@@ -59,9 +59,9 @@ Shortly saying UoW _maintains a list of objects affected by a business transacti
 Repository is a central place where data is stored and maintained. Igni provides basic implementation per each of the supported drivers.
  
 
-## Connecting
+# Connecting
 
-### Mysql/PgSQL
+###### Mysql/PgSQL
 
 ```php
 <?php
@@ -76,7 +76,7 @@ $connection = new Connection('localhost', new ConnectionOptions(
 ));
 ```
 
-### Sqlite
+###### Sqlite
 
 ```php
 <?php
@@ -88,7 +88,7 @@ $connection = new Connection('path/to/database', new ConnectionOptions(
 ));
 ```
 
-### MongoDB
+###### MongoDB
 
 ```php
 <?php
@@ -102,7 +102,7 @@ $connection = new Connection('localhost', new ConnectionOptions(
 ));
 ```
 
-## Mapping
+# Mapping
 
 Mapping tells how data that is stored in database should be reflected in your code.
 
@@ -113,7 +113,7 @@ Library provides following tools to map data:
 - Hydrators (used to map data from and to database)
 - Entities (unit of data, can be single person, place or thing)
 
-### Repositories
+## Repositories
 Repository is a central place where data is stored and maintained.
 
 #### Defining Repository
@@ -122,7 +122,7 @@ Repository is a central place where data is stored and maintained.
 
 #### Working with cursor
 
-### Entity
+## Entity
 An entity is an object that exists. It can perform various actions and has its own identity. 
 An entity can be a single thing, person, place, or object. Entity defines attributes, which keeps information about
 what entity needs in order to live. 
@@ -201,10 +201,12 @@ Types are used to tell library how properties should be treated when data is ret
 Igni contains 9 built-in types that you can use straight away and can be found in `Igni\Storage\Mapping\Strategy` namespace.
 Each of the built-in type also have corresponding annotation that can be found in `Igni\Storage\Mapping\Annotations\Types` namespace.
 
-##### Date
+#### Date
 Used to map datetime and date data types.
 
-###### _Accepted attributes:_
+##### _Accepted attributes:_
+
+`name` keeps equivalent key name stored in database
 
 `format` string representation of a [valid format](http://php.net/manual/pl/function.date.php) that is being used to store the value
 
@@ -229,11 +231,13 @@ class Example implements Igni\Storage\Entity
 }
 ```
 
-##### Decimal
+#### Decimal
 Decimals are safe way to deal with fragile numerical data like money. [bcmath](http://php.net/manual/pl/book.bc.php) 
 extension is required in order to use decimal values.
 
-###### _Accepted attributes:_
+##### _Accepted attributes:_
+
+`name` keeps equivalent key name stored in database
 
 `scale` is the number of digits to the right of the decimal point in a number
 
@@ -242,6 +246,7 @@ extension is required in order to use decimal values.
 ```php
 <?php declare(strict_types=1);
 
+/** @Igni\Storage\Mapping\Annotation\Entity(source="examples") */
 class Example implements Igni\Storage\Entity
 {
     /**
@@ -257,25 +262,40 @@ class Example implements Igni\Storage\Entity
 }
 ```
 
-##### Embed
-Embed is an object that is not entity itself.
+#### Embed
+Embed is an object that is not entity itself but it is composed into the entity. Embeds can be stored in the database as
+json or serialized php array.
 
-###### _Accepted attributes:_
+##### _Accepted attributes:_
 
-`scale` is the number of digits to the right of the decimal point in a number
+`name` keeps equivalent key name stored in database
 
-`precision` is the number of digits in a number
+`class` contains information about the type of embed object
+
+`storeAs` keeps information how data should be stored in the column/property. Can be one of the following values: 
+- _plain_
+- _json_
+- _serialized_
 
 ```php
 <?php declare(strict_types=1);
 
-class Example implements Igni\Storage\Entity
+/** @Igni\Storage\Mapping\Annotation\EmbeddedEntity() */
+class Address
 {
-    /**
-     * For example we can store the number 12.45 that has a precision of 4 and a scale of 2.
-     * @Igni\Storage\Mapping\Annotations\Types\DecimalNumber(scale=2, precision=4)
-     */
-    private $value;
+    /** @var Igni\Storage\Mapping\Annotation\Types\Text() */
+    private $street;
+    /** @var Igni\Storage\Mapping\Annotation\Types\Text() */
+    private $postalCode;
+    /** @var Igni\Storage\Mapping\Annotation\Types\Text() */
+    private $city;
+}
+
+/** @Igni\Storage\Mapping\Annotation\Entity(source="users") */
+class User implements Igni\Storage\Entity
+{
+    /** @var Igni\Storage\Mapping\Annotation\Types\Embed(Address::class, storeAs="json") */
+    private $address;
     
     public function getId(): Igni\Storage\Id 
     {
@@ -284,30 +304,83 @@ class Example implements Igni\Storage\Entity
 }
 ```
 
-##### Enum
+    Note: Storing embeds as json in SQL databases can be really usefull, databases like MySQL or PgSQL have good support
+    for JSON datatypes.
 
-##### Float
+#### Enum
+Enums should be always used when variable can be one out of small set of possible values. It can be used to save storage
+space, add additional checks in your code, etc. 
 
-##### Id
 
-##### Integer
+##### _Accepted attributes:_
 
-##### Reference
+`name` keeps equivalent key name stored in database
 
-##### Text
+`values` can be either class that implements `Igni\Storage\Enum` interface or array of values
+  
+```php
+<?php declare(strict_types=1);
 
-#### Working with custom types
+class AudioType implements \Igni\Storage\Enum
+{
+    const MPEG = 0;
+    const AAC = 1;
+    const MPEG_4 = 2;
+    
+    private $value;
+    
+    public function __construct($value)
+    {
+        $this->value = (int) $value;    
+        if (!in_array($this->value, [0, 1, 2])) {
+            throw new \InvalidArgumentException('Invalid audio type');
+        }
+    }
+    
+    public function getValue(): int
+    {
+        return $this->value;
+    }
+}
 
-##### Defining custom type
+/** @Igni\Storage\Mapping\Annotation\Entity(source="tracks") */
+class Track implements Igni\Storage\Entity
+{
+    /** @var Igni\Storage\Mapping\Annotation\Types\Enum(AudioType::class) */
+    private $audioTypeEnumClass; // This will be instance of AudioType class
+    
+    /** @var Igni\Storage\Mapping\Annotation\Types\Enum({"MPEG", "AAC", "MPEG-4"}) */
+    private $audioTypeList; // This can be one of the following strings: "MPEG", "AAC", "MPEG-4", but persisted as integer.
+    
+    public function getId(): Igni\Storage\Id 
+    {
+        //...
+    }
+}
+```
 
-##### Registering custom type
+#### Float
 
-### Working with References
+#### Id
 
-### Working with Collections
+#### Integer
 
-## Database Drivers
+#### Reference
 
-### Available drivers
+#### Text
 
-### Adding custom driver
+### Working with custom types
+
+#### Defining custom type
+
+#### Registering custom type
+
+## Working with References
+
+## Working with Collections
+
+# Database Drivers
+
+## Available drivers
+
+## Adding custom driver

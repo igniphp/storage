@@ -20,6 +20,8 @@ use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Driver\Pdo\Connection;
 use Igni\Storage\Driver\Pdo\ConnectionOptions;
 use Igni\Storage\EntityStorage;
+use Igni\Storage\Mapping\Collection\LazyCollection;
+use Igni\Storage\Id\GenericId;
 
 // Define entities:
 
@@ -27,7 +29,8 @@ use Igni\Storage\EntityStorage;
 class TrackEntity
 {
     use AutoGenerateId;
-    
+    /** @Property\Id(class=GenericId::class) */
+    public $id;   
     /** @Property\Text() */
     public $title;
     /** @Property\Reference(ArtistEntity::class) */
@@ -47,7 +50,10 @@ class TrackEntity
 class ArtistEntity
 {
     use AutoGenerateId;
-        
+    
+    /** @Property\Id(class=GenericId::class) */
+    public $id;    
+    
     /** @Property\Text() */
     public $name;
     
@@ -69,6 +75,15 @@ class ArtistRepository extends Repository
 
 class TrackRepository extends Repository
 {
+    public function findByArtist(ArtistEntity $artist): LazyCollection
+    {
+        $cursor = $this->query("SELECT * FROM tracks WHERE artist_id = :id", [
+            'id' => $artist->getId()
+        ]);
+
+        return new LazyCollection($cursor);
+    }
+    
     public function getEntityClass(): string 
     {
         return TrackEntity::class;
@@ -84,13 +99,19 @@ $sqliteConnection = new Connection('path/to/database', new ConnectionOptions(
 
 // Work with UnitOfWork
 $storage = new EntityStorage();
-$storage->getEntityManager()->addRepository(
+$storage->addRepository(
     new ArtistRepository($sqliteConnection),
     new TrackRepository($sqliteConnection)
 );
 
 $artist = $storage->get(ArtistEntity::class, 2);
 $track = $storage->get(TrackEntity::class, 1);
+
+// Find Artist's tracks
+foreach ($storage->getRepository(TrackEntity::class)->findByArtist($artist) as $track) {
+    echo $track->title;
+}
+
 
 // Override artist
 $track->artist = $artist;

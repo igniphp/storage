@@ -16,6 +16,12 @@ access.
 use Igni\Storage\Mapping\Annotation\Entity;
 use Igni\Storage\Mapping\Annotation\Types as Property;
 use Igni\Storage\Id\AutoGenerateId;
+use Igni\Storage\Driver\Pdo\Repository;
+use Igni\Storage\Driver\Pdo\Connection;
+use Igni\Storage\Driver\Pdo\ConnectionOptions;
+use Igni\Storage\EntityStorage;
+
+// Define entities:
 
 /** @Entity(source="tracks") */
 class TrackEntity
@@ -23,16 +29,79 @@ class TrackEntity
     use AutoGenerateId;
     
     /** @Property\Text() */
-    private $title;
-    /** @Property\IntegerNumber() */
-    private $length;
-    /** @Property\Reference(Artist::class, name="artist_id") */
-    private $artist;
-    /** @Property\Reference(Album::class, name="album_id") */
-    private $album;
+    public $title;
+    /** @Property\Reference(ArtistEntity::class) */
+    public $artist;
     /** @Property\Date(immutable=true) */
-    private $createdOn;
+    public $createdOn;
+    
+    public function __construct(ArtistEntity $artist, string $title) 
+    {
+        $this->title = $title;
+        $this->artist = $artist;
+        $this->createdOn = new DateTime();
+    }
 }
+
+/** @Entity(source="artists") */
+class ArtistEntity
+{
+    use AutoGenerateId;
+        
+    /** @Property\Text() */
+    public $name;
+    
+    public function __construct(string $name) 
+    {
+        $this->name = $name;
+    }
+}
+
+// Define repositories:
+
+class ArtistRepository extends Repository
+{
+    public function getEntityClass(): string 
+    {
+        return ArtistEntity::class;
+    }
+}
+
+class TrackRepository extends Repository
+{
+    public function getEntityClass(): string 
+    {
+        return TrackEntity::class;
+    }
+}
+
+// Defined connections
+
+$sqliteConnection = new Connection('path/to/database', new ConnectionOptions(
+    $type = 'sqlite'
+));
+
+
+// Work with UnitOfWork
+$storage = new EntityStorage();
+$storage->getEntityManager()->addRepository(
+    new ArtistRepository($sqliteConnection),
+    new TrackRepository($sqliteConnection)
+);
+
+$artist = $storage->get(ArtistEntity::class, 2);
+$track = $storage->get(TrackEntity::class, 1);
+
+// Override artist
+$track->artist = $artist;
+
+// Override artist name
+$artist->name = 'John Lennon';
+
+// Persist changes
+$storage->persist($track, $artist);
+$storage->commit();
+
 ```
 
 ## Features

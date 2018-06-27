@@ -27,4 +27,9 @@ interface Repository
      * @return Entity
      */
     public function update(Entity $entity): Entity;
+
+    /**
+     * @return string
+     */
+    public function getEntityClass(): string;
 }

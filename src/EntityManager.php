@@ -174,9 +174,11 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
         return isset($this->repositories[$entity]);
     }
 
-    public function addRepository(string $entity, Repository $repository): void
+    public function addRepository(Repository ...$repositories): void
     {
-        $this->repositories[$entity] = $repository;
+        foreach ($repositories as $repository) {
+            $this->repositories[$repository->getEntityClass()] = $repository;
+        }
     }
 
     public function attach(Entity $entity): Entity

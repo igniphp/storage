@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping;
+namespace Igni\Storage\Id;
 
 use Igni\Storage\Id;
-use Igni\Storage\Id\Uuid;
 
 /**
  * @property Id $id

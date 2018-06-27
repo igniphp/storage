@@ -7,7 +7,7 @@ use Igni\Storage\Entity;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Types as Property;
-use Igni\Storage\Mapping\AutoGenerateId;
+use Igni\Storage\Id\AutoGenerateId;
 use IgniTest\Fixtures\Artist\ArtistEntity;
 
 /**

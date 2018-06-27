@@ -3,7 +3,7 @@
 namespace IgniTest\Fixtures\Genre;
 
 use Igni\Storage\Id\GenericId;
-use Igni\Storage\Mapping\AutoGenerateId;
+use Igni\Storage\Id\AutoGenerateId;
 use Igni\Storage\Entity;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Types as Property;

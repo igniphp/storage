@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use Igni\Storage\Mapping\GenericId;
+use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\MappingStrategy;
 
 final class Id implements MappingStrategy, DefaultAttributesProvider

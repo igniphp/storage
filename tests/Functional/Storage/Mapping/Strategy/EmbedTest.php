@@ -2,7 +2,7 @@
 
 namespace IgniTest\Functional\Storage\Mapping\Strategy;
 
-use Igni\Storage\EntityManager;
+use Igni\Storage\Manager;
 use Igni\Storage\Mapping\Strategy\Embed;
 use IgniTest\Fixtures\Playlist\PlaylistDetails;
 use Mockery;
@@ -16,7 +16,7 @@ final class EmbedTest extends TestCase
         $extracted = [
             'rating' => 2.0,
         ];
-        $entityManager = Mockery::mock(EntityManager::class);
+        $entityManager = Mockery::mock(Manager::class);
         $entityManager
             ->shouldReceive('extract')
             ->withArgs([$playlistDetails])
@@ -50,7 +50,7 @@ final class EmbedTest extends TestCase
             'rating' => 2.0,
         ];
         $serialized = json_encode($extracted, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
-        $entityManager = Mockery::mock(EntityManager::class);
+        $entityManager = Mockery::mock(Manager::class);
         $entityManager
             ->shouldReceive('hydrate')
             ->withArgs([PlaylistDetails::class, $extracted])

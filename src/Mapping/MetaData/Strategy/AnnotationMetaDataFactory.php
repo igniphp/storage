@@ -11,7 +11,7 @@ use Doctrine\Common\Annotations\Reader;
 use Igni\Storage\Exception\MappingException;
 use Igni\Storage\Mapping\Annotation\EmbeddedEntity;
 use Igni\Storage\Mapping\Annotation\Entity;
-use Igni\Storage\Mapping\Annotation\Type as Property;
+use Igni\Storage\Mapping\Annotation\Property as Property;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use Igni\Storage\Mapping\MetaData\MetaDataFactory;
 use Igni\Storage\Mapping\MetaData\PropertyMetaData;
@@ -98,6 +98,10 @@ class AnnotationMetaDataFactory implements MetaDataFactory
                     break;
                 }
             }
+        }
+
+        if (!$metaData->definesProperties()) {
+            throw MappingException::forEmptyMapping($metaData->getClass());
         }
     }
 

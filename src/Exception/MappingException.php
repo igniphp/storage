@@ -9,6 +9,11 @@ class MappingException extends StorageException
         return new self("Unknown mapping strategy - `{$type}`. Did you forgot to call Strategy::register()?");
     }
 
+    public static function forEmptyMapping(string $class): self
+    {
+        return new self("Passed entity {$class} defines no mapped properties. Are you sure you have passed right class?");
+    }
+
     public static function forNonRegisteredSchema(string $entity): self
     {
         return new self("Entity `{$entity}` has no schema assigned");

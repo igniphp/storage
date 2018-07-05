@@ -14,6 +14,7 @@ final class Type
         'float' => Strategy\FloatNumber::class,
         'id' => Strategy\Id::class,
         'integer' => Strategy\IntegerNumber::class,
+        'int' => Strategy\IntegerNumber::class,
         'text' => Strategy\Text::class,
         'string' => Strategy\Text::class,
         'reference' => Strategy\Reference::class,

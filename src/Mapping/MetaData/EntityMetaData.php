@@ -29,7 +29,7 @@ final class EntityMetaData
      * Entity's mapped properties metadata.
      * @var PropertyMetaData[]
      */
-    private $properties;
+    private $properties = [];
 
     /**
      * @var ReflectionClass
@@ -76,7 +76,7 @@ final class EntityMetaData
     {
         $this->class = $class;
         $this->reflectionClass = new ReflectionClass($class);
-        $this->hydratorClassName = str_replace('\\', '', $class) . 'Hydrator';
+        $this->hydratorClassName = '_' . str_replace('\\', '', $class) . 'Hydrator';
     }
 
     public function makeEmbed(): void
@@ -157,6 +157,11 @@ final class EntityMetaData
     public function getHydratorClassName(): string
     {
         return $this->hydratorClassName;
+    }
+
+    public function definesProperties(): bool
+    {
+        return !empty($this->properties);
     }
 
     /**

@@ -8,7 +8,7 @@ class StorageException extends RuntimeException
 {
     public static function forNotRegisteredRepository(string $class): self
     {
-        return new self("Entity class ${class} has no repository assigned to it, have you forgot to call Ink::register()?");
+        return new self("Entity class ${class} has no repository assigned to it, have you forgot to call Storage::register()?");
     }
 
     public static function forNotRegisteredConnection(string $name): self

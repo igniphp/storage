@@ -4,7 +4,6 @@ namespace IgniTest\Fixtures\Track;
 
 use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Mapping\Collection\LazyCollection;
-use Igni\Storage\Mapping\MetaData\EntityMetaData;
 use IgniTest\Fixtures\Album\AlbumEntity;
 
 class TrackRepository extends Repository

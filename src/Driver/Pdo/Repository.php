@@ -3,7 +3,7 @@
 namespace Igni\Storage\Driver\Pdo;
 
 use Igni\Storage\Entity;
-use Igni\Storage\EntityManager;
+use Igni\Storage\Manager;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Repository as RepositoryInterface;
 
@@ -14,7 +14,7 @@ abstract class Repository implements RepositoryInterface
     protected $hydrator;
     protected $metaData;
 
-    final public function __construct(Connection $connection, EntityManager $entityManager)
+    final public function __construct(Connection $connection, Manager $entityManager)
     {
         $this->connection = $connection;
         $this->entityManager = $entityManager;

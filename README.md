@@ -171,7 +171,7 @@ The facilitation that is created by UoW makes track of changes and automated uni
 ###### Unit of Work
 Shortly saying UoW _maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems ([source](https://martinfowler.com/eaaCatalog/unitOfWork.html))._
 
-[Entity Storage](src/EntityStorage.php) is responsible for providing UoW implementation.
+[Entity Storage](src/Storage.php) is responsible for providing UoW implementation.
 
 ###### Repositories
 Repository is a central place where data is stored and maintained. Igni provides basic implementation per each of the supported drivers.

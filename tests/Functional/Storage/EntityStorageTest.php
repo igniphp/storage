@@ -2,8 +2,8 @@
 
 namespace IgniTest\Functional\Storage;
 
-use Igni\Storage\EntityManager;
-use Igni\Storage\EntityStorage;
+use Igni\Storage\Manager;
+use Igni\Storage\Storage;
 use IgniTest\Fixtures\Artist\ArtistEntity;
 use PHPUnit\Framework\TestCase;
 
@@ -20,9 +20,9 @@ final class EntityStorageTest extends TestCase
 
     public function testCanInstantiate(): void
     {
-        $entityStorage = new EntityStorage(new EntityManager());
+        $entityStorage = new Storage(new Manager());
 
-        self::assertInstanceOf(EntityStorage::class, $entityStorage);
+        self::assertInstanceOf(Storage::class, $entityStorage);
     }
 
     public function testGet(): void

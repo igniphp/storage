@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping\Annotation\Types;
+namespace Igni\Storage\Mapping\Annotation\Property;
 
-use Igni\Storage\Mapping\Annotation\Type;
+use Igni\Storage\Mapping\Annotation\Property;
 
 /**
  * @Annotation
  */
-class DecimalNumber extends Type
+class DecimalNumber extends Property
 {
     public $scale;
 

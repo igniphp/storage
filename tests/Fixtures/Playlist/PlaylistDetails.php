@@ -3,7 +3,7 @@
 namespace IgniTest\Fixtures\Playlist;
 
 use Igni\Storage\Mapping\Annotation as Storage;
-use Igni\Storage\Mapping\Annotation\Types as Property;
+use Igni\Storage\Mapping\Annotation\Property as Property;
 use Igni\Storage\Mapping\Collection\LazyCollection;
 use IgniTest\Fixtures\Track\TrackEntity;
 

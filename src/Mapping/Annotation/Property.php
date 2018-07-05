@@ -3,11 +3,14 @@
 namespace Igni\Storage\Mapping\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
+use function get_object_vars;
+use function method_exists;
+use function ucfirst;
 
 /**
  * @Annotation
  */
-class Type extends Annotation
+class Property extends Annotation
 {
     /**
      * @var string
@@ -18,6 +21,8 @@ class Type extends Annotation
      * @var string
      */
     public $type = 'text';
+
+    public $class;
 
     public function getType(): string
     {

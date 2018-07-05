@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Igni\Storage\Mapping\Annotation\Types;
+namespace Igni\Storage\Mapping\Annotation\Property;
 
-use Igni\Storage\Mapping\Annotation\Type;
+use Igni\Storage\Mapping\Annotation\Property;
 
 /**
  * @Annotation
  */
-class Reference extends Type
+class Reference extends Property
 {
     public $target;
 

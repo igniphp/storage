@@ -5,7 +5,7 @@ namespace Igni\Storage;
 use Igni\Storage\Exception\UnitOfWorkException;
 use SplObjectStorage;
 
-class EntityStorage implements UnitOfWork, RepositoryContainer
+class Storage implements UnitOfWork, RepositoryContainer
 {
     private const STATE_NEW = 1;
     private const STATE_MANAGED = 2;
@@ -40,13 +40,13 @@ class EntityStorage implements UnitOfWork, RepositoryContainer
     private $update = [];
 
     /**
-     * @var EntityManager
+     * @var Manager
      */
     private $entityManager;
 
-    public function __construct(EntityManager $manager = null)
+    public function __construct(Manager $manager = null)
     {
-        $this->entityManager = $manager ?? new EntityManager();
+        $this->entityManager = $manager ?? new Manager();
     }
 
     public function getRepository(string $entity): Repository
@@ -59,12 +59,12 @@ class EntityStorage implements UnitOfWork, RepositoryContainer
         return $this->entityManager->hasRepository($entity);
     }
 
-    public function addRepository(Repository $repositories): void
+    public function addRepository(Repository ...$repositories): void
     {
         $this->entityManager->addRepository(...$repositories);
     }
 
-    public function getEntityManager(): EntityManager
+    public function getEntityManager(): Manager
     {
         return $this->entityManager;
     }

@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Hydration;
 
-use Igni\Storage\EntityManager;
+use Igni\Storage\Manager;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Mapping\MappingStrategy;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
@@ -17,8 +17,8 @@ final class HydratorFactory
     private $hydrators = [];
 
     public function __construct(
-        EntityManager $entityManager,
-        $autoGenerate = HydratorAutoGenerate::IF_NOT_EXISTS
+        Manager $entityManager,
+        $autoGenerate = HydratorAutoGenerate::ALWAYS
     ) {
         $this->entityManager = $entityManager;
         $this->autoGenerate = $autoGenerate;
@@ -47,17 +47,12 @@ final class HydratorFactory
 
         $fileName = $this->entityManager->getHydratorDir() . DIRECTORY_SEPARATOR . str_replace('\\', '', $hydratorClassName) . '.php';
         switch ($this->autoGenerate) {
-            case HydratorAutoGenerate::ALWAYS:
-                $this->create($entityMeta, true);
-                break;
-
             case HydratorAutoGenerate::NEVER:
 
                 require_once $fileName;
                 break;
 
             case HydratorAutoGenerate::IF_NOT_EXISTS:
-            default:
 
                 if (!is_readable($fileName)) {
                     $hydrator = $this->create($entityMeta, true);
@@ -65,6 +60,11 @@ final class HydratorFactory
                 } else {
                     require_once $fileName;
                 }
+                break;
+
+            case HydratorAutoGenerate::ALWAYS:
+            default:
+                $this->create($entityMeta, true);
                 break;
         }
 

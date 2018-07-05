@@ -2,8 +2,6 @@
 
 namespace Igni\Storage;
 
-use Cache\Adapter\Apc\ApcCachePool;
-use Cache\Adapter\Apcu\ApcuCachePool;
 use Cache\Adapter\PHPArray\ArrayCachePool;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Exception\RepositoryException;
@@ -16,7 +14,7 @@ use Igni\Storage\Mapping\MetaData\MetaDataFactory;
 use Igni\Storage\Mapping\MetaData\Strategy\AnnotationMetaDataFactory;
 use Psr\SimpleCache\CacheInterface;
 
-class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
+class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
 {
     /** @var Entity[] */
     private $registry = [];
@@ -47,14 +45,14 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
      * @param string|null $hydratorDir
      * @param string|null $hydratorNamespace
      * @param CacheInterface|null $cache
-     * @param HydratorAutoGenerate|null $hydratorAutoGenerate
+     * @param string|null $hydratorAutoGenerate
      * @param MetaDataFactory|null $metaDataFactory
      */
     public function __construct(
         string $hydratorDir = null,
         string $hydratorNamespace = null,
         CacheInterface $cache = null,
-        HydratorAutoGenerate $hydratorAutoGenerate = null,
+        string $hydratorAutoGenerate = null,
         MetaDataFactory $metaDataFactory = null
     ) {
         if ($hydratorDir === null) {
@@ -62,7 +60,7 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
         }
 
         if ($hydratorAutoGenerate === null) {
-            $hydratorAutoGenerate = HydratorAutoGenerate::IF_NOT_EXISTS;
+            $hydratorAutoGenerate = HydratorAutoGenerate::ALWAYS;
         }
 
         if (!is_writable($hydratorDir)) {
@@ -74,13 +72,7 @@ class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
         }
 
         if ($cache === null) {
-            if (extension_loaded('apcu') && ini_get('apc.enabled')) {
-                $cache = new ApcuCachePool();
-            } elseif (extension_loaded('apc') && ini_get('apc.enabled')) {
-                $cache = new ApcCachePool();
-            } else {
-                $cache = new ArrayCachePool();
-            }
+            $cache = new ArrayCachePool();
         }
 
         $this->cache = $cache;

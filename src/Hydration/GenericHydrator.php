@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Hydration;
 
-use Igni\Storage\EntityManager;
+use Igni\Storage\Manager;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
 
 abstract class GenericHydrator implements ObjectHydrator
@@ -11,7 +11,7 @@ abstract class GenericHydrator implements ObjectHydrator
     protected $metaData;
     protected $mode;
 
-    public function __construct(EntityManager $entityManager, string $mode = HydrationMode::BY_REFERENCE)
+    public function __construct(Manager $entityManager, string $mode = HydrationMode::BY_REFERENCE)
     {
         $this->mode = $mode;
         $this->entityManager = $entityManager;
@@ -28,7 +28,7 @@ abstract class GenericHydrator implements ObjectHydrator
         return $this->mode;
     }
 
-    public function getEntityManager(): EntityManager
+    public function getEntityManager(): Manager
     {
         return $this->entityManager;
     }

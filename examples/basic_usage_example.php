@@ -17,8 +17,6 @@ use Igni\Storage\Storable;
 $sqliteConnection = new Connection(__DIR__ . '/db.db', new ConnectionOptions(
     $type = 'sqlite'
 ));
-$sqliteConnection->open();
-
 
 // Define entities:
 /** @Entity(source="tracks") */

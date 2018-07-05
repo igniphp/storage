@@ -77,22 +77,22 @@ abstract class Repository implements RepositoryInterface
     protected function buildSelectQuery($id): Cursor
     {
         $query = sprintf(
-            'SELECT *FROM %s WHERE %s = :_id_',
+            'SELECT *FROM %s WHERE %s = :_id',
             $this->metaData->getSource(),
             $this->metaData->getIdentifier()->getFieldName()
         );
 
-        return $this->connection->execute($query, ['_id_' => $id]);
+        return $this->connection->execute($query, ['_id' => $id]);
     }
 
     protected function buildDeleteQuery(Storable $entity): Cursor
     {
         $query = sprintf(
-            'DELETE FROM %s WHERE %s = :_id_',
+            'DELETE FROM %s WHERE %s = :_id',
             $this->metaData->getSource(),
             $this->metaData->getIdentifier()->getFieldName()
         );
-        return $this->connection->execute($query, ['_id_' => $entity->getId()]);
+        return $this->connection->execute($query, ['_id' => $entity->getId()]);
     }
 
     protected function buildCreateQuery(Storable $entity): Cursor
@@ -123,12 +123,12 @@ abstract class Repository implements RepositoryInterface
             $columns[] = "\"${columnName}\" = :${columnName}";
         }
         $sql = sprintf(
-            'UPDATE %s SET %s WHERE %s = :_id_',
+            'UPDATE %s SET %s WHERE %s = :_id',
             $this->metaData->getSource(),
             implode(', ', $columns),
             $this->metaData->getIdentifier()->getFieldName()
         );
-        return $this->connection->execute($sql, array_merge($data, ['_id_' => $entity->getId()]));
+        return $this->connection->execute($sql, array_merge($data, ['_id' => $entity->getId()]));
     }
 
     abstract public function getEntityClass(): string;

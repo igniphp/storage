@@ -12,7 +12,65 @@ Igni/storage is minimalistic mapping/hydration library with support for PDO and 
 access. 
 
 ```php
+<?php declare(strict_types=1);
 
+use Igni\Storage\Mapping\Annotation\Entity;
+use Igni\Storage\Mapping\Annotation\Property;
+use Igni\Storage\Id\AutoGenerateId;
+use Igni\Storage\Driver\Pdo\Repository;
+use Igni\Storage\Driver\Pdo\Connection;
+use Igni\Storage\Driver\Pdo\ConnectionOptions;
+use Igni\Storage\Storage;
+use Igni\Storage\Id\GenericId;
+use Igni\Storage\Storable;
+
+
+// Define connection:
+$sqliteConnection = new Connection(__DIR__ . '/db.db', new ConnectionOptions(
+    $type = 'sqlite'
+));
+
+// Initialize storage:
+$storage = new Storage();
+
+// Define entity:
+/** @Entity(source="artists") */
+class Artist implements Storable
+{
+    use AutoGenerateId;
+
+    /** @Property\Id(class=GenericId::class, name="ArtistId") */
+    public $id;
+
+    /** @Property\Text() */
+    public $name;
+
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+}
+
+$artistRepository = new class($sqliteConnection, $storage->getEntityManager()) extends Repository {
+    public function getEntityClass(): string
+    {
+        return Artist::class;
+    }
+};
+
+// Add repository
+$storage->addRepository($artistRepository);
+
+$artist = $storage->get(Artist::class, 1);
+
+// Override artist name
+$artist->name = 'John Lennon';
+
+// Persist changes
+$storage->persist($artist);
+
+// Commit changes
+$storage->commit();
 ```
 
 ## Features
@@ -58,14 +116,16 @@ layer between the data access layer and the business logic layer of your applica
 
 The facilitation that is created by UoW makes track of changes and automated unit testing to be achieved in much simpler manner.
 
-###### Unit of Work
-Shortly saying UoW _maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems ([source](https://martinfowler.com/eaaCatalog/unitOfWork.html))._
+#### Unit of Work
+Shortly saying UoW maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems ([source](https://martinfowler.com/eaaCatalog/unitOfWork.html))._
 
 [Entity Storage](src/Storage.php) is responsible for providing UoW implementation.
 
-###### Repositories
-Repository is a central place where data is stored and maintained. Igni provides basic implementation per each of the supported drivers.
- 
+#### Repositories
+Repository is a central place where data is stored and maintained. Igni provides basic implementation per each of the supported drivers:
+
+ - [Pdo Repository](src/Driver/Pdo/Repository.php) 
+ - [Mongo Repository](src/Driver/MongoDB/Repository.php)
 
 # Connecting
 
@@ -122,13 +182,52 @@ Library provides following tools to map data:
 - Entities (unit of data, can be single person, place or thing)
 
 ## Repositories
-Repository is a central place where data is stored and maintained.
+Repository is a central place where data is stored and maintained. Repository must implement [Repository interface](src/Repository.php) or
+extend one of the provided repository classes, depending which database you are using:
+
+ - [Pdo Repository](src/Driver/Pdo/Repository.php) 
+ - [Mongo Repository](src/Driver/MongoDB/Repository.php)
+
+Repositories have to be defined and registered in order to be recognized by unit of work. 
 
 #### Defining Repository
+```php
+<?php declare(strict_types=1);
+
+use Igni\Storage\Driver\Pdo\Repository as PDORepository;
+use Igni\Storage\Driver\MongoDB\Repository as MongoDBRepository;
+
+// Use pdo repository
+class TrackRepository extends PDORepository
+{
+    public function getEntityClass(): string 
+    {
+        return Track::class;
+    }
+}
+
+// Use mongodb repository
+class PlaylistRepository extends MongoDBRepository
+{
+    public function getEntityClass(): string 
+    {
+        return Playlist::class;
+    }
+}
+```
 
 #### Registering Repository
+```php
+<?php declare(strict_types=1);
+use Igni\Storage\Storage;
+
+// Initialize storage:
+$storage = new Storage();
+$storage->addRepository(new TrackRepository($connection));
+```
 
 #### Working with cursor
+
 
 ## Entity
 An entity is an object that exists. It can perform various actions and has its own identity. 
@@ -353,12 +452,12 @@ class AudioType implements \Igni\Storage\Enum
 }
 
 /** @Igni\Storage\Mapping\Annotation\Entity(source="tracks") */
-class Track implements Igni\Storage\Entity
+class Track implements Igni\Storage\Storable
 {
-    /** @var Igni\Storage\Mapping\Annotation\Types\Enum(AudioType::class) */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Enum(AudioType::class) */
     private $audioTypeEnumClass; // This will be instance of AudioType class    
     
-    /** @var Igni\Storage\Mapping\Annotation\Types\Enum({"MPEG", "AAC", "MPEG-4"}) */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Enum({"MPEG", "AAC", "MPEG-4"}) */
     private $audioTypeList; // This can be one of the following strings: "MPEG", "AAC", "MPEG-4", but persisted as integer.
     
     public function getId(): Igni\Storage\Id 
@@ -379,9 +478,9 @@ Maps float numbers.
 <?php declare(strict_types=1);
 
 /** @Igni\Storage\Mapping\Annotation\Entity(source="tracks") */
-class Track implements Igni\Storage\Entity
+class Track implements Igni\Storage\Storable
 {
-    /** @var Igni\Storage\Mapping\Annotation\Types\Float(name="audio_length") */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Float(name="audio_length") */
     private $length;  
 
     public function getId(): Igni\Storage\Id 
@@ -419,9 +518,9 @@ long varchar value to save the storage space.
 <?php declare(strict_types=1);
 
 /** @Igni\Storage\Mapping\Annotation\Entity(source="tracks") */
-class Track implements Igni\Storage\Entity
+class Track implements Igni\Storage\Storable
 {
-    /** @var Igni\Storage\Mapping\Annotation\Types\Id(class=Igni\Storage|Id\Uuid::class) */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Id(class=Igni\Storage|Id\Uuid::class) */
     private $id;  
 
     public function getId(): Igni\Storage\Id 
@@ -438,7 +537,7 @@ The following example shows how to auto-generate ids for your entity.
 <?php declare(strict_types=1);
 
 /** @Igni\Storage\Mapping\Annotation\Entity(source="tracks") */
-class Track implements Igni\Storage\Entity
+class Track implements Igni\Storage\Storable
 {
     use Igni\Storage\Id\AutoGenerateId;
 }
@@ -455,9 +554,9 @@ Maps integer numbers.
 <?php declare(strict_types=1);
 
 /** @Igni\Storage\Mapping\Annotation\Entity(source="tracks") */
-class Track implements Igni\Storage\Entity
+class Track implements Igni\Storage\Storable
 {
-    /** @var Igni\Storage\Mapping\Annotation\Types\IntegerNumber() */
+    /** @var Igni\Storage\Mapping\Annotation\Property\IntegerNumber() */
     private $length;  
 
     public function getId(): Igni\Storage\Id 
@@ -477,9 +576,9 @@ class Track implements Igni\Storage\Entity
 <?php declare(strict_types=1);
 
 /** @Igni\Storage\Mapping\Annotation\Entity(source="tracks") */
-class Track implements Igni\Storage\Entity
+class Track implements Igni\Storage\Storable
 {
-    /** @var Igni\Storage\Mapping\Annotation\Types\Text() */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Text() */
     private $lyrics;  
 
     public function getId(): Igni\Storage\Id 

@@ -82,7 +82,7 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
 
     public function current()
     {
-        // Empty resultset or out of bounds.
+        // Empty result-set or out of bounds.
         if ($this->cursor === null &&
             $this->current === null &&
             ($this->pointer > $this->length || ($this->length === null && $this->complete))

@@ -67,8 +67,9 @@ final class Connection implements ConnectionInterface
     public function execute(...$parameters): Cursor
     {
         if (!$this->isOpen()) {
-            throw ConnectionException::forExecutionFailure('Connection was not open', $this, $parameters);
+            $this->open();
         }
+
         $query = $parameters[0];
 
         if (isset($parameters[1]) && is_array($parameters[1])) {

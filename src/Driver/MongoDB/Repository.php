@@ -5,7 +5,7 @@ namespace Igni\Storage\Driver\MongoDB;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Repository as RepositoryInterface;
 use Igni\Storage\Manager;
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 
 abstract class Repository implements RepositoryInterface
 {
@@ -22,7 +22,7 @@ abstract class Repository implements RepositoryInterface
         $this->hydrator = $entityManager->getHydrator($this->getEntityClass());
     }
 
-    public function get($id): Entity
+    public function get($id): Storable
     {
         $cursor = $this->connection->find(
             $this->metaData->getSource(),
@@ -34,14 +34,14 @@ abstract class Repository implements RepositoryInterface
         $entity = $cursor->current();
         $cursor->close();
 
-        if (!$entity instanceof Entity) {
+        if (!$entity instanceof Storable) {
             throw RepositoryException::forNotFound($id);
         }
 
         return $entity;
     }
 
-    public function create(Entity $entity): Entity
+    public function create(Storable $entity): Storable
     {
         // Support id auto-generation.
         $entity->getId();
@@ -58,7 +58,7 @@ abstract class Repository implements RepositoryInterface
         return $entity;
     }
 
-    public function remove(Entity $entity): Entity
+    public function remove(Storable $entity): Storable
     {
         $this->connection->remove(
             $this->metaData->getSource(),
@@ -68,7 +68,7 @@ abstract class Repository implements RepositoryInterface
         return $entity;
     }
 
-    public function update(Entity $entity): Entity
+    public function update(Storable $entity): Storable
     {
         $this->connection->update(
             $this->metaData->getSource(),

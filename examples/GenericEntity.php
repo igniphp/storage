@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
 use Igni\Storage\Id\GenericId;
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 
-class GenericEntity implements Entity, ArrayAccess
+class GenericEntity implements Storable, ArrayAccess
 {
     private $id;
     private $idKey;

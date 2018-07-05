@@ -5,28 +5,28 @@ namespace Igni\Storage;
 interface Repository
 {
     /**
-     * @param mixed $id
-     * @return Entity
+     * @param string|int $id
+     * @return object|Storable
      */
-    public function get($id): Entity;
+    public function get($id): Storable;
 
     /**
-     * @param Entity $entity
-     * @return Entity
+     * @param Storable $entity
+     * @return Storable
      */
-    public function create(Entity $entity): Entity;
+    public function create(Storable $entity): Storable;
 
     /**
-     * @param Entity $entity
-     * @return Entity
+     * @param Storable $entity
+     * @return Storable
      */
-    public function remove(Entity $entity): Entity;
+    public function remove(Storable $entity): Storable;
 
     /**
-     * @param Entity $entity
-     * @return Entity
+     * @param Storable $entity
+     * @return Storable
      */
-    public function update(Entity $entity): Entity;
+    public function update(Storable $entity): Storable;
 
     /**
      * @return string

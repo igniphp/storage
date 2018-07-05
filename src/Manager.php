@@ -16,7 +16,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
 {
-    /** @var Entity[] */
+    /** @var Storable[] */
     private $registry = [];
 
     /** @var Repository[] */
@@ -96,10 +96,10 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
     /**
      * Creates new entity in the storage.
      *
-     * @param Entity $entity
-     * @return Entity
+     * @param Storable $entity
+     * @return Storable
      */
-    public function create(Entity $entity): Entity
+    public function create(Storable $entity): Storable
     {
         $this->getRepository(get_class($entity))->create($entity);
         $this->attach($entity);
@@ -110,10 +110,10 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
     /**
      * Updated entity in the storage.
      *
-     * @param Entity $entity
-     * @return Entity
+     * @param Storable $entity
+     * @return Storable
      */
-    public function update(Entity $entity): Entity
+    public function update(Storable $entity): Storable
     {
         $this->getRepository(get_class($entity))->update($entity);
 
@@ -123,10 +123,10 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
     /**
      * Removes entity from the storage.
      *
-     * @param Entity $entity
-     * @return Entity
+     * @param Storable $entity
+     * @return Storable
      */
-    public function remove(Entity $entity): Entity
+    public function remove(Storable $entity): Storable
     {
         $this->getRepository(get_class($entity))->remove($entity);
         $this->detach($entity);
@@ -139,9 +139,9 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
      *
      * @param string $entity
      * @param $id
-     * @return Entity
+     * @return Storable
      */
-    public function get(string $entity, $id): Entity
+    public function get(string $entity, $id): Storable
     {
         $key = $this->getId($entity, $id);
 
@@ -173,7 +173,7 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
         }
     }
 
-    public function attach(Entity $entity): Entity
+    public function attach(Storable $entity): Storable
     {
         $key = $this->getId($entity);
 
@@ -184,7 +184,7 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
         return $this->registry[$key];
     }
 
-    public function detach(Entity $entity): Entity
+    public function detach(Storable $entity): Storable
     {
         $key = $this->getId($entity);
         if (isset($this->registry[$key])) {
@@ -209,10 +209,10 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
     /**
      * Checks if entity lives in the identity map.
      *
-     * @param Entity $entity
+     * @param Storable $entity
      * @return bool
      */
-    public function contains(Entity $entity): bool
+    public function contains(Storable $entity): bool
     {
         return in_array($entity, $this->registry, true);
     }
@@ -235,7 +235,7 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
      */
     private function getId($entity, $id = null): string
     {
-        if ($entity instanceof Entity) {
+        if ($entity instanceof Storable) {
             return get_class($entity) . '@' . $entity->getId()->getValue();
         }
 

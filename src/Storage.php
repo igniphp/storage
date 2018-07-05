@@ -69,7 +69,7 @@ class Storage implements UnitOfWork, RepositoryContainer
         return $this->entityManager;
     }
 
-    public function get(string $entity, $id): Entity
+    public function get(string $entity, $id): Storable
     {
         $entity = $this->entityManager->get($entity, $id);
         $this->states[spl_object_hash($entity)] = self::STATE_MANAGED;
@@ -78,9 +78,9 @@ class Storage implements UnitOfWork, RepositoryContainer
     }
 
     /**
-     * @param Entity[] ...$entities
+     * @param Storable[] ...$entities
      */
-    public function persist(Entity ...$entities): void
+    public function persist(Storable ...$entities): void
     {
         foreach ($entities as $entity) {
             $this->persistOne($entity);
@@ -88,9 +88,9 @@ class Storage implements UnitOfWork, RepositoryContainer
     }
 
     /**
-     * @param Entity[] ...$entities
+     * @param Storable[] ...$entities
      */
-    public function remove(Entity ...$entities): void
+    public function remove(Storable ...$entities): void
     {
         foreach ($entities as $entity) {
             $this->removeOne($entity);
@@ -120,7 +120,7 @@ class Storage implements UnitOfWork, RepositoryContainer
         $this->remove = [];
     }
 
-    private function persistOne(Entity $entity): void
+    private function persistOne(Storable $entity): void
     {
         $namespace = get_class($entity);
 
@@ -144,7 +144,7 @@ class Storage implements UnitOfWork, RepositoryContainer
         }
     }
 
-    public function getState(Entity $entity): int
+    public function getState(Storable $entity): int
     {
         $oid = spl_object_hash($entity);
         if (isset($this->states[$oid])) {
@@ -169,7 +169,7 @@ class Storage implements UnitOfWork, RepositoryContainer
         }
     }
 
-    private function removeOne(Entity $entity): void
+    private function removeOne(Storable $entity): void
     {
         $namespace = get_class($entity);
         $oid = spl_object_hash($entity);
@@ -193,14 +193,14 @@ class Storage implements UnitOfWork, RepositoryContainer
         $this->remove[$namespace]->attach($entity);
     }
 
-    public function attach(Entity ...$entities): void
+    public function attach(Storable ...$entities): void
     {
         foreach ($entities as $entity) {
             $this->entityManager->attach($entity);
         }
     }
 
-    public function contains(Entity $entity): bool
+    public function contains(Storable $entity): bool
     {
         $contains = $this->entityManager->contains($entity);
         $oid = spl_object_hash($entity);
@@ -209,14 +209,14 @@ class Storage implements UnitOfWork, RepositoryContainer
         return $contains;
     }
 
-    public function detach(Entity ...$entities): void
+    public function detach(Storable ...$entities): void
     {
         foreach ($entities as $entity) {
             $this->detachOne($entity);
         }
     }
 
-    private function detachOne(Entity $entity): void
+    private function detachOne(Storable $entity): void
     {
         $this->states[spl_object_hash($entity)] = self::STATE_DETACHED;
         $namespace = get_class($entity);

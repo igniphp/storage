@@ -46,6 +46,11 @@ final class PropertyMetaData
         return $this->attributes;
     }
 
+    public function hasAttribute(string $name): bool
+    {
+        return isset($this->attributes[$name]);
+    }
+
     public function setFieldName(string $name): void
     {
         $this->fieldName = $name;

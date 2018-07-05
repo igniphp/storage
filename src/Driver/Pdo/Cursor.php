@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Driver\Pdo;
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Exception\CursorException;
 use Igni\Storage\Hydration\ObjectHydrator;
 use IteratorIterator;
@@ -19,7 +19,7 @@ class Cursor implements \Igni\Storage\Driver\Cursor
     private $hydrator;
     /** @var \PDOStatement */
     private $baseCursor;
-    /** @var Entity|array|null */
+    /** @var Storable|array|null */
     private $current = null;
     /** @var  IteratorIterator */
     private $iterator;

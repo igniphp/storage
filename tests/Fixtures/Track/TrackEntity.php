@@ -2,7 +2,7 @@
 
 namespace IgniTest\Fixtures\Track;
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property;
@@ -14,7 +14,7 @@ use IgniTest\Fixtures\Genre\GenreEntity;
 /**
  * @Storage\Entity("tracks")
  */
-class TrackEntity implements Entity
+class TrackEntity implements Storable
 {
     use AutoGenerateId;
 

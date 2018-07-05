@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Driver\Pdo;
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Manager;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Repository as RepositoryInterface;
@@ -22,32 +22,81 @@ abstract class Repository implements RepositoryInterface
         $this->hydrator = $this->entityManager->getHydrator($this->getEntityClass());
     }
 
-    public function get($id): Entity
+    public function get($id): Storable
     {
         if ($this->entityManager->has($this->getEntityClass(), $id)) {
             return $this->entityManager->get($this->getEntityClass(), $id);
         }
-        $query = sprintf(
-            'SELECT *FROM %s WHERE %s = :__id__',
-            $this->metaData->getSource(),
-            $this->metaData->getIdentifier()->getFieldName()
-        );
 
-        $cursor = $this->connection->execute($query, ['__id__' => $id]);
+        $cursor = $this->buildSelectQuery($id);
         $cursor->setHydrator($this->hydrator);
         $entity = $cursor->current();
+        $cursor->close();
 
-        if (!$entity instanceof Entity) {
+        if (!$entity instanceof Storable) {
             throw RepositoryException::forNotFound($id);
         }
 
         return $entity;
     }
 
-    public function create(Entity $entity): Entity
+    public function create(Storable $entity): Storable
     {
         // Execute id auto-generation.
         $entity->getId();
+        $cursor = $this->buildCreateQuery($entity);
+        $cursor->execute();
+
+        return $entity;
+    }
+
+    public function remove(Storable $entity): Storable
+    {
+        $cursor = $this->buildDeleteQuery($entity);
+        $cursor->execute();
+
+        return $entity;
+    }
+
+    public function update(Storable $entity): Storable
+    {
+        $cursor = $this->buildUpdateQuery($entity);
+        $cursor->execute();
+
+        return $entity;
+    }
+
+    protected function query($query, array $parameters = []): Cursor
+    {
+        $cursor = $this->connection->execute($query, $parameters);
+        $cursor->setHydrator($this->hydrator);
+
+        return $cursor;
+    }
+
+    protected function buildSelectQuery($id): Cursor
+    {
+        $query = sprintf(
+            'SELECT *FROM %s WHERE %s = :_id_',
+            $this->metaData->getSource(),
+            $this->metaData->getIdentifier()->getFieldName()
+        );
+
+        return $this->connection->execute($query, ['_id_' => $id]);
+    }
+
+    protected function buildDeleteQuery(Storable $entity): Cursor
+    {
+        $query = sprintf(
+            'DELETE FROM %s WHERE %s = :_id_',
+            $this->metaData->getSource(),
+            $this->metaData->getIdentifier()->getFieldName()
+        );
+        return $this->connection->execute($query, ['_id_' => $entity->getId()]);
+    }
+
+    protected function buildCreateQuery(Storable $entity): Cursor
+    {
         $data = $this->hydrator->extract($entity);
         $fields = array_keys($data);
         $binds = [];
@@ -62,26 +111,10 @@ abstract class Repository implements RepositoryInterface
             implode(',', $columns),
             implode(',', $binds)
         );
-        $cursor = $this->connection->execute($sql, $data);
-        $cursor->execute();
-
-        return $entity;
+        return $this->connection->execute($sql, $data);
     }
 
-    public function remove(Entity $entity): Entity
-    {
-        $query = sprintf(
-            'DELETE FROM %s WHERE %s = :__id__',
-            $this->metaData->getSource(),
-            $this->metaData->getIdentifier()->getFieldName()
-        );
-        $cursor = $this->connection->execute($query, ['__id__' => $entity->getId()]);
-        $cursor->execute();
-
-        return $entity;
-    }
-
-    public function update(Entity $entity): Entity
+    protected function buildUpdateQuery(Storable $entity): Cursor
     {
         $data = $this->hydrator->extract($entity);
         $fields = array_keys($data);
@@ -90,24 +123,12 @@ abstract class Repository implements RepositoryInterface
             $columns[] = "\"${columnName}\" = :${columnName}";
         }
         $sql = sprintf(
-            'UPDATE %s SET %s WHERE %s = :__id__',
+            'UPDATE %s SET %s WHERE %s = :_id_',
             $this->metaData->getSource(),
             implode(', ', $columns),
             $this->metaData->getIdentifier()->getFieldName()
         );
-        $cursor = $this->connection->execute($sql, array_merge($data, ['__id__' => $entity->getId()]));
-        $cursor->execute();
-        $cursor->close();
-
-        return $entity;
-    }
-
-    protected function query($query, array $parameters = []): Cursor
-    {
-        $cursor = $this->connection->execute($query, $parameters);
-        $cursor->setHydrator($this->hydrator);
-
-        return $cursor;
+        return $this->connection->execute($sql, array_merge($data, ['_id_' => $entity->getId()]));
     }
 
     abstract public function getEntityClass(): string;

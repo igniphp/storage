@@ -105,6 +105,7 @@ final class HydratorFactory
         $extractMethod = new ReflectionApi\RuntimeMethod('extract');
         $extractMethod->addArgument(new ReflectionApi\RuntimeArgument('entity'));
         $extractMethod->setReturnType('array');
+        $extractMethod->addLine("\$data = [];");
         $hydratorClass->addMethod($extractMethod);
 
         foreach ($metaData->getProperties() as $property) {
@@ -125,15 +126,17 @@ final class HydratorFactory
             $hydrateMethod->addLine('\\' . ReflectionApi::class . "::writeProperty(\$entity, '{$property->getName()}', \$value);");
 
             // Store objects hydrated by reference
-            $hydrateMethod->addLine("if (\$this->mode === \Igni\Storage\Hydration\HydrationMode::BY_REFERENCE && \$entity instanceof \Igni\Storage\Entity) {");
+            $hydrateMethod->addLine("if (\$this->mode === \Igni\Storage\Hydration\HydrationMode::BY_REFERENCE && \$entity instanceof \Igni\Storage\Storable) {");
             $hydrateMethod->addLine("\t\$this->entityManager->attach(\$entity);");
             $hydrateMethod->addLine("}");
 
             // Build extractor for property.
-            $extractMethod->addLine("// Extract {$property->getName()}.");
-            $extractMethod->addLine('$value = \\' . ReflectionApi::class . "::readProperty(\$entity, '{$property->getName()}');");
-            $extractMethod->addLine("\\{$type}::extract(\$value, ${attributes}, \$this->entityManager);");
-            $extractMethod->addLine("\$data['{$property->getFieldName()}'] = \$value;");
+            if (!$property->getAttributes()['readonly']) {
+                $extractMethod->addLine("// Extract {$property->getName()}.");
+                $extractMethod->addLine('$value = \\' . ReflectionApi::class . "::readProperty(\$entity, '{$property->getName()}');");
+                $extractMethod->addLine("\\{$type}::extract(\$value, ${attributes}, \$this->entityManager);");
+                $extractMethod->addLine("\$data['{$property->getFieldName()}'] = \$value;");
+            }
         }
 
         $hydrateMethod->addLine('return $entity;');

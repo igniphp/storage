@@ -4,7 +4,7 @@ namespace Igni\Storage\Driver\MongoDB;
 
 use MongoDB\Driver\Command;
 use Igni\Storage\Driver\Cursor as CursorInterface;
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Exception\CursorException;
 use Igni\Storage\Hydration\ObjectHydrator;
 use IteratorIterator;
@@ -21,7 +21,7 @@ class Cursor implements CursorInterface
     private $baseCursor;
     /** @var ConnectionOptions */
     private $options;
-    /** @var Entity|array|null */
+    /** @var Storable|object|array|null */
     private $current = null;
     /** @var  IteratorIterator */
     private $iterator;

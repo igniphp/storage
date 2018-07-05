@@ -3,7 +3,7 @@
 namespace IgniTest\Fixtures\Album;
 
 use DateTime;
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property as Property;
@@ -13,7 +13,7 @@ use IgniTest\Fixtures\Artist\ArtistEntity;
 /**
  * @Storage\Entity(source="albums", hydrator=AlbumHydrator::class)
  */
-class AlbumEntity implements Entity
+class AlbumEntity implements Storable
 {
     use AutoGenerateId;
 

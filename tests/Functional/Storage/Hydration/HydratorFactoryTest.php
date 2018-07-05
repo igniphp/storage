@@ -177,6 +177,7 @@ class HydratorFactoryTest extends TestCase
         $metaData->setCustomHydratorClass(PlaylistDetailsHydrator::class);
 
         $rating = new PropertyMetaData('rating', FloatNumber::class);
+        $rating->setAttributes(['readonly' => false]);
         $metaData->addProperty($rating);
 
         return $metaData;

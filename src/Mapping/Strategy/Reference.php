@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Manager;
 use Igni\Storage\Mapping\MappingStrategy;
 
@@ -21,7 +21,7 @@ final class Reference implements MappingStrategy
 
     public static function extract(&$value, array $attributes = [], Manager $manager = null): void
     {
-        if ($value instanceof Entity) {
+        if ($value instanceof Storable) {
             $value = $value->getId() ? $value->getId()->getValue() : null;
         } else {
             $value = null;

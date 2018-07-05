@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Storage;
 use Igni\Storage\Id\GenericId;
-use Igni\Storage\Mapping\Annotation\Entity as Storable;
+use Igni\Storage\Mapping\Annotation\Entity;
 use Igni\Storage\Mapping\Annotation\Property;
 use Igni\Storage\Id\AutoGenerateId;
 use Igni\Storage\Hydration\ObjectHydrator;
@@ -41,9 +41,9 @@ final class TrackHydrator implements ObjectHydrator
 }
 
 /**
- * @Storable(source="tracks", hydrator=TrackHydrator::class)
+ * @Entity(source="tracks", hydrator=TrackHydrator::class)
  */
-class Track implements Entity
+class Track implements Storable
 {
     use AutoGenerateId;
 

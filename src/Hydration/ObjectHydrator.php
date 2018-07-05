@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Hydration;
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 
 interface ObjectHydrator
 {
@@ -10,7 +10,7 @@ interface ObjectHydrator
      * Returns entity hydrated with provided data
      *
      * @param array $data
-     * @return object|Entity
+     * @return object|Storable
      */
     public function hydrate(array $data);
 

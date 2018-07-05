@@ -24,6 +24,8 @@ class Property extends Annotation
 
     public $class;
 
+    public $readonly = false;
+
     public function getType(): string
     {
         return $this->type;
@@ -38,7 +40,7 @@ class Property extends Annotation
                 $attributes[$name] = $this->$method();
             }
         }
-        unset($attributes['type'], $attributes['value'], $attributes['name']);
+        //unset($attributes['type'], $attributes['value'], $attributes['name']);
 
         return $attributes;
     }

@@ -2,7 +2,7 @@
 
 namespace IgniTest\Fixtures\Playlist;
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property as Property;
@@ -12,7 +12,7 @@ use IgniTest\Fixtures\Track\TrackEntity;
 /**
  * @Storage\Entity(source="playlist")
  */
-class PlaylistEntity implements Entity
+class PlaylistEntity implements Storable
 {
     use AutoGenerateId;
 

@@ -12,116 +12,6 @@ Igni/storage is minimalistic mapping/hydration library with support for PDO and 
 access. 
 
 ```php
-<?php declare(strict_types=1);
-use Igni\Storage\Mapping\Annotation\Entity;
-use Igni\Storage\Mapping\Annotation\Types as Property;
-use Igni\Storage\Id\AutoGenerateId;
-use Igni\Storage\Driver\Pdo\Repository;
-use Igni\Storage\Driver\Pdo\Connection;
-use Igni\Storage\Driver\Pdo\ConnectionOptions;
-use Igni\Storage\EntityStorage;
-use Igni\Storage\Mapping\Collection\LazyCollection;
-use Igni\Storage\Id\GenericId;
-
-// Define entities:
-
-/** @Entity(source="tracks") */
-class TrackEntity
-{
-    use AutoGenerateId;
-    /** @Property\Id(class=GenericId::class) */
-    public $id;   
-    /** @Property\Text() */
-    public $title;
-    /** @Property\Reference(ArtistEntity::class) */
-    public $artist;
-    /** @Property\Date(immutable=true) */
-    public $createdOn;
-    
-    public function __construct(ArtistEntity $artist, string $title) 
-    {
-        $this->title = $title;
-        $this->artist = $artist;
-        $this->createdOn = new DateTime();
-    }
-}
-
-/** @Entity(source="artists") */
-class ArtistEntity
-{
-    use AutoGenerateId;
-    
-    /** @Property\Id(class=GenericId::class) */
-    public $id;    
-    
-    /** @Property\Text() */
-    public $name;
-    
-    public function __construct(string $name) 
-    {
-        $this->name = $name;
-    }
-}
-
-// Define repositories:
-
-class ArtistRepository extends Repository
-{
-    public function getEntityClass(): string 
-    {
-        return ArtistEntity::class;
-    }
-}
-
-class TrackRepository extends Repository
-{
-    public function findByArtist(ArtistEntity $artist): LazyCollection
-    {
-        $cursor = $this->query("SELECT * FROM tracks WHERE artist_id = :id", [
-            'id' => $artist->getId()
-        ]);
-
-        return new LazyCollection($cursor);
-    }
-    
-    public function getEntityClass(): string 
-    {
-        return TrackEntity::class;
-    }
-}
-
-// Defined connections
-
-$sqliteConnection = new Connection('path/to/database', new ConnectionOptions(
-    $type = 'sqlite'
-));
-
-
-// Work with UnitOfWork
-$storage = new EntityStorage();
-$storage->addRepository(
-    new ArtistRepository($sqliteConnection),
-    new TrackRepository($sqliteConnection)
-);
-
-$artist = $storage->get(ArtistEntity::class, 2);
-$track = $storage->get(TrackEntity::class, 1);
-
-// Find Artist's tracks
-foreach ($storage->getRepository(TrackEntity::class)->findByArtist($artist) as $track) {
-    echo $track->title;
-}
-
-
-// Override artist
-$track->artist = $artist;
-
-// Override artist name
-$artist->name = 'John Lennon';
-
-// Persist changes
-$storage->persist($track, $artist);
-$storage->commit();
 
 ```
 
@@ -246,17 +136,18 @@ An entity can be a single thing, person, place, or object. Entity defines attrib
 what entity needs in order to live. 
 
 #### Defining Entities
-Entity must implement `\Storage\Entity` interface. The interface requires you to define `getId` method.
+Entity must implement `\Igni\Storage\Storable` interface in order to be stored, updated or deleted. 
+The interface requires you to define `getId` method.
 
 The simplest entity may look like this:
 
 ```php
 <?php
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Id;
 use Igni\Storage\Id\Uuid;
 
-class SongEntity implements Entity
+class SongEntity implements Storable
 {
     private $id;
     
@@ -283,7 +174,7 @@ Following example stores song in table/collection named `songs` with identity se
 
 ```php
 <?php
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Id;
 use Igni\Storage\Id\Uuid;
 use Igni\Storage\Mapping\Annotation as Storage;
@@ -291,7 +182,7 @@ use Igni\Storage\Mapping\Annotation as Storage;
 /**
  * @Storage\Entity(source="albums")
  */
-class SongEntity implements Entity
+class SongEntity implements Storable
 {
     /**
      * @var Uuid
@@ -335,10 +226,10 @@ Used to map datetime and date data types.
 ```php
 <?php declare(strict_types=1);
 
-class Example implements Igni\Storage\Entity
+class Example implements Igni\Storage\Storable
 {
     /**
-     * @Igni\Storage\Mapping\Annotations\Types\Date(format="Ymd", immutable=true, timezone="UTC")
+     * @Igni\Storage\Mapping\Annotation\Property\Date(format="Ymd", immutable=true, timezone="UTC")
      */
     private $value;
     
@@ -365,11 +256,11 @@ extension is required in order to use decimal values.
 <?php declare(strict_types=1);
 
 /** @Igni\Storage\Mapping\Annotation\Entity(source="examples") */
-class Example implements Igni\Storage\Entity
+class Example implements Igni\Storage\Storable
 {
     /**
      * For example we can store the number 12.45 that has a precision of 4 and a scale of 2.
-     * @Igni\Storage\Mapping\Annotations\Types\DecimalNumber(scale=2, precision=4)
+     * @Igni\Storage\Mapping\Annotation\Property\DecimalNumber(scale=2, precision=4)
      */
     private $value;
     
@@ -401,18 +292,18 @@ json or serialized php array.
 /** @Igni\Storage\Mapping\Annotation\EmbeddedEntity() */
 class Address
 {
-    /** @var Igni\Storage\Mapping\Annotation\Types\Text() */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Text() */
     private $street;
-    /** @var Igni\Storage\Mapping\Annotation\Types\Text() */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Text() */
     private $postalCode;
-    /** @var Igni\Storage\Mapping\Annotation\Types\Text() */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Text() */
     private $city;
 }
 
 /** @Igni\Storage\Mapping\Annotation\Entity(source="users") */
-class User implements Igni\Storage\Entity
+class User implements Igni\Storage\Storable
 {
-    /** @var Igni\Storage\Mapping\Annotation\Types\Embed(Address::class, storeAs="json") */
+    /** @var Igni\Storage\Mapping\Annotation\Property\Embed(Address::class, storeAs="json") */
     private $address;
     
     public function getId(): Igni\Storage\Id 

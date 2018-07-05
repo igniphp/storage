@@ -2,7 +2,7 @@
 
 namespace IgniTest\Fixtures\Artist;
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property as Property;
@@ -12,7 +12,7 @@ use Igni\Storage\Mapping\Collection\LazyCollection;
 /**
  * @Storage\Entity(source="artists", hydrator=ArtistHydrator::class)
  */
-class ArtistEntity implements Entity
+class ArtistEntity implements Storable
 {
     use AutoGenerateId;
 

@@ -2,11 +2,11 @@
 
 namespace Igni\Storage\Exception;
 
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 
 class IdentityMapException extends StorageException
 {
-    public static function forEntityWithoutIdentity(Entity $entity): IdentityMapException
+    public static function forEntityWithoutIdentity(Storable $entity): IdentityMapException
     {
         $class = get_class($entity);
         return new self("${class} has no identity, thus it cannot be attached to IdentityMap.");

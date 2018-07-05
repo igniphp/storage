@@ -4,7 +4,7 @@ namespace IgniTest\Fixtures\Genre;
 
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Id\AutoGenerateId;
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property as Property;
 use Igni\Storage\Mapping\Collection\LazyCollection;
@@ -12,7 +12,7 @@ use Igni\Storage\Mapping\Collection\LazyCollection;
 /**
  * @Storage\Entity(source="genres")
  */
-class GenreEntity implements Entity
+class GenreEntity implements Storable
 {
     use AutoGenerateId;
 

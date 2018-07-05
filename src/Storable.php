@@ -2,7 +2,7 @@
 
 namespace Igni\Storage;
 
-interface Entity
+interface Storable
 {
     public function getId(): Id;
 }

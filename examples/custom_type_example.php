@@ -4,10 +4,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Igni\Storage\Driver\Pdo\Connection;
 use Igni\Storage\Driver\Pdo\ConnectionOptions;
 use Igni\Storage\Driver\Pdo\Repository;
-use Igni\Storage\Entity;
+use Igni\Storage\Storable;
 use Igni\Storage\Id\AutoGenerateId;
 use Igni\Storage\Id\GenericId;
-use Igni\Storage\Mapping\Annotation\Entity as Storable;
+use Igni\Storage\Mapping\Annotation\Entity;
 use Igni\Storage\Mapping\Annotation\Property;
 use Igni\Storage\Mapping\MappingStrategy;
 use Igni\Storage\Mapping\Type;
@@ -54,9 +54,9 @@ class Composer
 }
 
 /**
- * @Storable(source="tracks")
+ * @Entity(source="tracks")
  */
-class Track implements Entity
+class Track implements Storable
 {
     use AutoGenerateId;
 

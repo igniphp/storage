@@ -3,7 +3,7 @@
 namespace Igni\Storage\Id;
 
 use Igni\Storage\Exception\MappingException;
-use Igni\Utils\Uuid as UuidUtil;
+use Igni\Util\UuidGenerator;
 
 class Uuid extends GenericId
 {
@@ -12,18 +12,18 @@ class Uuid extends GenericId
     public function __construct($value = null)
     {
         if ($value === null) {
-            $value = UuidUtil::generate();
+            $value = UuidGenerator::generate();
             $this->long = $value;
-            return parent::__construct(UuidUtil::toShort($value));
+            return parent::__construct(UuidGenerator::toShort($value));
         }
 
         $uuid = (string) $value;
 
-        if (!UuidUtil::validate($uuid)) {
-            $uuid = UuidUtil::fromShort($uuid);
+        if (!UuidGenerator::validate($uuid)) {
+            $uuid = UuidGenerator::fromShort($uuid);
         }
 
-        if (!UuidUtil::validate($uuid)) {
+        if (!UuidGenerator::validate($uuid)) {
             throw MappingException::forInvalidUuid($value);
         }
 

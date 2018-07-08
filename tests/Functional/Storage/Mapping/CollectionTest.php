@@ -88,10 +88,11 @@ final class CollectionTest extends TestCase
             'TrackId' => 42,
         ];
         $collection = new Collection($cursor);
-        $collection->add($item);
-        $collection->add($item);
-        $collection->add($item);
-        $collection->add($item);
+        $collection = $collection
+            ->add($item)
+            ->add($item)
+            ->add($item)
+            ->add($item);
 
         $length = self::readAttribute($collection, 'length');
 

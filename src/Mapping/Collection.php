@@ -7,7 +7,7 @@ use Iterator;
 
 interface Collection extends Iterator, Countable
 {
-    public function contains($item): bool;
+    public function contains($element): bool;
     public function first();
     public function last();
     public function at(int $index);

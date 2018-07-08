@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Mapping;
+namespace IgniTest\Functional\Storage\Mapping\Collection;
 
 use Igni\Storage\Mapping\Collection\LazyCollection;
 use IgniTest\Functional\Storage\StorageTrait;

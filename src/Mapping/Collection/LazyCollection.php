@@ -2,9 +2,13 @@
 
 namespace Igni\Storage\Mapping\Collection;
 
-use Igni\Exception\OutOfBoundsException;
 use Igni\Storage\Driver\Cursor;
+use Igni\Storage\Exception\CollectionException;
 
+/**
+ * Lazy collection is used for memory saving
+ * @package Igni\Storage\Mapping\Collection
+ */
 class LazyCollection implements \Igni\Storage\Mapping\Collection
 {
     protected $cursor;
@@ -19,10 +23,10 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
         $this->cursor = $cursor;
     }
 
-    public function contains($item): bool
+    public function contains($element): bool
     {
         foreach ($this as $element) {
-            if ($element === $item) {
+            if ($element === $element) {
                 return true;
             }
         }
@@ -57,7 +61,7 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
         }
 
         if ($this->complete) {
-            throw OutOfBoundsException::forInvalidOffset($index);
+            throw CollectionException::forOutOfBoundsIndex($index);
         }
 
         $savedPointer = $this->pointer;
@@ -72,7 +76,7 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
         if ($this->pointer < $index && $this->complete) {
             $offset = $this->pointer;
             $this->pointer = $savedPointer;
-            throw OutOfBoundsException::forInvalidOffset($offset);
+            throw CollectionException::forOutOfBoundsIndex($offset);
         }
 
         $this->pointer = $savedPointer;
@@ -87,7 +91,7 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
             $this->current === null &&
             ($this->pointer > $this->length || ($this->length === null && $this->complete))
         ) {
-            throw OutOfBoundsException::forInvalidOffset($this->pointer);
+            throw CollectionException::forOutOfBoundsIndex($this->pointer);
         }
 
         if (null === $this->current) {

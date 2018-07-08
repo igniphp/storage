@@ -226,9 +226,6 @@ $storage = new Storage();
 $storage->addRepository(new TrackRepository($connection));
 ```
 
-#### Working with cursor
-
-
 ## Entity
 An entity is an object that exists. It can perform various actions and has its own identity. 
 An entity can be a single thing, person, place, or object. Entity defines attributes, which keeps information about
@@ -322,6 +319,8 @@ Used to map datetime and date data types.
 
 `immutable` tells whether the value should be instantiated as `\DateTimeImmutable` or `\DateTime`
 
+`readonly` property marked as readonly is ignored during persistence operations
+
 ```php
 <?php declare(strict_types=1);
 
@@ -350,6 +349,8 @@ extension is required in order to use decimal values.
 `scale` is the number of digits to the right of the decimal point in a number
 
 `precision` is the number of digits in a number
+
+`readonly` property marked as readonly is ignored during persistence operations
 
 ```php
 <?php declare(strict_types=1);
@@ -384,6 +385,8 @@ json or serialized php array.
 - _plain_
 - _json_
 - _serialized_
+
+`readonly` property marked as readonly is ignored during persistence operations
 
 ```php
 <?php declare(strict_types=1);
@@ -425,6 +428,8 @@ space, add additional checks in your code, etc.
 `name` keeps equivalent key name stored in database
 
 `values` can be either class that implements `Igni\Storage\Enum` interface or array of values
+  
+`readonly` property marked as readonly is ignored during persistence operations
   
 ```php
 <?php declare(strict_types=1);
@@ -473,6 +478,8 @@ Maps float numbers.
 ##### _Accepted attributes:_
 
 `name` keeps equivalent key name stored in database
+
+`readonly` property marked as readonly is ignored during persistence operations
   
 ```php
 <?php declare(strict_types=1);
@@ -549,6 +556,8 @@ Maps integer numbers.
 ##### _Accepted attributes:_
 
 `name` keeps equivalent key name stored in database
+
+`readonly` property marked as readonly is ignored during persistence operations
   
 ```php
 <?php declare(strict_types=1);
@@ -571,6 +580,8 @@ class Track implements Igni\Storage\Storable
 ##### _Accepted attributes:_
 
 `name` keeps equivalent key name stored in database
+
+`readonly` property marked as readonly is ignored during persistence operations
   
 ```php
 <?php declare(strict_types=1);
@@ -600,5 +611,13 @@ References
 # Database Drivers
 
 ## Available drivers
+
+### PDO Driver
+
+#### Working with cursor
+
+### MongoDB Driver
+
+#### Working with cursor
 
 ## Adding custom driver

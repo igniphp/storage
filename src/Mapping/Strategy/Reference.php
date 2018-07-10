@@ -3,12 +3,12 @@
 namespace Igni\Storage\Mapping\Strategy;
 
 use Igni\Storage\Storable;
-use Igni\Storage\Manager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Mapping\MappingStrategy;
 
 final class Reference implements MappingStrategy
 {
-    public static function hydrate(&$value, array $attributes = [], Manager $manager = null): void
+    public static function hydrate(&$value, array $attributes = [], EntityManager $manager = null): void
     {
         if ($value) {
             try {
@@ -19,7 +19,7 @@ final class Reference implements MappingStrategy
         }
     }
 
-    public static function extract(&$value, array $attributes = [], Manager $manager = null): void
+    public static function extract(&$value, array $attributes = [], EntityManager $manager = null): void
     {
         if ($value instanceof Storable) {
             $value = $value->getId() ? $value->getId()->getValue() : null;

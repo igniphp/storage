@@ -2,7 +2,7 @@
 
 namespace Igni\Storage\Hydration;
 
-use Igni\Storage\Manager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Mapping\MappingStrategy;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
@@ -17,7 +17,7 @@ final class HydratorFactory
     private $hydrators = [];
 
     public function __construct(
-        Manager $entityManager,
+        EntityManager $entityManager,
         $autoGenerate = HydratorAutoGenerate::ALWAYS
     ) {
         $this->entityManager = $entityManager;
@@ -126,7 +126,7 @@ final class HydratorFactory
             $hydrateMethod->addLine('\\' . ReflectionApi::class . "::writeProperty(\$entity, '{$property->getName()}', \$value);");
 
             // Store objects hydrated by reference
-            $hydrateMethod->addLine("if (\$this->mode === \Igni\Storage\Hydration\HydrationMode::BY_REFERENCE && \$entity instanceof \Igni\Storage\Storable) {");
+            $hydrateMethod->addLine("if (\$this->saveMemory === false && \$entity instanceof \Igni\Storage\Storable) {");
             $hydrateMethod->addLine("\t\$this->entityManager->attach(\$entity);");
             $hydrateMethod->addLine("}");
 

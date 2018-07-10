@@ -3,7 +3,7 @@
 namespace Igni\Storage\Driver\Pdo;
 
 use Igni\Storage\Storable;
-use Igni\Storage\Manager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Repository as RepositoryInterface;
 
@@ -14,7 +14,7 @@ abstract class Repository implements RepositoryInterface
     protected $hydrator;
     protected $metaData;
 
-    final public function __construct(Connection $connection, Manager $entityManager)
+    final public function __construct(Connection $connection, EntityManager $entityManager)
     {
         $this->connection = $connection;
         $this->entityManager = $entityManager;
@@ -29,7 +29,7 @@ abstract class Repository implements RepositoryInterface
         }
 
         $cursor = $this->buildSelectQuery($id);
-        $cursor->setHydrator($this->hydrator);
+        $cursor->hydrateWith($this->hydrator);
         $entity = $cursor->current();
         $cursor->close();
 
@@ -69,8 +69,7 @@ abstract class Repository implements RepositoryInterface
     protected function query($query, array $parameters = []): Cursor
     {
         $cursor = $this->connection->execute($query, $parameters);
-        $cursor->setHydrator($this->hydrator);
-
+        $cursor->hydrateWith($this->hydrator);
         return $cursor;
     }
 

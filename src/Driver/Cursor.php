@@ -4,7 +4,7 @@ namespace Igni\Storage\Driver;
 
 interface Cursor extends \Iterator
 {
-    public function close(): void;
     public function open(): void;
+    public function close(): void;
     public function getConnection(): Connection;
 }

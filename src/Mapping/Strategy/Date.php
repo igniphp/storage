@@ -2,6 +2,10 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
+use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
 use Igni\Storage\Mapping\MappingStrategy;
 
 final class Date implements MappingStrategy, DefaultAttributesProvider
@@ -13,16 +17,16 @@ final class Date implements MappingStrategy, DefaultAttributesProvider
         }
 
         if ($attributes['immutable']) {
-            $value = new \DateTimeImmutable($value, new \DateTimeZone($attributes['timezone']));
+            $value = new DateTimeImmutable($value, new DateTimeZone($attributes['timezone']));
             return;
         }
 
-        $value = new \DateTime($value, new \DateTimeZone($attributes['timezone']));
+        $value = new DateTime($value, new DateTimeZone($attributes['timezone']));
     }
 
     public static function extract(&$value, array $attributes = []): void
     {
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             $value = $value->format($attributes['format']);
         } else {
             $value = null;

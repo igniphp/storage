@@ -4,10 +4,23 @@ namespace IgniTest\Functional\Storage\Mapping\Collection;
 
 use Igni\Storage\Mapping\Collection\Collection;
 use ArrayIterator;
+use IgniTest\Functional\Storage\StorageTrait;
 use PHPUnit\Framework\TestCase;
 
 final class CollectionTest extends TestCase
 {
+    use StorageTrait;
+
+    protected function setUp(): void
+    {
+        $this->setupStorage();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->clearStorage();
+    }
+
     public function testCanInstantiate(): void
     {
         self::assertInstanceOf(Collection::class, new Collection());
@@ -88,5 +101,125 @@ final class CollectionTest extends TestCase
         self::assertNotSame($filtered, $collection);
         self::assertSame([1, 2, 3, 4, 5, 6, 7], $collection->toArray());
         self::assertSame([1, 3, 5, 7], $filtered->toArray());
+    }
+
+    public function testCount(): void
+    {
+        $cursor = $this->createCursorForSql('SELECT *FROM tracks WHERE AlbumId = 1;');
+
+        $collection = new Collection($cursor);
+        self::assertCount(10, $collection);
+    }
+
+    public function testIteration(): void
+    {
+        $cursor = $this->createCursorForSql('SELECT *FROM tracks WHERE AlbumId = 1;');
+
+        $collection = new Collection($cursor);
+        $current = $collection->current();
+        self::assertEquals(1, $current['TrackId']);
+        $current = $collection->current();
+        self::assertEquals(1, $current['TrackId']);
+        $collection->next();
+        $current = $collection->current();
+        self::assertEquals(6, $current['TrackId']);
+
+        $current = $collection->at(4);
+        self::assertEquals(9, $current['TrackId']);
+
+        $current = $collection->at(9);
+        self::assertEquals(14, $current['TrackId']);
+
+        $current = $collection->first();
+        self::assertEquals(1, $current['TrackId']);
+
+        $current = $collection->last();
+        self::assertEquals(14, $current['TrackId']);
+
+        self::assertCount(10, $collection);
+
+        $collection = new Collection($cursor);
+        $collection->next();
+        self::assertCount(10, $collection);
+    }
+
+    public function testCurrent(): void
+    {
+        $cursor = $this->createCursorForSql('SELECT *FROM tracks WHERE AlbumId = 1;');
+
+        $collection = new Collection($cursor);
+        $current = $collection->current();
+
+        self::assertEquals(1, $current['TrackId']);
+    }
+
+    public function testAdd(): void
+    {
+        $cursor = $this->createCursorForSql('SELECT *FROM tracks WHERE AlbumId = 1;');
+
+        $item = [
+            'TrackId' => 42,
+        ];
+        $collection = new Collection($cursor);
+        $collection = $collection
+            ->add($item)
+            ->add($item)
+            ->add($item)
+            ->add($item);
+
+        $length = self::readAttribute($collection, 'length');
+
+        self::assertSame(14, $length);
+
+        self::assertTrue($collection->contains($item));
+        self::assertCount(14, $collection);
+
+        $collection->rewind();
+
+        $i = 0;
+        foreach($collection as $item) {
+            self::assertArrayHasKey('TrackId', $item);
+            ++$i;
+        }
+
+        self::assertSame(14, $i);
+    }
+
+    public function testEvery(): void
+    {
+        $cursor = $this->createCursorForSql('SELECT *FROM tracks;');
+        $collection = new Collection($cursor);
+
+        self::assertTrue($collection->every(function($item) {
+            return isset($item['TrackId']);
+        }));
+
+        self::assertFalse($collection->every(function($item) {
+            return isset($item['NonExistingField']);
+        }));
+    }
+
+    public function testAny(): void
+    {
+        $cursor = $this->createCursorForSql('SELECT *FROM tracks;');
+        $collection = new Collection($cursor);
+
+        self::assertTrue($collection->any(function($item) {
+            return $item['TrackId'] === '4';
+        }));
+
+        self::assertFalse($collection->any(function($item) {
+            return $item['TrackId'] === 'a';
+        }));
+    }
+
+    public function testReverse(): void
+    {
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5, 6, 7]));
+        $reversed = $collection->reverse();
+
+        self::assertNotSame($reversed, $collection);
+        self::assertSame([1, 2, 3, 4, 5, 6, 7], $collection->toArray());
+        self::assertSame([7, 6, 5, 4, 3, 2, 1], $reversed->toArray());
     }
 }

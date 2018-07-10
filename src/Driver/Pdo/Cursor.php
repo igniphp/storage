@@ -2,12 +2,15 @@
 
 namespace Igni\Storage\Driver\Pdo;
 
+use Igni\Storage\Driver\MemorySavingCursor;
+use Igni\Storage\Hydration\MemorySavingHydrator;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Storable;
 use Igni\Storage\Exception\CursorException;
 use Igni\Storage\Hydration\ObjectHydrator;
 use IteratorIterator;
 
-class Cursor implements \Igni\Storage\Driver\Cursor
+class Cursor implements MemorySavingCursor
 {
     /** @var Connection  */
     private $connection;
@@ -45,10 +48,18 @@ class Cursor implements \Igni\Storage\Driver\Cursor
         return $this->connection;
     }
 
-    public function setHydrator(ObjectHydrator $hydrator): void
+    public function hydrateWith(ObjectHydrator $hydrator): void
     {
         $this->hydrator = $hydrator;
     }
+
+    public function saveMemory(bool $save = true): void
+    {
+        if ($this->hydrator instanceof MemorySavingHydrator) {
+            $this->hydrator->saveMemory($save);
+        }
+    }
+
     public function current()
     {
         $this->open();

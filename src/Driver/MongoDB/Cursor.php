@@ -2,14 +2,16 @@
 
 namespace Igni\Storage\Driver\MongoDB;
 
+use Igni\Storage\Driver\MemorySavingCursor;
+use Igni\Storage\Hydration\MemorySavingHydrator;
+use Igni\Storage\EntityManager;
 use MongoDB\Driver\Command;
-use Igni\Storage\Driver\Cursor as CursorInterface;
 use Igni\Storage\Storable;
 use Igni\Storage\Exception\CursorException;
 use Igni\Storage\Hydration\ObjectHydrator;
 use IteratorIterator;
 
-class Cursor implements CursorInterface
+class Cursor implements MemorySavingCursor
 {
     /** @var Connection  */
     private $connection;
@@ -25,6 +27,10 @@ class Cursor implements CursorInterface
     private $current = null;
     /** @var  IteratorIterator */
     private $iterator;
+    /** @var EntityManager */
+    private $manager;
+    /** @var bool */
+    private $saveMemory = false;
 
     public function __construct(
         Connection $connection,
@@ -52,9 +58,16 @@ class Cursor implements CursorInterface
         return $this->connection;
     }
 
-    public function setHydrator(ObjectHydrator $hydrator): void
+    public function hydrateWith(ObjectHydrator $hydrator): void
     {
         $this->hydrator = $hydrator;
+    }
+
+    public function saveMemory(bool $save = true): void
+    {
+        if ($this->hydrator instanceof MemorySavingHydrator) {
+            $this->hydrator->saveMemory($save);
+        }
     }
 
     public function current()

@@ -2,13 +2,13 @@
 
 namespace Igni\Storage\Mapping\Strategy;
 
-use Igni\Storage\Manager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\HydratorException;
 use Igni\Storage\Mapping\MappingStrategy;
 
 final class Embed implements MappingStrategy, DefaultAttributesProvider
 {
-    public static function hydrate(&$value, array $attributes = [], Manager $manager = null): void
+    public static function hydrate(&$value, array $attributes = [], EntityManager $manager = null): void
     {
         if (!empty($value)) {
             $value = self::deserializeValue($value, $attributes['storeAs']);
@@ -22,7 +22,7 @@ final class Embed implements MappingStrategy, DefaultAttributesProvider
         }
     }
 
-    public static function extract(&$value, array $attributes = [], Manager $manager = null): void
+    public static function extract(&$value, array $attributes = [], EntityManager $manager = null): void
     {
 
         if ($value instanceof $attributes['class']) {

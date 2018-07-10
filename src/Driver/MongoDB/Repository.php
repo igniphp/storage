@@ -4,7 +4,7 @@ namespace Igni\Storage\Driver\MongoDB;
 
 use Igni\Storage\Exception\RepositoryException;
 use Igni\Storage\Repository as RepositoryInterface;
-use Igni\Storage\Manager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Storable;
 
 abstract class Repository implements RepositoryInterface
@@ -14,7 +14,7 @@ abstract class Repository implements RepositoryInterface
     protected $hydrator;
     protected $metaData;
 
-    final public function __construct(Connection $connection, Manager $entityManager)
+    final public function __construct(Connection $connection, EntityManager $entityManager)
     {
         $this->connection = $connection;
         $this->entityManager = $entityManager;
@@ -29,7 +29,7 @@ abstract class Repository implements RepositoryInterface
             ['_id' => $id],
             ['limit' => 1]
         );
-        $cursor->setHydrator($this->hydrator);
+        $cursor->hydrateWith($this->hydrator);
 
         $entity = $cursor->current();
         $cursor->close();

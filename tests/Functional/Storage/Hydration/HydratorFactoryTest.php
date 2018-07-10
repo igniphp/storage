@@ -2,7 +2,7 @@
 
 namespace IgniTestFunctional\Storage\Hydration;
 
-use Igni\Storage\Manager;
+use Igni\Storage\EntityManager;
 use Igni\Storage\Hydration\HydratorAutoGenerate;
 use Igni\Storage\Hydration\HydratorFactory;
 use Igni\Storage\Hydration\ObjectHydrator;
@@ -29,7 +29,7 @@ class HydratorFactoryTest extends TestCase
     public function testCanInstantiate(): void
     {
         $hydratorFactory = new HydratorFactory(
-            Mockery::mock(Manager::class),
+            Mockery::mock(EntityManager::class),
             HydratorAutoGenerate::ALWAYS
         );
 
@@ -43,7 +43,7 @@ class HydratorFactoryTest extends TestCase
         $trackRepository->shouldReceive('findByAlbum')
             ->andReturn(Mockery::mock(LazyCollection::class));
 
-        $entityManager = Mockery::mock(Manager::class);
+        $entityManager = Mockery::mock(EntityManager::class);
         $entityManager->shouldReceive('attach');
         $entityManager
             ->shouldReceive('getHydratorNamespace')
@@ -101,7 +101,7 @@ class HydratorFactoryTest extends TestCase
             ->shouldReceive('getMultiple')
             ->andReturn(Mockery::mock(LazyCollection::class));
 
-        $entityManager = Mockery::mock(Manager::class);
+        $entityManager = Mockery::mock(EntityManager::class);
         $entityManager
             ->shouldReceive('getHydratorNamespace')
             ->andReturn('');
@@ -141,7 +141,7 @@ class HydratorFactoryTest extends TestCase
             ->shouldReceive('getMultiple')
             ->andReturn(Mockery::mock(LazyCollection::class));
 
-        $entityManager = Mockery::mock(Manager::class);
+        $entityManager = Mockery::mock(EntityManager::class);
         $entityManager
             ->shouldReceive('getHydratorNamespace')
             ->andReturn('TestNamespace');

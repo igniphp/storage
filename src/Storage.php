@@ -40,13 +40,13 @@ class Storage implements UnitOfWork, RepositoryContainer
     private $update = [];
 
     /**
-     * @var Manager
+     * @var EntityManager
      */
     private $entityManager;
 
-    public function __construct(Manager $manager = null)
+    public function __construct(EntityManager $manager = null)
     {
-        $this->entityManager = $manager ?? new Manager();
+        $this->entityManager = $manager ?? new EntityManager();
     }
 
     public function getRepository(string $entity): Repository
@@ -64,7 +64,7 @@ class Storage implements UnitOfWork, RepositoryContainer
         $this->entityManager->addRepository(...$repositories);
     }
 
-    public function getEntityManager(): Manager
+    public function getEntityManager(): EntityManager
     {
         return $this->entityManager;
     }

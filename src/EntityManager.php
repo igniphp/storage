@@ -14,7 +14,7 @@ use Igni\Storage\Mapping\MetaData\MetaDataFactory;
 use Igni\Storage\Mapping\MetaData\Strategy\AnnotationMetaDataFactory;
 use Psr\SimpleCache\CacheInterface;
 
-class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
+class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
 {
     /** @var Storable[] */
     private $registry = [];
@@ -287,10 +287,11 @@ class Manager implements IdentityMap, RepositoryContainer, MetaDataFactory
     }
 
     /**
-     * Returns entity's mapping metadata information.
+     * Returns entity's mapping metadata information
      *
-     * @param string|class $entity
+     * @param string $entity
      * @return EntityMetaData
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function getMetaData(string $entity): EntityMetaData
     {

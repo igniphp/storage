@@ -13,15 +13,6 @@ use Igni\Storage\Mapping\MappingStrategy;
 use Igni\Storage\Mapping\Type;
 use Igni\Storage\Storage;
 
-
-class ComposerType extends Property
-{
-    public function getType(): string
-    {
-        return 'composer';
-    }
-}
-
 class ComposerMapping implements MappingStrategy
 {
     public static function hydrate(&$value)

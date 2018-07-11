@@ -672,7 +672,7 @@ class Track implements Igni\Storage\Storable
 If entity has to store collection of references it is recommended to create custom hydrator.
 
 
-### Working with custom hydrators 
+## Working with custom hydrators 
 Auto-resolving complex schema is memory and cpu consuming and in most cases not sufficient enough. 
 At the time like this it is good to have set of tools that will support you in building application layer
 where you have total control what is happening on your database layer.
@@ -731,7 +731,7 @@ class TrackEntity implements Igni\Storage\Storable
 
 For full example please visit [examples directory](examples).
 
-### Working with custom types
+## Working with custom types
 Storage provides useful set of daily-basis types like: int, decimal float or reference. If you find you lack some
 type that will fulfill your needs there is easy way to define your own custom data-type.
 

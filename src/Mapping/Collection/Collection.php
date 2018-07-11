@@ -4,7 +4,7 @@ namespace Igni\Storage\Mapping\Collection;
 
 use Igni\Storage\Exception\CollectionException;
 use Iterator;
-use OutOfBoundsException;
+use Igni\Exception\OutOfBoundsException;
 
 /**
  * Immutable collection representation.
@@ -235,7 +235,7 @@ class Collection implements \Igni\Storage\Mapping\Collection
     public function removeMany(...$elements): self
     {
         $collection = clone $this;
-        $collection->items = array_diff($collection->items, $elements);
+        $collection->items = array_values(array_diff($collection->items, $elements));
         $collection->length -= count($elements);
         $collection->cursor = 0;
 

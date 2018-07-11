@@ -2,6 +2,8 @@
 
 namespace IgniTest\Functional\Storage\Mapping\Collection;
 
+use Igni\Exception\OutOfBoundsException;
+use Igni\Storage\Exception\CollectionException;
 use Igni\Storage\Mapping\Collection\Collection;
 use ArrayIterator;
 use IgniTest\Functional\Storage\StorageTrait;
@@ -71,6 +73,13 @@ final class CollectionTest extends TestCase
         self::assertSame([1, 2, 3, 4, 5], $inserted->toArray());
     }
 
+    public function testFailWhileInsertInNegativeIndex(): void
+    {
+        $this->expectException(CollectionException::class);
+        $collection = new Collection(new ArrayIterator([1, 3, 4, 5]));
+        $collection->insert(-1, 2);
+    }
+
     public function testInsertMany(): void
     {
         $collection = new Collection(new ArrayIterator([1, 5, 6, 7]));
@@ -118,29 +127,51 @@ final class CollectionTest extends TestCase
         $collection = new Collection($cursor);
         $current = $collection->current();
         self::assertEquals(1, $current['TrackId']);
+        self::assertSame(0, $collection->key());
+
         $current = $collection->current();
         self::assertEquals(1, $current['TrackId']);
+        self::assertSame(0, $collection->key());
+
         $collection->next();
         $current = $collection->current();
         self::assertEquals(6, $current['TrackId']);
+        self::assertSame(1, $collection->key());
 
         $current = $collection->at(4);
         self::assertEquals(9, $current['TrackId']);
+        self::assertSame(1, $collection->key());
 
         $current = $collection->at(9);
         self::assertEquals(14, $current['TrackId']);
+        self::assertSame(1, $collection->key());
 
         $current = $collection->first();
         self::assertEquals(1, $current['TrackId']);
+        self::assertSame(0, $collection->key());
 
         $current = $collection->last();
         self::assertEquals(14, $current['TrackId']);
+        self::assertSame(9, $collection->key());
+
+        $collection->previous();
+        $current = $collection->current();
+        self::assertEquals(13, $current['TrackId']);
+        self::assertSame(8, $collection->key());
+
+        $collection->previous();
+        $current = $collection->current();
+        self::assertEquals(12, $current['TrackId']);
+        self::assertSame(7, $collection->key());
 
         self::assertCount(10, $collection);
 
         $collection = new Collection($cursor);
         $collection->next();
         self::assertCount(10, $collection);
+
+        $this->expectException(OutOfBoundsException::class);
+        $collection->at(20);
     }
 
     public function testCurrent(): void
@@ -185,6 +216,16 @@ final class CollectionTest extends TestCase
         self::assertSame(14, $i);
     }
 
+    public function testAddMany(): void
+    {
+        $collection = new Collection(new ArrayIterator([1, 2, 3]));
+        $added = $collection->addMany(4, 5, 6);
+
+        self::assertSame([1, 2, 3, 4, 5, 6], $added->toArray());
+        self::assertSame([1, 2, 3], $collection->toArray());
+        self::assertNotSame($added, $collection);
+    }
+
     public function testEvery(): void
     {
         $cursor = $this->createCursorForSql('SELECT *FROM tracks;');
@@ -221,6 +262,26 @@ final class CollectionTest extends TestCase
         self::assertNotSame($reversed, $collection);
         self::assertSame([1, 2, 3, 4, 5, 6, 7], $collection->toArray());
         self::assertSame([7, 6, 5, 4, 3, 2, 1], $reversed->toArray());
+    }
+
+    public function testRemove(): void
+    {
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5, 6, 7]));
+        $removed = $collection->remove(2);
+
+        self::assertNotSame($removed, $collection);
+        self::assertSame([1, 2, 3, 4, 5, 6, 7], $collection->toArray());
+        self::assertSame([1, 3, 4, 5, 6, 7], $removed->toArray());
+    }
+
+    public function testRemoveMany(): void
+    {
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5, 6, 7]));
+        $removed = $collection->removeMany(2, 5);
+
+        self::assertNotSame($removed, $collection);
+        self::assertSame([1, 2, 3, 4, 5, 6, 7], $collection->toArray());
+        self::assertSame([1, 3, 4, 6, 7], $removed->toArray());
     }
 
     public function testClear(): void

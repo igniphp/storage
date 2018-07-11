@@ -4,6 +4,7 @@ namespace Igni\Storage\Id;
 
 use Igni\Storage\Exception\MappingException;
 use Igni\Util\UuidGenerator;
+use InvalidArgumentException;
 
 class Uuid extends GenericId
 {
@@ -18,9 +19,16 @@ class Uuid extends GenericId
         }
 
         $uuid = (string) $value;
+        $short = (string) $value;
 
-        if (!UuidGenerator::validate($uuid)) {
-            $uuid = UuidGenerator::fromShort($uuid);
+        try {
+            if (!UuidGenerator::validate($uuid)) {
+                $uuid = UuidGenerator::fromShort($uuid);
+            } else {
+                $short = UuidGenerator::toShort($short);
+            }
+        } catch (InvalidArgumentException $exception) {
+            throw MappingException::forInvalidUuid($value);
         }
 
         if (!UuidGenerator::validate($uuid)) {
@@ -28,7 +36,7 @@ class Uuid extends GenericId
         }
 
         $this->long = $uuid;
-        parent::__construct((string) $value);
+        parent::__construct($short);
     }
 
     public function getShort(): string

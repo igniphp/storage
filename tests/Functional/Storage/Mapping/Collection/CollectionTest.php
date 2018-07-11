@@ -222,4 +222,12 @@ final class CollectionTest extends TestCase
         self::assertSame([1, 2, 3, 4, 5, 6, 7], $collection->toArray());
         self::assertSame([7, 6, 5, 4, 3, 2, 1], $reversed->toArray());
     }
+
+    public function testClear(): void
+    {
+        $collection = new Collection(new ArrayIterator([1]));
+        $collection->clear();
+        self::assertSame([], $collection->toArray());
+    }
+
 }

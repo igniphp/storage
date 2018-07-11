@@ -3,6 +3,7 @@
 namespace Igni\Storage\Mapping\Collection;
 
 use Igni\Storage\Driver\Cursor;
+use Igni\Storage\Driver\MemorySavingCursor;
 use Igni\Storage\Exception\CollectionException;
 
 /**

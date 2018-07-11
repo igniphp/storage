@@ -6,3 +6,4 @@
 /tests/tmp/*
 /metrics
 /coverage.clover
+/coverage

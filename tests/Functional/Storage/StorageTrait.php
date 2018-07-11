@@ -88,11 +88,36 @@ trait StorageTrait
     private function loadRepositories(): void
     {
         $this->entityManager->addRepository(
-            new ArtistRepository($this->sqliteConnection, $this->entityManager),
-            new AlbumRepository($this->sqliteConnection, $this->entityManager),
-            new TrackRepository($this->sqliteConnection, $this->entityManager),
-            new GenreRepository($this->sqliteConnection, $this->entityManager),
-            new PlaylistRepository($this->mongoConnection, $this->entityManager)
+            $this->createArtistRepository(),
+            $this->createAlbumRepository(),
+            $this->createTrackRepository(),
+            $this->createGenreRepository(),
+            $this->createPlaylistRepository()
         );
+    }
+
+    private function createArtistRepository(): ArtistRepository
+    {
+        return new ArtistRepository($this->sqliteConnection, $this->entityManager);
+    }
+
+    private function createAlbumRepository(): AlbumRepository
+    {
+        return new AlbumRepository($this->sqliteConnection, $this->entityManager);
+    }
+
+    private function createTrackRepository(): TrackRepository
+    {
+        return new TrackRepository($this->sqliteConnection, $this->entityManager);
+    }
+
+    private function createGenreRepository(): GenreRepository
+    {
+        return new GenreRepository($this->sqliteConnection, $this->entityManager);
+    }
+
+    private function createPlaylistRepository(): PlaylistRepository
+    {
+        return new PlaylistRepository($this->mongoConnection, $this->entityManager);
     }
 }

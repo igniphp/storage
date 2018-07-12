@@ -58,7 +58,6 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
 
     public function at(int $index)
     {
-        $item = null;
         if ($index < $this->length) {
             return $this->current = $this->items[$index];
         }

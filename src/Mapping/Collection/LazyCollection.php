@@ -2,12 +2,13 @@
 
 namespace Igni\Storage\Mapping\Collection;
 
+use ArrayIterator;
 use Igni\Storage\Driver\Cursor;
-use Igni\Storage\Driver\MemorySavingCursor;
 use Igni\Storage\Exception\CollectionException;
 
 /**
- * Lazy collection is used for memory saving
+ * Lazy collection fetches items from cursor only if the item is requested
+ *
  * @package Igni\Storage\Mapping\Collection
  */
 class LazyCollection implements \Igni\Storage\Mapping\Collection
@@ -41,6 +42,7 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
         if ($this->pointer < $this->length) {
             return $this->current = $this->items[$this->pointer];
         }
+
         return $this->current();
     }
 
@@ -66,13 +68,13 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
         }
 
         $savedPointer = $this->pointer;
-        while ($this->pointer <= $index) {
-            $item = $this->current();
+        while ($this->pointer < $index) {
             if (!$this->valid()) {
                 break;
             }
             $this->next();
         }
+        $item = $this->current();
 
         if ($this->pointer < $index && $this->complete) {
             $offset = $this->pointer;
@@ -110,9 +112,9 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
     {
         $this->pointer++;
 
-        if ($this->pointer < $this->length) {
+        if ($this->pointer <= $this->length) {
             $this->current = $this->items[$this->pointer];
-        } else if ($this->cursor) {
+        } elseif ($this->cursor) {
             if ($this->pointer > $this->length) {
                 $this->length = $this->pointer;
             }
@@ -135,11 +137,6 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
         if (!$this->current) {
             $this->current();
         }
-        return $this->pointer;
-    }
-
-    public function index(): int
-    {
         return $this->pointer;
     }
 
@@ -189,5 +186,12 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
         $this->last();
 
         return $this->items;
+    }
+
+    public function toCollection(): Collection
+    {
+        $this->last();
+
+        return new Collection(new ArrayIterator($this->items));
     }
 }

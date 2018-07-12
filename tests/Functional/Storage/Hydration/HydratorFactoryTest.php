@@ -3,6 +3,7 @@
 namespace IgniTestFunctional\Storage\Hydration;
 
 use Igni\Storage\EntityManager;
+use Igni\Storage\Hydration\GenericHydrator;
 use Igni\Storage\Hydration\HydratorAutoGenerate;
 use Igni\Storage\Hydration\HydratorFactory;
 use Igni\Storage\Hydration\ObjectHydrator;
@@ -79,7 +80,8 @@ class HydratorFactoryTest extends TestCase
         $hydrator = $metaData->getHydratorClassName();
         $hydrator = new $hydrator($entityManager);
 
-        self::assertInstanceOf(ObjectHydrator::class, $hydrator);
+        self::assertInstanceOf(GenericHydrator::class, $hydrator);
+        self::assertInstanceOf(EntityMetaData::class, $hydrator->getMetaData());
 
         /** @var AlbumEntity $album */
         $album = $hydrator->hydrate($this->provideAlbumData());

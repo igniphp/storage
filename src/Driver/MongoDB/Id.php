@@ -2,18 +2,23 @@
 
 namespace Igni\Storage\Driver\MongoDB;
 
+use MongoDB\BSON\ObjectId;
+
 class Id implements \Igni\Storage\Id
 {
     private $value;
 
-    public function __construct($value)
+    public function __construct($value = null)
     {
-        $this->value = $value;
-    }
+        if ($value === null) {
+            $value = new ObjectId();
+        }
 
-    public static function generate(): self
-    {
-        return new self(new \MongoId());
+        if (!$value instanceof ObjectId) {
+            $value = new ObjectId((string) $value);
+        }
+
+        $this->value = $value;
     }
 
     public function getValue()

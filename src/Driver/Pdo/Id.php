@@ -2,29 +2,8 @@
 
 namespace Igni\Storage\Driver\Pdo;
 
-use Igni\Utils\Uuid;
+use Igni\Storage\Id\Uuid;
 
-class Id implements \Igni\Storage\Id
+class Id extends Uuid
 {
-    private $value;
-
-    public function __construct($value)
-    {
-        $this->value = $value;
-    }
-
-    public static function generate(): self
-    {
-        return new self(Uuid::generateShort());
-    }
-
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    public function __toString(): string
-    {
-        return (string) $this->value;
-    }
 }

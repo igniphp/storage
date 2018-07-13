@@ -12,17 +12,18 @@ final class Connection implements ConnectionInterface
     private $handler;
 
     /** @var string */
-    private $host;
+    private $dsn;
 
     /** @var ConnectionOptions */
     private $options;
 
+    /** @var array */
     private $queryLog = [];
 
-    public function __construct(string $host, ConnectionOptions $options)
+    public function __construct(string $dsn, ConnectionOptions $options = null)
     {
-        $this->host = $host;
-        $this->options = $options;
+        $this->dsn = $dsn;
+        $this->options = $options ?? new ConnectionOptions();
     }
 
     public function close(): void
@@ -36,17 +37,8 @@ final class Connection implements ConnectionInterface
             return;
         }
 
-        $dsn = "{$this->options->getDsn()};host={$this->host}";
-
-        if ($this->options->getDsn() === 'sqlite:') {
-            $dsn = "{$this->options->getDsn()}/{$this->host}";
-            if ($this->host === 'memory') {
-                $dsn = "{$this->options->getDsn()}:{$this->host}";
-            }
-        }
-
         $this->handler = new PDO(
-            $dsn,
+            $this->dsn,
             $this->options->getUsername(),
             $this->options->getPassword(),
             $this->options->getAttributes()

@@ -14,7 +14,7 @@ use Igni\Storage\Mapping\MetaData\MetaDataFactory;
 use Igni\Storage\Mapping\MetaData\Strategy\AnnotationMetaDataFactory;
 use Psr\SimpleCache\CacheInterface;
 
-class EntityManager implements IdentityMap, RepositoryContainer, MetaDataFactory
+class EntityManager implements IdentityMap, MetaDataFactory
 {
     /** @var Storable[] */
     private $registry = [];

@@ -2,22 +2,18 @@
 
 namespace IgniTest\Functional\Storage;
 
+use Igni\Storage\Driver\ConnectionManager;
 use Igni\Storage\Driver\MongoDB\Connection as MongoDBConnection;
+use Igni\Storage\Driver\MongoDB\Connection;
 use Igni\Storage\Driver\MongoDB\ConnectionOptions as MongoDBOptions;
 use Igni\Storage\Driver\Pdo\Connection as SqliteConnection;
-use Igni\Storage\Driver\Pdo\ConnectionOptions as SqliteOptions;
 use Igni\Storage\Driver\Pdo\Cursor;
 use Igni\Storage\EntityManager;
 use Igni\Storage\Storage;
-use IgniTest\Fixtures\Album\AlbumEntity;
 use IgniTest\Fixtures\Album\AlbumRepository;
-use IgniTest\Fixtures\Artist\ArtistEntity;
 use IgniTest\Fixtures\Artist\ArtistRepository;
-use IgniTest\Fixtures\Genre\GenreEntity;
 use IgniTest\Fixtures\Genre\GenreRepository;
-use IgniTest\Fixtures\Playlist\PlaylistEntity;
 use IgniTest\Fixtures\Playlist\PlaylistRepository;
-use IgniTest\Fixtures\Track\TrackEntity;
 use IgniTest\Fixtures\Track\TrackRepository;
 
 trait StorageTrait
@@ -42,19 +38,22 @@ trait StorageTrait
 
     private function setupStorage(): void
     {
+        ConnectionManager::release();
         $tmpDir = __DIR__ . '/../../tmp/';
         // Copy database so it stays untouched.
         $dbDir = __DIR__ . '/../../Fixtures/';
         $this->sqliteDbPath = tempnam(sys_get_temp_dir(), 'igni-test');
         copy($dbDir . '/test.db', $this->sqliteDbPath);
 
-        $this->sqliteConnection = new SqliteConnection($this->sqliteDbPath, new SqliteOptions('sqlite'));
-        $this->sqliteConnection->open();
+
+
+        $this->sqliteConnection = new SqliteConnection('sqlite:' . $this->sqliteDbPath);
+        $this->mongoConnection = new MongoDBConnection('localhost', new MongoDBOptions('test', 'travis', 'test'));
+        ConnectionManager::addConnection($this->sqliteConnection);
+        ConnectionManager::addConnection($this->mongoConnection, 'mongo');
+
         $this->entityManager = new EntityManager($tmpDir);
         $this->unitOfWork = new Storage($this->entityManager);
-
-        $this->mongoConnection = new MongoDBConnection('localhost', new MongoDBOptions('test', 'travis', 'test'));
-        $this->mongoConnection->open();
 
         $mongoData = json_decode(file_get_contents($dbDir . '/test.json'), true);
         foreach ($mongoData as $collection => $data) {
@@ -98,26 +97,26 @@ trait StorageTrait
 
     private function createArtistRepository(): ArtistRepository
     {
-        return new ArtistRepository($this->sqliteConnection, $this->entityManager);
+        return new ArtistRepository($this->entityManager);
     }
 
     private function createAlbumRepository(): AlbumRepository
     {
-        return new AlbumRepository($this->sqliteConnection, $this->entityManager);
+        return new AlbumRepository($this->entityManager);
     }
 
     private function createTrackRepository(): TrackRepository
     {
-        return new TrackRepository($this->sqliteConnection, $this->entityManager);
+        return new TrackRepository($this->entityManager);
     }
 
     private function createGenreRepository(): GenreRepository
     {
-        return new GenreRepository($this->sqliteConnection, $this->entityManager);
+        return new GenreRepository($this->entityManager);
     }
 
     private function createPlaylistRepository(): PlaylistRepository
     {
-        return new PlaylistRepository($this->mongoConnection, $this->entityManager);
+        return new PlaylistRepository($this->entityManager);
     }
 }

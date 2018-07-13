@@ -10,7 +10,7 @@ use Igni\Storage\Id\AutoGenerateId;
 use IgniTest\Fixtures\Track\TrackEntity;
 
 /**
- * @Storage\Entity(source="playlist")
+ * @Storage\Entity(source="playlist", connection="mongo")
  */
 class PlaylistEntity implements Storable
 {

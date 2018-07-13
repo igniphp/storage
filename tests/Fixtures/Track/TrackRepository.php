@@ -39,7 +39,7 @@ class TrackRepository extends Repository
         return new LazyCollection($cursor);
     }
 
-    public function getEntityClass(): string
+    public static function getEntityClass(): string
     {
         return TrackEntity::class;
     }

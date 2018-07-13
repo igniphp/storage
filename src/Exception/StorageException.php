@@ -13,6 +13,11 @@ class StorageException extends RuntimeException
 
     public static function forNotRegisteredConnection(string $name): self
     {
-        return new self("Connection with name ${name} was not registered.");
+        return new self("Connection with name `${name}`` was not registered.");
+    }
+
+    public static function forAlreadyExistingConnection(string $name): self
+    {
+        return new self("Connection with name `${name}`  was already registered.");
     }
 }

@@ -20,7 +20,7 @@ class ArtistRepository extends Repository
         return $cursor->current();
     }
 
-    public function getEntityClass(): string
+    public static function getEntityClass(): string
     {
         return ArtistEntity::class;
     }

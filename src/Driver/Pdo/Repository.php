@@ -2,26 +2,12 @@
 
 namespace Igni\Storage\Driver\Pdo;
 
-use Igni\Storage\Storable;
-use Igni\Storage\EntityManager;
+use Igni\Storage\Driver\GenericRepository;
 use Igni\Storage\Exception\RepositoryException;
-use Igni\Storage\Repository as RepositoryInterface;
+use Igni\Storage\Storable;
 
-abstract class Repository implements RepositoryInterface
+abstract class Repository extends GenericRepository
 {
-    protected $connection;
-    protected $entityManager;
-    protected $hydrator;
-    protected $metaData;
-
-    final public function __construct(Connection $connection, EntityManager $entityManager)
-    {
-        $this->connection = $connection;
-        $this->entityManager = $entityManager;
-        $this->metaData = $this->entityManager->getMetaData($this->getEntityClass());
-        $this->hydrator = $this->entityManager->getHydrator($this->getEntityClass());
-    }
-
     public function get($id): Storable
     {
         if ($this->entityManager->has($this->getEntityClass(), $id)) {
@@ -129,6 +115,4 @@ abstract class Repository implements RepositoryInterface
         );
         return $this->connection->execute($sql, array_merge($data, ['_id' => $entity->getId()]));
     }
-
-    abstract public function getEntityClass(): string;
 }

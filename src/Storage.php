@@ -2,10 +2,11 @@
 
 namespace Igni\Storage;
 
+use Igni\Storage\Driver\ConnectionManager;
 use Igni\Storage\Exception\UnitOfWorkException;
 use SplObjectStorage;
 
-class Storage implements UnitOfWork, RepositoryContainer
+class Storage implements UnitOfWork
 {
     private const STATE_NEW = 1;
     private const STATE_MANAGED = 2;

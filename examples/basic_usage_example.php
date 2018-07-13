@@ -1,4 +1,8 @@
 <?php declare(strict_types=1);
+/**
+ * Simple tutorial step by step introducing user to world of storage framework.
+ * Each section contains comment explaining what is happening behind the scenes.
+ */
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Igni\Storage\Mapping\Annotation\Entity;
@@ -8,19 +12,17 @@ use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Driver\Pdo\Connection;
 use Igni\Storage\Driver\Pdo\ConnectionOptions;
 use Igni\Storage\Storage;
-use Igni\Storage\Mapping\Collection\LazyCollection;
+use Igni\Storage\Mapping\Collection\Collection;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Storable;
 
+// Below there are entities used in the example:
 
-// Define connections:
-$sqliteConnection = new Connection(__DIR__ . '/db.db', new ConnectionOptions(
-    $type = 'sqlite'
-));
-
-// Define entities:
-/** @Entity(source="tracks") */
-class TrackEntity implements Storable
+/**
+ * Records are taken from `tracks` table and hydrated to `Track` instance
+ * @Entity(source="tracks")
+ */
+class Track implements Storable
 {
     use AutoGenerateId;
     /** @Property\Id(class=GenericId::class, name="TrackId") */
@@ -30,15 +32,18 @@ class TrackEntity implements Storable
     /** @Property\Reference(ArtistEntity::class, name="ArtistId", readonly=true) */
     public $artist;
 
-    public function __construct(ArtistEntity $artist, string $title)
+    public function __construct(Artist $artist, string $title)
     {
         $this->title = $title;
         $this->artist = $artist;
     }
 }
 
-/** @Entity(source="artists") */
-class ArtistEntity implements Storable
+/**
+ * Records are taken from `artists` table and hydrated to `Artist` instance
+ * @Entity(source="artists")
+ */
+class Artist implements Storable
 {
     use AutoGenerateId;
 
@@ -54,55 +59,75 @@ class ArtistEntity implements Storable
     }
 }
 
-// Define repositories:
+// The following lines contain repositories
 
+/**
+ * Repositories can be used to define complex queries and aggregations by using native SQL queries.
+ */
 class TrackRepository extends Repository
 {
-    public function findByArtist(ArtistEntity $artist): LazyCollection
+    /**
+     * Finds all tracks that belongs to given artist and return results as collection.
+     */
+    public function findByArtist(Artist $artist): Collection
     {
-        $cursor = $this->query("SELECT tracks.* FROM tracks JOIN albums ON albums.AlbumId = tracks.AlbumId JOIN artists ON artists.ArtistId = albums.ArtistId  WHERE albums.ArtistId = :id", [
+        $cursor = $this->query("
+            SELECT tracks.* 
+            FROM tracks 
+            JOIN albums ON albums.AlbumId = tracks.AlbumId 
+            JOIN artists ON artists.ArtistId = albums.ArtistId  
+            WHERE albums.ArtistId = :id
+        ", [
             'id' => $artist->getId()
         ]);
 
-        return new LazyCollection($cursor);
+        return new Collection($cursor);
     }
 
-    public function getEntityClass(): string
+    public static function getEntityClass(): string
     {
-        return TrackEntity::class;
+        return Track::class;
     }
 }
-
-// Work with UnitOfWork:
+// Work with unit of work
+// Define connections:
+$sqliteConnection = new Connection(__DIR__ . '/db.db');
 $storage = new Storage();
+
+// Attach repositories
 $storage->addRepository(
-    // Dynamic Repository
+// Dynamic Repository
     new class($sqliteConnection, $storage->getEntityManager()) extends Repository {
-        public function getEntityClass(): string
+        public static function getEntityClass(): string
         {
-            return ArtistEntity::class;
+            return Artist::class;
         }
     },
 
     // Custom Repository class
     new TrackRepository($sqliteConnection, $storage->getEntityManager())
+
 );
 
-$artist = $storage->get(ArtistEntity::class, 1);
-$track = $storage->get(TrackEntity::class, 1);
+// Fetch items from database
 
-// Find Artist's tracks
-foreach ($storage->getRepository(TrackEntity::class)->findByArtist($artist) as $track) {
+$artist = $storage->get(Artist::class, 1); // This is equivalent to: SELECT *FROM artists WHERE ArtistId = 1
+$track = $storage->get(Track::class, 1); // This is equivalent to: SELECT *FROM tracks WHERE TrackId = 1
+
+// Iterate through all tracks that belong to given artist
+foreach ($storage->getRepository(Track::class)->findByArtist($artist) as $track) {
     echo $track->title;
 }
 
+// Create new artist.
+$jimmy = new Artist('Moaning Jimmy');
+$storage->persist($jimmy);
 
-// Override artist
-$track->artist = $artist;
+// Update track's artist.
+$track->artist = $jimmy;
 
-// Override artist name
-$artist->name = 'John Lennon';
+$storage->remove($artist); // This will remove existing artist with id 1 once commit is executed.
 
-// Persist changes
-$storage->persist($track, $artist);
-$storage->commit();
+$storage->persist($track); // Save changes that will be flushed to database once commit is executed.
+
+$storage->commit(); // All update queries will happen from this point on

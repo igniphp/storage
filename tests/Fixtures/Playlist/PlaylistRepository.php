@@ -6,7 +6,7 @@ use Igni\Storage\Driver\MongoDB\Repository;
 
 class PlaylistRepository extends Repository
 {
-    public function getEntityClass(): string
+    public static function getEntityClass(): string
     {
         return PlaylistEntity::class;
     }

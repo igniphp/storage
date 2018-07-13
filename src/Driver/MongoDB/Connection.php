@@ -8,6 +8,11 @@ use Igni\Storage\Exception\DriverException;
 
 final class Connection implements ConnectionInterface
 {
+    /** @var array */
+    private const VALID_FIND_OPTIONS = [
+        'sort', 'projection', 'skip', 'limit', 'max', 'min'
+    ];
+
     /** @var MongoDB\Driver\Manager */
     private $handler;
 
@@ -16,10 +21,6 @@ final class Connection implements ConnectionInterface
 
     /** @var ConnectionOptions */
     private $options;
-
-    private const VALID_FIND_OPTIONS = [
-        'sort', 'projection', 'skip', 'limit', 'max', 'min'
-    ];
 
     public function __construct(string $host, ConnectionOptions $options = null)
     {
@@ -48,6 +49,10 @@ final class Connection implements ConnectionInterface
 
     public function execute(...$parameters): Cursor
     {
+        if (!$this->isOpen()) {
+            $this->open();
+        }
+
         $command = new MongoDB\Driver\Command($parameters[0]);
 
         return new Cursor($this, $this->options, $command);

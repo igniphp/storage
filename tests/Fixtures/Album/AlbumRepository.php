@@ -20,7 +20,7 @@ class AlbumRepository extends Repository
         return new LazyCollection($this->query($query, ['id' => $artist->getId()->getValue()]));
     }
 
-    public function getEntityClass(): string
+    public static function getEntityClass(): string
     {
         return AlbumEntity::class;
     }

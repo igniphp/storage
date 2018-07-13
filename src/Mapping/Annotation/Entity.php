@@ -10,5 +10,6 @@ use Doctrine\Common\Annotations\Annotation;
 class Entity extends Annotation
 {
     public $source;
+    public $connection = 'default';
     public $hydrator;
 }

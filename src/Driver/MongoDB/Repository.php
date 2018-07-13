@@ -2,26 +2,12 @@
 
 namespace Igni\Storage\Driver\MongoDB;
 
+use Igni\Storage\Driver\GenericRepository;
 use Igni\Storage\Exception\RepositoryException;
-use Igni\Storage\Repository as RepositoryInterface;
-use Igni\Storage\EntityManager;
 use Igni\Storage\Storable;
 
-abstract class Repository implements RepositoryInterface
+abstract class Repository extends GenericRepository
 {
-    protected $connection;
-    protected $entityManager;
-    protected $hydrator;
-    protected $metaData;
-
-    final public function __construct(Connection $connection, EntityManager $entityManager)
-    {
-        $this->connection = $connection;
-        $this->entityManager = $entityManager;
-        $this->metaData = $entityManager->getMetaData($this->getEntityClass());
-        $this->hydrator = $entityManager->getHydrator($this->getEntityClass());
-    }
-
     public function get($id): Storable
     {
         $cursor = $this->connection->find(
@@ -75,6 +61,4 @@ abstract class Repository implements RepositoryInterface
             $this->hydrator->extract($entity)
         );
     }
-
-    abstract public function getEntityClass(): string;
 }

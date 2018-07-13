@@ -51,15 +51,9 @@ access.
 ```php
 <?php declare(strict_types=1);
 
-use Igni\Storage\Mapping\Annotation\Entity;
-use Igni\Storage\Mapping\Annotation\Property;
-use Igni\Storage\Id\AutoGenerateId;
-use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Driver\Pdo\Connection;
 use Igni\Storage\Driver\Pdo\ConnectionOptions;
 use Igni\Storage\Storage;
-use Igni\Storage\Id\GenericId;
-use Igni\Storage\Storable;
 
 
 // Define connection:
@@ -69,44 +63,15 @@ $sqliteConnection = new Connection(__DIR__ . '/db.db', new ConnectionOptions(
 
 // Initialize storage:
 $storage = new Storage();
-
-// Define entity:
-/** @Entity(source="artists") */
-class Artist implements Storable
-{
-    use AutoGenerateId;
-
-    /** @Property\Id(class=GenericId::class, name="ArtistId") */
-    public $id;
-
-    /** @Property\Text() */
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
-}
-
-$artistRepository = new class($sqliteConnection, $storage->getEntityManager()) extends Repository {
-    public function getEntityClass(): string
-    {
-        return Artist::class;
-    }
-};
-
-// Add repository
-$storage->addRepository($artistRepository);
-
 $artist = $storage->get(Artist::class, 1);
 
-// Override artist name
+// Update artist's name
 $artist->name = 'John Lennon';
 
-// Persist changes
+// Save changes in memory
 $storage->persist($artist);
 
-// Commit changes
+// Commit changes to database
 $storage->commit();
 ```
 

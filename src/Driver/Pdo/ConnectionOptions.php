@@ -7,16 +7,14 @@ use PDO;
 final class ConnectionOptions
 {
     private $username;
-    private $databaseType;
     private $databaseName;
     private $password;
     private $attributes = [];
 
-    public function __construct(string $databaseType, string $databaseName = '', string $username = '', string $password = '')
+    public function __construct(string $databaseName = '', string $username = '', string $password = '')
     {
         $this->username = $username;
         $this->password = $password;
-        $this->databaseType = $databaseType;
         $this->databaseName = $databaseName;
 
         $this->usePersistentConnection();
@@ -60,14 +58,5 @@ final class ConnectionOptions
     public function getAttributes(): array
     {
         return $this->attributes;
-    }
-
-    public function getDsn(): string
-    {
-        if ($this->databaseName) {
-            return "{$this->databaseType}:dbname={$this->databaseName}";
-        }
-
-        return "{$this->databaseType}:";
     }
 }

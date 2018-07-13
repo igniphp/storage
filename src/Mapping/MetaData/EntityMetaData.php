@@ -44,6 +44,13 @@ final class EntityMetaData
     private $source;
 
     /**
+     * Connection that will be used when no repository is registered
+     * for the entity.
+     * @var string
+     */
+    private $connection = 'default';
+
+    /**
      * Provides information if entity is embed entity.
      * @var bool
      */
@@ -104,6 +111,16 @@ final class EntityMetaData
     public function getSource(): string
     {
         return $this->source;
+    }
+
+    public function setConnection(string $name = 'default'): void
+    {
+        $this->connection = $name;
+    }
+
+    public function getConnection(): string
+    {
+        return $this->connection;
     }
 
     public function setCustomHydratorClass(string $className): void
@@ -198,6 +215,7 @@ final class EntityMetaData
             'hydratorClassName',
             'properties',
             'source',
+            'connection',
             'customHydrator',
         ];
     }

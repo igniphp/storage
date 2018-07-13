@@ -6,7 +6,7 @@ use Igni\Storage\Driver\Pdo\Repository;
 
 class GenreRepository extends Repository
 {
-    public function getEntityClass(): string
+    public static function getEntityClass(): string
     {
         return GenreEntity::class;
     }

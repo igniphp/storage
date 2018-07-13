@@ -78,6 +78,7 @@ class AnnotationMetaDataFactory implements MetaDataFactory
                 case Entity::class:
                     $source = $annotation->source ?? $annotation->value;
                     $metaData->setSource($source);
+                    $metaData->setConnection($annotation->connection);
                     $this->setCustomHydrator($annotation, $metaData);
                     break;
                 case EmbeddedEntity::class:

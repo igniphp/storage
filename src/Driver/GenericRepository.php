@@ -5,9 +5,9 @@ namespace Igni\Storage\Driver;
 use Igni\Storage\EntityManager;
 use Igni\Storage\Hydration\ObjectHydrator;
 use Igni\Storage\Mapping\MetaData\EntityMetaData;
-use Igni\Storage\Repository as RepositoryInterface;
+use Igni\Storage\Repository;
 
-abstract class GenericRepository implements RepositoryInterface
+abstract class GenericRepository implements Repository
 {
     /**
      * @var Connection
@@ -27,7 +27,7 @@ abstract class GenericRepository implements RepositoryInterface
      */
     protected $metaData;
 
-    final public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
         $this->metaData = $this->entityManager->getMetaData($this->getEntityClass());

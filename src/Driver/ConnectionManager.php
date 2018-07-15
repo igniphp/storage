@@ -20,40 +20,40 @@ final class ConnectionManager
         self::$connections = [];
     }
 
-    public static function addConnection(Connection $connection, string $name = 'default'): void
+    public static function register(Connection $connection, string $name = 'default'): void
     {
-        if (!self::hasDefaultConnection()) {
+        if (!self::hasDefault()) {
             self::$defaultConnection = $connection;
         }
 
-        if (self::hasConnection($name)) {
+        if (self::has($name)) {
             throw StorageException::forAlreadyExistingConnection($name);
         }
 
         self::$connections[$name] = $connection;
     }
 
-    public static function hasConnection(string $name): bool
+    public static function has(string $name): bool
     {
         return isset(self::$connections[$name]);
     }
 
-    public static function hasDefaultConnection(): bool
+    public static function hasDefault(): bool
     {
         return self::$defaultConnection !== null;
     }
 
-    public static function getDefaultConnection(): Connection
+    public static function getDefault(): Connection
     {
-        if (!self::hasDefaultConnection()) {
+        if (!self::hasDefault()) {
             throw StorageException::forNotRegisteredConnection('default');
         }
         return self::$defaultConnection;
     }
 
-    public static function getConnection(string $name): Connection
+    public static function get(string $name): Connection
     {
-        if (!self::hasConnection($name)) {
+        if (!self::has($name)) {
             throw StorageException::forNotRegisteredConnection($name);
         }
 

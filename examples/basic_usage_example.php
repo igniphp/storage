@@ -10,11 +10,11 @@ use Igni\Storage\Mapping\Annotation\Property;
 use Igni\Storage\Id\AutoGenerateId;
 use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Driver\Pdo\Connection;
-use Igni\Storage\Driver\Pdo\ConnectionOptions;
 use Igni\Storage\Storage;
 use Igni\Storage\Mapping\Collection\Collection;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Storable;
+use Igni\Storage\Driver\ConnectionManager;
 
 // Below there are entities used in the example:
 
@@ -91,13 +91,14 @@ class TrackRepository extends Repository
 }
 // Work with unit of work
 // Define connections:
-$sqliteConnection = new Connection(__DIR__ . '/db.db');
+ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
+
 $storage = new Storage();
 
 // Attach repositories
 $storage->addRepository(
-// Dynamic Repository
-    new class($sqliteConnection, $storage->getEntityManager()) extends Repository {
+    // Dynamic Repository
+    new class($storage->getEntityManager()) extends Repository {
         public static function getEntityClass(): string
         {
             return Artist::class;
@@ -105,7 +106,7 @@ $storage->addRepository(
     },
 
     // Custom Repository class
-    new TrackRepository($sqliteConnection, $storage->getEntityManager())
+    new TrackRepository($storage->getEntityManager())
 
 );
 

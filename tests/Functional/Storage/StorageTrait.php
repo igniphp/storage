@@ -49,8 +49,8 @@ trait StorageTrait
 
         $this->sqliteConnection = new SqliteConnection('sqlite:' . $this->sqliteDbPath);
         $this->mongoConnection = new MongoDBConnection('localhost', new MongoDBOptions('test', 'travis', 'test'));
-        ConnectionManager::addConnection($this->sqliteConnection);
-        ConnectionManager::addConnection($this->mongoConnection, 'mongo');
+        ConnectionManager::register($this->sqliteConnection);
+        ConnectionManager::register($this->mongoConnection, 'mongo');
 
         $this->entityManager = new EntityManager($tmpDir);
         $this->unitOfWork = new Storage($this->entityManager);

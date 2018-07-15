@@ -12,6 +12,7 @@ use Igni\Storage\Mapping\Annotation\Property;
 use Igni\Storage\Mapping\MappingStrategy;
 use Igni\Storage\Mapping\Type;
 use Igni\Storage\Storage;
+use Igni\Storage\Driver\ConnectionManager;
 
 class ComposerMapping implements MappingStrategy
 {
@@ -83,11 +84,10 @@ class Track implements Storable
     }
 }
 
-$sqlLiteConnection = new Connection(__DIR__ . '/db.db', new ConnectionOptions('sqlite'));
-$sqlLiteConnection->open();
+ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
 $unitOfWork = new Storage();
-$unitOfWork->addRepository(new class($sqlLiteConnection, $unitOfWork->getEntityManager()) extends Repository {
-    public function getEntityClass(): string
+$unitOfWork->addRepository(new class($unitOfWork->getEntityManager()) extends Repository {
+    public static function getEntityClass(): string
     {
         return Track::class;
     }
@@ -95,4 +95,4 @@ $unitOfWork->addRepository(new class($sqlLiteConnection, $unitOfWork->getEntityM
 
 $track = $unitOfWork->get(Track::class, 1);
 
-$track->getComposer();// Instance of composer.
+print_r($track->getComposer());// Instance of composer.

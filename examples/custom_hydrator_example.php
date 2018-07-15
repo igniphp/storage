@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Igni\Storage\Storable;
-use Igni\Storage\Storage;
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Driver\Pdo\Connection;
+use Igni\Storage\Driver\Pdo\Repository;
+use Igni\Storage\Hydration\GenericHydrator;
+use Igni\Storage\Hydration\ObjectHydrator;
+use Igni\Storage\Id;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation\Entity;
 use Igni\Storage\Mapping\Annotation\Property;
-use Igni\Storage\Id;
-use Igni\Storage\Hydration\ObjectHydrator;
-use Igni\Storage\Hydration\GenericHydrator;
-use Igni\Storage\Driver\Pdo\Connection;
-use Igni\Storage\Driver\Pdo\ConnectionOptions;
-use Igni\Storage\Driver\Pdo\Repository;
+use Igni\Storage\Storable;
+use Igni\Storage\Storage;
 
 /**
  * This is your custom hydrator - it implements decorator pattern.
@@ -92,13 +92,13 @@ class Track implements Storable
 
 // Below we setup bootstrap; connection and unit of work instance (Storage instance)
 
-$sqlLiteConnection = new Connection(__DIR__ . '/db.db', new ConnectionOptions('sqlite'));
+ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
 
 $unitOfWork = new Storage();
 
 // Repository has to be registered so framework knows which class is responsible for obtaining given entity from database.
-$unitOfWork->addRepository(new class($sqlLiteConnection, $unitOfWork->getEntityManager()) extends Repository {
-    public function getEntityClass(): string
+$unitOfWork->addRepository(new class($unitOfWork->getEntityManager()) extends Repository {
+    public static function getEntityClass(): string
     {
         return Track::class;
     }
@@ -107,4 +107,4 @@ $unitOfWork->addRepository(new class($sqlLiteConnection, $unitOfWork->getEntityM
 // Now database is queried and data gets hydrated with custom hydrator to instance of Track class.
 $track = $unitOfWork->get(Track::class, 1);
 
-$track->getAlbum();// Unknown album.
+echo $track->getAlbum();// Unknown album.

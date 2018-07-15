@@ -16,6 +16,7 @@ Licensed under MIT License.
   + [Mysql/PgSQL](#mysql-pgsql)
   + [Sqlite](#sqlite)
   + [MongoDB](#mongodb)
+  + [Connection Manager](#connection-manager)
 - [Mapping](#mapping)
   * [Repositories](#repositories-1)
       - [Defining Repository](#defining-repository)
@@ -52,14 +53,11 @@ access.
 <?php declare(strict_types=1);
 
 use Igni\Storage\Driver\Pdo\Connection;
-use Igni\Storage\Driver\Pdo\ConnectionOptions;
 use Igni\Storage\Storage;
-
+use Igni\Storage\Driver\ConnectionManager;
 
 // Define connection:
-$sqliteConnection = new Connection(__DIR__ . '/db.db', new ConnectionOptions(
-    $type = 'sqlite'
-));
+ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
 
 // Initialize storage:
 $storage = new Storage();
@@ -131,34 +129,30 @@ Repository is a central place where data is stored and maintained. Igni provides
 
 # Connecting
 
-###### Mysql/PgSQL
+## Mysql/PgSQL
 
 ```php
 <?php
 use Igni\Storage\Driver\Pdo\Connection;
 use Igni\Storage\Driver\Pdo\ConnectionOptions;
 
-$connection = new Connection('localhost', new ConnectionOptions(
-    $type = 'mysql',
+new Connection('mysql:host=localhost', new ConnectionOptions(
     $database = 'test',
     $username = 'root',
     $password = 'password'
 ));
 ```
 
-###### Sqlite
+## Sqlite
 
 ```php
 <?php
 use Igni\Storage\Driver\Pdo\Connection;
-use Igni\Storage\Driver\Pdo\ConnectionOptions;
 
-$connection = new Connection('path/to/database', new ConnectionOptions(
-    $type = 'sqlite'
-));
+$connection = new Connection('sqlite:/path/to/database');
 ```
 
-###### MongoDB
+## MongoDB
 
 ```php
 <?php
@@ -170,6 +164,44 @@ $connection = new Connection('localhost', new ConnectionOptions(
     $username = 'test',
     $password = 'password'
 ));
+```
+
+## Connection manager
+Connection manager is static class used for registering and obtaining active connections by repositories.
+If you would like your repositories to automatically retrieve a connection you have to register one in the
+connection manager.
+
+### Registering connection
+```php
+<?php 
+use Igni\Storage\Driver\ConnectionManager;
+
+ConnectionManager::register($connection, $name = 'my_connection');
+```
+
+### Checking if connection exists
+```php
+<?php 
+use Igni\Storage\Driver\ConnectionManager;
+
+ConnectionManager::has($name = 'my_connection');// return true
+```
+
+### Retrieving connection
+```php
+<?php 
+use Igni\Storage\Driver\ConnectionManager;
+
+ConnectionManager::get($name = 'my_connection');// return true
+```
+
+### Releasing connections
+```php
+<?php 
+use Igni\Storage\Driver\ConnectionManager;
+
+// Releases and closes all registered connections
+ConnectionManager::release();
 ```
 
 # Mapping
@@ -196,22 +228,22 @@ Repositories have to be defined and registered in order to be recognized by unit
 ```php
 <?php declare(strict_types=1);
 
-use Igni\Storage\Driver\Pdo\Repository as PDORepository;
-use Igni\Storage\Driver\MongoDB\Repository as MongoDBRepository;
+use Igni\Storage\Driver\Pdo;
+use Igni\Storage\Driver\MongoDB;
 
 // Use pdo repository
-class TrackRepository extends PDORepository
+class TrackRepository extends Pdo\Repository
 {
-    public function getEntityClass(): string 
+    public static function getEntityClass(): string 
     {
         return Track::class;
     }
 }
 
 // Use mongodb repository
-class PlaylistRepository extends MongoDBRepository
+class PlaylistRepository extends MongoDB\Repository
 {
-    public function getEntityClass(): string 
+    public static function getEntityClass(): string 
     {
         return Playlist::class;
     }
@@ -225,7 +257,9 @@ use Igni\Storage\Storage;
 
 // Initialize storage:
 $storage = new Storage();
-$storage->addRepository(new TrackRepository($connection));
+
+// Add repository
+$storage->addRepository(new TrackRepository($storage->getEntityManager()));
 ```
 
 ## Entity
@@ -278,7 +312,7 @@ use Igni\Storage\Id\Uuid;
 use Igni\Storage\Mapping\Annotation as Storage;
 
 /**
- * @Storage\Entity(source="albums")
+ * @Storage\Entity(source="albums", connection="default")
  */
 class SongEntity implements Storable
 {
@@ -302,6 +336,17 @@ class SongEntity implements Storable
 The above entity can be stored, retrieved and deleted but it contains no viable data like: title, artist, album, etc.
 Altering more data in the entity can be achieved by creating more properties and annotating them with desired type
 annotation. 
+
+##### Entity Annotation
+Used to register an entity within storage framework
+
+##### _Accepted attributes:_
+
+`source` _(required)_ generally speaking this is name of place where entity is kept in your database (collection, table, etc.)
+
+`hydrator` class name of custom hydrator that should be used during retrieve and persist process
+
+`connection` specify the connection name that should be used by entity's repository 
 
 #### Types
 Types are used to tell library how properties should be treated when data is retrieved and/or stored. 
@@ -638,6 +683,7 @@ If entity has to store collection of references it is recommended to create cust
 
 
 ## Working with custom hydrators 
+
 Auto-resolving complex schema is memory and cpu consuming and in most cases not sufficient enough. 
 At the time like this it is good to have set of tools that will support you in building application layer
 where you have total control what is happening on your database layer.
@@ -697,6 +743,7 @@ class TrackEntity implements Igni\Storage\Storable
 For full example please visit [examples directory](examples).
 
 ## Working with custom types
+
 Storage provides useful set of daily-basis types like: int, decimal float or reference. If you find you lack some
 type that will fulfill your needs there is easy way to define your own custom data-type.
 

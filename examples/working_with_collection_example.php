@@ -8,16 +8,14 @@ require_once __DIR__ . '/../vendor/autoload.php';
  * - how to work with low memory footprint
  */
 
+use Igni\Storage\Driver\ConnectionManager;
 use Igni\Storage\Driver\Pdo\Connection;
-use Igni\Storage\Driver\Pdo\ConnectionOptions;
 use Igni\Storage\Driver\Pdo\Repository;
-use Igni\Storage\Storable;
 use Igni\Storage\Id;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation\Entity;
 use Igni\Storage\Mapping\Annotation\Property;
-use Igni\Storage\Mapping\MappingStrategy;
-use Igni\Storage\Mapping\Type;
+use Igni\Storage\Storable;
 use Igni\Storage\Storage;
 
 /**
@@ -45,15 +43,17 @@ class Track implements Storable
 }
 
 
-$sqlLiteConnection = new Connection(__DIR__ . '/db.db', new ConnectionOptions('sqlite'));
-$sqlLiteConnection->open();
-$unitOfWork = new Storage();
-$unitOfWork->addRepository(new class($sqlLiteConnection, $unitOfWork->getEntityManager()) extends Repository {
-    public function getEntityClass(): string
+class TrackRepository extends Repository
+{
+    public static function getEntityClass(): string
     {
         return Track::class;
     }
-});
+}
+
+ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
+$unitOfWork = new Storage();
+$unitOfWork->addRepository(new TrackRepository($unitOfWork->getEntityManager()));
 
 $track = $unitOfWork->get(Track::class, 1);
 

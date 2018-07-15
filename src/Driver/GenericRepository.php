@@ -27,11 +27,15 @@ abstract class GenericRepository implements Repository
      */
     protected $metaData;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, Connection $connection = null)
     {
         $this->entityManager = $entityManager;
         $this->metaData = $this->entityManager->getMetaData($this->getEntityClass());
         $this->hydrator = $this->entityManager->getHydrator($this->getEntityClass());
-        $this->connection = ConnectionManager::getConnection($this->metaData->getConnection());
+        if ($connection === null) {
+            $connection = ConnectionManager::get($this->metaData->getConnection());
+        }
+
+        $this->connection = $connection;
     }
 }

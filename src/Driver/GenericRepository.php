@@ -35,7 +35,6 @@ abstract class GenericRepository implements Repository
         if ($connection === null) {
             $connection = ConnectionManager::get($this->metaData->getConnection());
         }
-
         $this->connection = $connection;
     }
 }

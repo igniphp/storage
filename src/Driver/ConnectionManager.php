@@ -6,9 +6,10 @@ use Igni\Storage\Exception\StorageException;
 
 final class ConnectionManager
 {
-    private static $defaultConnection;
     /** @var Connection[] */
     private static $connections = [];
+
+    private const DEFAULT_NAME = 'default';
 
     public static function release(): void
     {
@@ -16,21 +17,21 @@ final class ConnectionManager
             $connection->close();
         }
 
-        self::$defaultConnection = null;
         self::$connections = [];
     }
 
-    public static function register(Connection $connection, string $name = 'default'): void
+    public static function register(string $name, Connection $connection): void
     {
-        if (!self::hasDefault()) {
-            self::$defaultConnection = $connection;
-        }
-
         if (self::has($name)) {
             throw StorageException::forAlreadyExistingConnection($name);
         }
 
         self::$connections[$name] = $connection;
+    }
+
+    public static function registerDefault(Connection $connection): void
+    {
+        self::register(self::DEFAULT_NAME, $connection);
     }
 
     public static function has(string $name): bool
@@ -40,15 +41,12 @@ final class ConnectionManager
 
     public static function hasDefault(): bool
     {
-        return self::$defaultConnection !== null;
+        return self::has(self::DEFAULT_NAME);
     }
 
     public static function getDefault(): Connection
     {
-        if (!self::hasDefault()) {
-            throw StorageException::forNotRegisteredConnection('default');
-        }
-        return self::$defaultConnection;
+        return self::get(self::DEFAULT_NAME);
     }
 
     public static function get(string $name): Connection

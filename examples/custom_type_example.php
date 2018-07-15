@@ -84,7 +84,7 @@ class Track implements Storable
     }
 }
 
-ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
+ConnectionManager::registerDefault(new Connection('sqlite:/' . __DIR__ . '/db.db'));
 $unitOfWork = new Storage();
 $unitOfWork->addRepository(new class($unitOfWork->getEntityManager()) extends Repository {
     public static function getEntityClass(): string

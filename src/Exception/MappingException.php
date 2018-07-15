@@ -29,4 +29,9 @@ class MappingException extends StorageException
         $dump = var_export($value, true);
         return new self("Invalid value ({$dump}) for attribute `{$name}`. {$message}");
     }
+
+    public static function forInvalidEntityClass(string $name): self
+    {
+        return new self("Entity class `$name` was not found. Are you sure it was add to autoload?");
+    }
 }

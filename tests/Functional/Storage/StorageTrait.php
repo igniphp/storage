@@ -4,7 +4,6 @@ namespace IgniTest\Functional\Storage;
 
 use Igni\Storage\Driver\ConnectionManager;
 use Igni\Storage\Driver\MongoDB\Connection as MongoDBConnection;
-use Igni\Storage\Driver\MongoDB\Connection;
 use Igni\Storage\Driver\MongoDB\ConnectionOptions as MongoDBOptions;
 use Igni\Storage\Driver\Pdo\Connection as SqliteConnection;
 use Igni\Storage\Driver\Pdo\Cursor;
@@ -45,12 +44,11 @@ trait StorageTrait
         $this->sqliteDbPath = tempnam(sys_get_temp_dir(), 'igni-test');
         copy($dbDir . '/test.db', $this->sqliteDbPath);
 
-
-
         $this->sqliteConnection = new SqliteConnection('sqlite:' . $this->sqliteDbPath);
         $this->mongoConnection = new MongoDBConnection('localhost', new MongoDBOptions('test', 'travis', 'test'));
-        ConnectionManager::register($this->sqliteConnection);
-        ConnectionManager::register($this->mongoConnection, 'mongo');
+        ConnectionManager::registerDefault($this->sqliteConnection);
+        ConnectionManager::register('sqlite', $this->sqliteConnection);
+        ConnectionManager::register('mongo', $this->mongoConnection);
 
         $this->entityManager = new EntityManager($tmpDir);
         $this->unitOfWork = new Storage($this->entityManager);

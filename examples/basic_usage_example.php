@@ -91,7 +91,7 @@ class TrackRepository extends Repository
 }
 // Work with unit of work
 // Define connections:
-ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
+ConnectionManager::registerDefault(new Connection('sqlite:/' . __DIR__ . '/db.db'));
 
 $storage = new Storage();
 

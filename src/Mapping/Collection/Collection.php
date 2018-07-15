@@ -23,6 +23,7 @@ class Collection implements \Igni\Storage\Mapping\Collection
             return;
         }
 
+        /** @TODO: Maybe keep cursor as iterator */
         $this->items = iterator_to_array($cursor);
         $this->length = count($this->items);
     }

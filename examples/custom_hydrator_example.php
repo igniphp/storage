@@ -92,7 +92,7 @@ class Track implements Storable
 
 // Below we setup bootstrap; connection and unit of work instance (Storage instance)
 
-ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
+ConnectionManager::registerDefault(new Connection('sqlite:/' . __DIR__ . '/db.db'));
 
 $unitOfWork = new Storage();
 

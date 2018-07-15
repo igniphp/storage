@@ -44,23 +44,19 @@ class EntityManager implements IdentityMap, MetaDataFactory
      * EntityManager constructor.
      * @param string|null $hydratorDir
      * @param string|null $hydratorNamespace
-     * @param CacheInterface|null $cache
      * @param string|null $hydratorAutoGenerate
+     * @param CacheInterface|null $cache
      * @param MetaDataFactory|null $metaDataFactory
      */
     public function __construct(
         string $hydratorDir = null,
         string $hydratorNamespace = null,
+        string $hydratorAutoGenerate = HydratorAutoGenerate::IF_NOT_EXISTS,
         CacheInterface $cache = null,
-        string $hydratorAutoGenerate = null,
         MetaDataFactory $metaDataFactory = null
     ) {
         if ($hydratorDir === null) {
             $hydratorDir = sys_get_temp_dir();
-        }
-
-        if ($hydratorAutoGenerate === null) {
-            $hydratorAutoGenerate = HydratorAutoGenerate::ALWAYS;
         }
 
         if (!is_writable($hydratorDir)) {
@@ -79,7 +75,6 @@ class EntityManager implements IdentityMap, MetaDataFactory
         $this->hydratorDir = $hydratorDir;
         $this->metaDataFactory = $metaDataFactory;
         $this->hydratorNamespace = $hydratorNamespace ?? '';
-
         $this->hydratorFactory = new HydratorFactory($this, $hydratorAutoGenerate);
     }
 
@@ -169,7 +164,7 @@ class EntityManager implements IdentityMap, MetaDataFactory
     public function addRepository(Repository ...$repositories): void
     {
         foreach ($repositories as $repository) {
-            $this->repositories[$repository->getEntityClass()] = $repository;
+            $this->repositories[$repository::getEntityClass()] = $repository;
         }
     }
 
@@ -291,7 +286,6 @@ class EntityManager implements IdentityMap, MetaDataFactory
      *
      * @param string $entity
      * @return EntityMetaData
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function getMetaData(string $entity): EntityMetaData
     {
@@ -300,6 +294,8 @@ class EntityManager implements IdentityMap, MetaDataFactory
         if (!$this->cache->has($key)) {
             $metaData = $this->metaDataFactory->getMetaData($entity);
             $this->cache->set($key, $metaData);
+
+            return $metaData;
         }
 
         return $this->cache->get($key);

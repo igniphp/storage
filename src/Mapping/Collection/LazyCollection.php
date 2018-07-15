@@ -27,8 +27,8 @@ class LazyCollection implements \Igni\Storage\Mapping\Collection
 
     public function contains($element): bool
     {
-        foreach ($this as $element) {
-            if ($element === $element) {
+        foreach ($this as $current) {
+            if ($current === $element) {
                 return true;
             }
         }

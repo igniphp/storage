@@ -3,11 +3,10 @@
 namespace Igni\Storage\Driver\Pdo;
 
 use Igni\Storage\Driver\MemorySavingCursor;
-use Igni\Storage\Hydration\MemorySavingHydrator;
-use Igni\Storage\EntityManager;
-use Igni\Storage\Storable;
 use Igni\Storage\Exception\CursorException;
+use Igni\Storage\Hydration\MemorySavingHydrator;
 use Igni\Storage\Hydration\ObjectHydrator;
+use Igni\Storage\Storable;
 use IteratorIterator;
 
 class Cursor implements MemorySavingCursor

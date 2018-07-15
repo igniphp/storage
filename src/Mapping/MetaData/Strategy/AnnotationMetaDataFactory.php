@@ -45,23 +45,18 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         $this->cache = $cache;
     }
 
+    /**
+     * @param string $entity
+     * @return EntityMetaData
+     */
     public function getMetaData(string $entity): EntityMetaData
     {
-        $cacheKey = str_replace('\\', '', $entity) . '.metadata';
-        if ($this->cache->has($cacheKey)) {
-            return $this->cache->get($cacheKey);
+        try {
+            $metaData = new EntityMetaData($entity);
+            $reflection = ReflectionApi::reflectClass($entity);
+        } catch (\ReflectionException $e) {
+            throw MappingException::forInvalidEntityClass($entity);
         }
-
-        $metaData = $this->parseMetaData($entity);
-        $this->cache->set($cacheKey, $metaData);
-
-        return $metaData;
-    }
-
-    protected function parseMetaData(string $entityClass): EntityMetaData
-    {
-        $metaData = new EntityMetaData($entityClass);
-        $reflection = ReflectionApi::reflectClass($entityClass);
 
         $this->parseClassAnnotations($reflection, $metaData);
         $this->parseProperties($reflection, $metaData);
@@ -106,6 +101,10 @@ class AnnotationMetaDataFactory implements MetaDataFactory
         }
     }
 
+    /**
+     * @param EmbeddedEntity|Entity|Annotation $annotation
+     * @param EntityMetaData $metaData
+     */
     private function setCustomHydrator(Annotation $annotation, EntityMetaData $metaData)
     {
         if ($annotation->hydrator !== null) {
@@ -113,6 +112,7 @@ class AnnotationMetaDataFactory implements MetaDataFactory
                 throw new MappingException("Cannot use hydrator {$annotation->hydrator} class does not exist.");
             }
 
+            /** @noinspection PhpStrictTypeCheckingInspection */
             $metaData->setCustomHydratorClass($annotation->hydrator);
         }
     }

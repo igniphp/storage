@@ -4,7 +4,8 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/igniphp/storage/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/igniphp/storage/?branch=master)
 
 ## Igni Storage
-Licensed under MIT License.
+
+Igni storage is minimalistic mapping/hydration framework with support for PDO and MongoDB databases with cross database access.
 
 ## Table of contents
 - [Introduction](#introduction)
@@ -45,9 +46,6 @@ Licensed under MIT License.
   * [Adding custom driver](#adding-custom-driver)
 
 # Introduction
-
-Igni/storage is minimalistic mapping/hydration library with support for PDO and MongoDB databases with cross database
-access. 
 
 ```php
 <?php declare(strict_types=1);

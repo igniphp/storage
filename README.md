@@ -930,3 +930,30 @@ $totalAge = $collection->reduce(
     $initialValue = 0
 );
 ```
+
+## Working with Lazy collections
+
+Lazy collection are immutable lazy bastards, they do nothing all the day but iterate through cursor
+in the way where item is not fetched from database until it is really needed (such lazy, wow!).
+(If you reached this point of documentation take my congratulations :D)
+
+Lazy collection was specially made to work with cursors so it accepts only cursors:
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\LazyCollection;
+
+$connection = ConnectionManager::getDefault();
+
+$lazyBastard = new LazyCollection($connection->execute('SELECT *FROM artists'));
+
+// Iterating
+foreach ($lazyBastard as $item) {
+    // Do something here
+}
+
+// You have changed your mind and get fed with laziness- no probs:
+$nonLazy = $lazyBastard->toCollection();
+```
+
+##### That's all folks!

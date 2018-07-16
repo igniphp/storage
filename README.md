@@ -37,6 +37,7 @@ Igni storage is minimalistic mapping/hydration framework with support for PDO an
   * [Working with custom hydrators](#working-with-custom-hydrators)
   * [Working with custom types](#working-with-custom-types)
   * [Working with Collections](#working-with-collections)
+  * [Working with Lazy Collections](#working-with-lazy-collections)
 
 # Introduction
 

@@ -3,7 +3,7 @@
 namespace Igni\Storage\Mapping\Collection;
 
 use Igni\Storage\Exception\CollectionException;
-use Iterator;
+use Traversable;
 use Igni\Exception\OutOfBoundsException;
 
 /**
@@ -15,7 +15,7 @@ class Collection implements \Igni\Storage\Mapping\Collection
     protected $cursor = 0;
     protected $items = [];
 
-    public function __construct(Iterator $cursor = null)
+    public function __construct(iterable $cursor = null)
     {
         if ($cursor === null) {
             $this->items = [];
@@ -24,7 +24,12 @@ class Collection implements \Igni\Storage\Mapping\Collection
         }
 
         /** @TODO: Maybe keep cursor as iterator */
-        $this->items = iterator_to_array($cursor);
+        if ($cursor instanceof Traversable) {
+            $this->items = iterator_to_array($cursor);
+        } else {
+            $this->items = $cursor;
+        }
+
         $this->length = count($this->items);
     }
 
@@ -343,5 +348,10 @@ class Collection implements \Igni\Storage\Mapping\Collection
     public function toArray(): array
     {
         return $this->items;
+    }
+
+    public static function fromList(...$elements): Collection
+    {
+        return new self($elements);
     }
 }

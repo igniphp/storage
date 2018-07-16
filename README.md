@@ -55,7 +55,7 @@ use Igni\Storage\Storage;
 use Igni\Storage\Driver\ConnectionManager;
 
 // Define connection:
-ConnectionManager::register(new Connection('sqlite:/' . __DIR__ . '/db.db'));
+ConnectionManager::registerDefault(new Connection('sqlite:/' . __DIR__ . '/db.db'));
 
 // Initialize storage:
 $storage = new Storage();
@@ -174,7 +174,7 @@ connection manager.
 <?php 
 use Igni\Storage\Driver\ConnectionManager;
 
-ConnectionManager::register($connection, $name = 'my_connection');
+ConnectionManager::register($name = 'my_connection', $connection);
 ```
 
 ### Checking if connection exists
@@ -772,17 +772,161 @@ For full example please visit [examples directory](examples).
 
 ## Working with Collections
 
+Collection is a container that groups multiple elements into a single unit. Storage framework contains collection implementation
+that allows to easier represent or manipulate data that are provided by cursor or any other Iterable instance.
+ 
+Storage framework's collection supports declarative programming, it has support for map/reduce operations.
+ 
+### Instantiating new collection
+Collection can be instantiated with any iterable including cursor.
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\Collection;
 
-# Database Drivers
+// From iterable
+$connection = ConnectionManager::getDefault();
+$collection = new Collection($connection->execute('SELECT *FROM artists'));
 
-## Available drivers
+// From list of items
+$numbers = Collection::fromList(1, 2, 3);
+```
 
-### PDO Driver
+### Adding new item to a collection
+```php
+<?php
+use Igni\Storage\Mapping\Collection\Collection;
 
-#### Working with cursor
+$collection = new Collection();
+$withNewItem = $collection->add(1);
+$withMultipleItems = $collection->addMany(1, 2, 3);
+```
 
-### MongoDB Driver
+### Removing item from collection
+```php
+<?php
+use Igni\Storage\Mapping\Collection\Collection;
 
-#### Working with cursor
+$collection = new Collection([1, 2, 3, 4]);
 
-## Adding custom driver
+$collectionWithoutItem = $collection->remove(2);
+
+$collectionWithoutManyItems = $collection->removeMany(1, 4);
+```
+
+### Iterating through collection
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\Collection;
+
+$connection = ConnectionManager::getDefault();
+$collection = new Collection($connection->execute('SELECT *FROM artists'));
+
+// Imperative approach.
+$mappedData = new Collection();
+foreach ($collection as $item) {
+    $item['age'] = 20;
+    $mappedData = $mappedData->add($item);
+}
+
+// Declarative approach
+$mappedData = $collection->map(function ($item) {
+    $item['age'] = 20;
+    return $item;
+});
+```
+
+### Sorting/Reversing items in collection
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\Collection;
+
+$connection = ConnectionManager::getDefault();
+$collection = new Collection($connection->execute('SELECT *FROM artists'));
+
+// Sort by age
+$sorted = $collection->sort(function(array $current, array $next) {
+    return $current['age'] <=> $next['age'];
+});
+
+// Reverse
+$reversed = $sorted->reverse(); 
+```
+
+### Checking if collection contains an element
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\Collection;
+
+$connection = ConnectionManager::getDefault();
+$collection = new Collection($connection->execute('SELECT name, age FROM artists'));
+
+
+if ($collection->contains(['name' => 'Bob', 'age' => 20])) {
+    // There is Bob in the collection
+}
+```
+
+### Searching items in collection
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\Collection;
+
+$connection = ConnectionManager::getDefault();
+$collection = new Collection($connection->execute('SELECT *FROM artists'));
+
+// Age greater than 50
+$elders = $collection->where(function(array $artist) {
+    return $artist['age'] > 50;
+});
+```
+
+### Checking if any item in a collection fulfils given requirement 
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\Collection;
+
+$connection = ConnectionManager::getDefault();
+$collection = new Collection($connection->execute('SELECT *FROM artists'));
+
+if ($collection->any(function($artist) { return $artist['age'] > 70; })) {
+    // There is at least one artist who is over 70 yo
+}
+```
+
+### Checking if every item in a collection fulfils given requirement 
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\Collection;
+
+$connection = ConnectionManager::getDefault();
+$collection = new Collection($connection->execute('SELECT *FROM artists'));
+
+if ($collection->every(function($artist) { return $artist['age'] > 2; })) {
+    // All artists are above 2 yo
+}
+```
+
+
+### Reducing collection to a single value
+```php
+<?php
+use Igni\Storage\Driver\ConnectionManager;
+use Igni\Storage\Mapping\Collection\Collection;
+
+$connection = ConnectionManager::getDefault();
+$collection = new Collection($connection->execute('SELECT *FROM artists'));
+
+$totalAge = $collection->reduce(
+    function(int $total, array $artist) {
+        return $total + $artist['age'];
+    }, 
+    $initialValue = 0
+);
+```

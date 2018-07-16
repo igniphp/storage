@@ -26,13 +26,12 @@ final class CollectionTest extends TestCase
     public function testCanInstantiate(): void
     {
         self::assertInstanceOf(Collection::class, new Collection());
-        self::assertInstanceOf(Collection::class, new Collection([1, 2, 3]));
-        self::assertInstanceOf(Collection::class, Collection::fromList(1, 2, 3));
+        self::assertInstanceOf(Collection::class, new Collection(new ArrayIterator([1, 2, 3])));
     }
 
     public function testReduce(): void
     {
-        $collection = new Collection([1, 2, 3, 4, 5]);
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5]));
         self::assertSame(
             15,
             $collection->reduce(
@@ -46,7 +45,7 @@ final class CollectionTest extends TestCase
 
     public function testMap(): void
     {
-        $collection = new Collection([1, 2, 3, 4, 5]);
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5]));
         $mapped = $collection->map(function($el) { return $el + 1; });
 
         self::assertNotSame($mapped, $collection);
@@ -56,7 +55,7 @@ final class CollectionTest extends TestCase
 
     public function testSort(): void
     {
-        $collection = new Collection([2, 4, 5, 1, 3]);
+        $collection = new Collection(new ArrayIterator([2, 4, 5, 1, 3]));
         $sorted = $collection->sort(function ($a, $b) { return $a <=> $b; });
 
         self::assertNotSame($sorted, $collection);
@@ -66,7 +65,7 @@ final class CollectionTest extends TestCase
 
     public function testInsert(): void
     {
-        $collection = new Collection([1, 3, 4, 5]);
+        $collection = new Collection(new ArrayIterator([1, 3, 4, 5]));
         $inserted = $collection->insert(1, 2);
 
         self::assertNotSame($inserted, $collection);
@@ -77,13 +76,13 @@ final class CollectionTest extends TestCase
     public function testFailWhileInsertInNegativeIndex(): void
     {
         $this->expectException(CollectionException::class);
-        $collection = new Collection([1, 3, 4, 5]);
+        $collection = new Collection(new ArrayIterator([1, 3, 4, 5]));
         $collection->insert(-1, 2);
     }
 
     public function testInsertMany(): void
     {
-        $collection = new Collection([1, 5, 6, 7]);
+        $collection = new Collection(new ArrayIterator([1, 5, 6, 7]));
         $inserted = $collection->insert(1, 2, 3, 4);
 
         self::assertNotSame($inserted, $collection);
@@ -93,7 +92,7 @@ final class CollectionTest extends TestCase
 
     public function testSlice(): void
     {
-        $collection = new Collection([1, 2, 3, 4, 5, 6, 7]);
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5, 6, 7]));
         $sliced = $collection->slice(1, 3);
 
         self::assertNotSame($sliced, $collection);
@@ -103,7 +102,7 @@ final class CollectionTest extends TestCase
 
     public function testWhere(): void
     {
-        $collection = new Collection([1, 2, 3, 4, 5, 6, 7]);
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5, 6, 7]));
         $filtered = $collection->where(function($item){
             return $item % 2 > 0;
         });
@@ -219,7 +218,7 @@ final class CollectionTest extends TestCase
 
     public function testAddMany(): void
     {
-        $collection = new Collection([1, 2, 3]);
+        $collection = new Collection(new ArrayIterator([1, 2, 3]));
         $added = $collection->addMany(4, 5, 6);
 
         self::assertSame([1, 2, 3, 4, 5, 6], $added->toArray());
@@ -257,7 +256,7 @@ final class CollectionTest extends TestCase
 
     public function testReverse(): void
     {
-        $collection = new Collection([1, 2, 3, 4, 5, 6, 7]);
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5, 6, 7]));
         $reversed = $collection->reverse();
 
         self::assertNotSame($reversed, $collection);
@@ -267,7 +266,7 @@ final class CollectionTest extends TestCase
 
     public function testRemove(): void
     {
-        $collection = new Collection([1, 2, 3, 4, 5, 6, 7]);
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5, 6, 7]));
         $removed = $collection->remove(2);
 
         self::assertNotSame($removed, $collection);
@@ -277,7 +276,7 @@ final class CollectionTest extends TestCase
 
     public function testRemoveMany(): void
     {
-        $collection = new Collection([1, 2, 3, 4, 5, 6, 7]);
+        $collection = new Collection(new ArrayIterator([1, 2, 3, 4, 5, 6, 7]));
         $removed = $collection->removeMany(2, 5);
 
         self::assertNotSame($removed, $collection);
@@ -287,7 +286,7 @@ final class CollectionTest extends TestCase
 
     public function testClear(): void
     {
-        $collection = new Collection([1]);
+        $collection = new Collection(new ArrayIterator([1]));
         $collection->clear();
         self::assertSame([], $collection->toArray());
     }

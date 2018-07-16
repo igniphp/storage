@@ -1,8 +1,18 @@
 {
   "name": "igniphp/storage",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
+  "description": "Minimalistic entity framework with multi database support.",
+  "keywords": [
+    "ODM",
+    "ORM",
+    "Entity framework",
+    "Unit of work",
+    "Identity map",
+    "Mysql",
+    "Sqlite",
+    "Mongo",
+    "Pgsql",
+    "php71"
+  ],
   "license": "MIT",
   "authors": [
     {

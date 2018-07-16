@@ -37,13 +37,6 @@ Igni storage is minimalistic mapping/hydration framework with support for PDO an
   * [Working with custom hydrators](#working-with-custom-hydrators)
   * [Working with custom types](#working-with-custom-types)
   * [Working with Collections](#working-with-collections)
-- [Database Drivers](#database-drivers)
-  * [Available drivers](#available-drivers)
-    + [PDO Driver](#pdo-driver)
-      - [Working with cursor](#working-with-cursor)
-    + [MongoDB Driver](#mongodb-driver)
-      - [Working with cursor](#working-with-cursor-1)
-  * [Adding custom driver](#adding-custom-driver)
 
 # Introduction
 

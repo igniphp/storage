@@ -6,6 +6,31 @@
 ## Igni Storage
 
 Igni storage is minimalistic mapping/hydration framework with support for PDO and MongoDB databases with cross database access.
+# Introduction
+
+```php
+<?php declare(strict_types=1);
+
+use Igni\Storage\Driver\Pdo\Connection;
+use Igni\Storage\Storage;
+use Igni\Storage\Driver\ConnectionManager;
+
+// Define connection:
+ConnectionManager::registerDefault(new Connection('sqlite:/' . __DIR__ . '/db.db'));
+
+// Initialize storage:
+$storage = new Storage();
+$artist = $storage->get(Artist::class, 1);
+
+// Update artist's name
+$artist->name = 'John Lennon';
+
+// Save changes in memory
+$storage->persist($artist);
+
+// Commit changes to database
+$storage->commit();
+```
 
 ## Table of contents
 - [Introduction](#introduction)
@@ -39,31 +64,6 @@ Igni storage is minimalistic mapping/hydration framework with support for PDO an
   * [Working with Collections](#working-with-collections)
   * [Working with Lazy Collections](#working-with-lazy-collections)
 
-# Introduction
-
-```php
-<?php declare(strict_types=1);
-
-use Igni\Storage\Driver\Pdo\Connection;
-use Igni\Storage\Storage;
-use Igni\Storage\Driver\ConnectionManager;
-
-// Define connection:
-ConnectionManager::registerDefault(new Connection('sqlite:/' . __DIR__ . '/db.db'));
-
-// Initialize storage:
-$storage = new Storage();
-$artist = $storage->get(Artist::class, 1);
-
-// Update artist's name
-$artist->name = 'John Lennon';
-
-// Save changes in memory
-$storage->persist($artist);
-
-// Commit changes to database
-$storage->commit();
-```
 
 ## Features
 ###### Works with native queries

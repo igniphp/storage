@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Artist;
+namespace Igni\Tests\Fixtures\Artist;
 
 use Igni\Storage\Driver\Pdo\Repository;
 

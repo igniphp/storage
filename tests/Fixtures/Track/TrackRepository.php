@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Track;
+namespace Igni\Tests\Fixtures\Track;
 
 use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Mapping\Collection\LazyCollection;
-use IgniTest\Fixtures\Album\AlbumEntity;
+use Igni\Tests\Fixtures\Album\AlbumEntity;
 
 class TrackRepository extends Repository
 {

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Album;
+namespace Igni\Tests\Fixtures\Album;
 
 use DateTime;
 use Igni\Storage\Storable;
@@ -8,7 +8,7 @@ use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property as Property;
 use Igni\Storage\Id\AutoGenerateId;
-use IgniTest\Fixtures\Artist\ArtistEntity;
+use Igni\Tests\Fixtures\Artist\ArtistEntity;
 
 /**
  * @Storage\Entity(source="albums", hydrator=AlbumHydrator::class)

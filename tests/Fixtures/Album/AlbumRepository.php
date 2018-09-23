@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Album;
+namespace Igni\Tests\Fixtures\Album;
 
 use Igni\Storage\Driver\Pdo\Repository;
 use Igni\Storage\Mapping\Collection\LazyCollection;
-use IgniTest\Fixtures\Artist\ArtistEntity;
+use Igni\Tests\Fixtures\Artist\ArtistEntity;
 
 class AlbumRepository extends Repository
 {

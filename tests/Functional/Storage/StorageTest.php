@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage;
+namespace Igni\Tests\Functional\Storage;
 
 use Igni\Storage\EntityManager;
 use Igni\Storage\Exception\StorageException;
 use Igni\Storage\Storage;
-use IgniTest\Fixtures\Artist\ArtistEntity;
-use IgniTest\Fixtures\Playlist\PlaylistEntity;
+use Igni\Tests\Fixtures\Artist\ArtistEntity;
+use Igni\Tests\Fixtures\Playlist\PlaylistEntity;
 use PHPUnit\Framework\TestCase;
 
 final class StorageTest extends TestCase

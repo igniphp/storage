@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Driver\PDO;
+namespace Igni\Tests\Functional\Storage\Driver\PDO;
 
-use IgniTest\Fixtures\Album\AlbumEntity;
-use IgniTest\Fixtures\Artist\ArtistEntity;
-use IgniTest\Functional\Storage\StorageTrait;
+use Igni\Tests\Fixtures\Album\AlbumEntity;
+use Igni\Tests\Fixtures\Artist\ArtistEntity;
+use Igni\Tests\Functional\Storage\StorageTrait;
 use PHPUnit\Framework\TestCase;
 
 class RepositoryTest extends TestCase

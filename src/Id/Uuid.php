@@ -10,7 +10,7 @@ class Uuid extends GenericId
 {
     private $long;
 
-    public function __construct($value = null)
+    public function __construct(string $value = null)
     {
         if ($value === null) {
             $value = UuidGenerator::generate();

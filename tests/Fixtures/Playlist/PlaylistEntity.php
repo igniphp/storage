@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Playlist;
+namespace Igni\Tests\Fixtures\Playlist;
 
 use Igni\Storage\Storable;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property as Property;
 use Igni\Storage\Id\AutoGenerateId;
-use IgniTest\Fixtures\Track\TrackEntity;
+use Igni\Tests\Fixtures\Track\TrackEntity;
 
 /**
  * @Storage\Entity(source="playlist", connection="mongo")

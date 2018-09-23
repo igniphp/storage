@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage;
+namespace Igni\Tests\Functional\Storage;
 
 use Igni\Storage\Driver\ConnectionManager;
 use Igni\Storage\Driver\MongoDB\Connection as MongoDBConnection;
@@ -9,11 +9,11 @@ use Igni\Storage\Driver\Pdo\Connection as SqliteConnection;
 use Igni\Storage\Driver\Pdo\Cursor;
 use Igni\Storage\EntityManager;
 use Igni\Storage\Storage;
-use IgniTest\Fixtures\Album\AlbumRepository;
-use IgniTest\Fixtures\Artist\ArtistRepository;
-use IgniTest\Fixtures\Genre\GenreRepository;
-use IgniTest\Fixtures\Playlist\PlaylistRepository;
-use IgniTest\Fixtures\Track\TrackRepository;
+use Igni\Tests\Fixtures\Album\AlbumRepository;
+use Igni\Tests\Fixtures\Artist\ArtistRepository;
+use Igni\Tests\Fixtures\Genre\GenreRepository;
+use Igni\Tests\Fixtures\Playlist\PlaylistRepository;
+use Igni\Tests\Fixtures\Track\TrackRepository;
 
 trait StorageTrait
 {

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Mapping;
+namespace Igni\Tests\Functional\Storage\Mapping;
 
 use Igni\Storage\Mapping\Strategy\Text;
 use Igni\Storage\Mapping\Type;

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Mapping\MetaData\Strategy;
+namespace Igni\Tests\Functional\Storage\Mapping\MetaData\Strategy;
 
 use Igni\Storage\Mapping\MetaData\Strategy\AnnotationMetaDataFactory;
 use Igni\Storage\Mapping\Strategy\Embed;
 use Igni\Storage\Mapping\Strategy\Id;
 use Igni\Storage\Mapping\Strategy\Text;
-use IgniTest\Fixtures\Playlist\PlaylistEntity;
+use Igni\Tests\Fixtures\Playlist\PlaylistEntity;
 use PHPUnit\Framework\TestCase;
 
 final class AnnotationMetaDataFactoryTest extends TestCase

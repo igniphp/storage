@@ -3,9 +3,9 @@
 namespace IgniTestFunctional\Storage\Driver\MongoDB;
 
 use Igni\Storage\Mapping\Collection\Collection;
-use IgniTest\Fixtures\Playlist\PlaylistEntity;
-use IgniTest\Fixtures\Track\TrackEntity;
-use IgniTest\Functional\Storage\StorageTrait;
+use Igni\Tests\Fixtures\Playlist\PlaylistEntity;
+use Igni\Tests\Fixtures\Track\TrackEntity;
+use Igni\Tests\Functional\Storage\StorageTrait;
 use PHPUnit\Framework\TestCase;
 
 class RepositoryTest extends TestCase

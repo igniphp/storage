@@ -3,7 +3,7 @@
 namespace IgniTestFunctional\Storage\Driver\MongoDB;
 
 use PHPUnit\Framework\TestCase;
-use IgniTest\Functional\Storage\StorageTrait;
+use Igni\Tests\Functional\Storage\StorageTrait;
 
 class ConnectionTest extends TestCase
 {

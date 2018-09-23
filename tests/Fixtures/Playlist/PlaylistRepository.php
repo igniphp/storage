@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Playlist;
+namespace Igni\Tests\Fixtures\Playlist;
 
 use Igni\Storage\Driver\MongoDB\Repository;
 

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Mapping\Strategy;
+namespace Igni\Tests\Functional\Storage\Mapping\Strategy;
 
 use Igni\Storage\EntityManager;
 use Igni\Storage\Mapping\Strategy\Embed;
-use IgniTest\Fixtures\Playlist\PlaylistDetails;
+use Igni\Tests\Fixtures\Playlist\PlaylistDetails;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 

@@ -16,12 +16,12 @@ use Igni\Storage\Mapping\Strategy\Id;
 use Igni\Storage\Mapping\Strategy\Reference;
 use Igni\Storage\Mapping\Strategy\Text;
 use Igni\Storage\Repository;
-use IgniTest\Fixtures\Album\AlbumEntity;
-use IgniTest\Fixtures\Artist\ArtistEntity;
-use IgniTest\Fixtures\Playlist\PlaylistDetails;
-use IgniTest\Fixtures\Playlist\PlaylistDetailsHydrator;
-use IgniTest\Fixtures\Track\TrackEntity;
-use IgniTest\Fixtures\Track\TrackRepository;
+use Igni\Tests\Fixtures\Album\AlbumEntity;
+use Igni\Tests\Fixtures\Artist\ArtistEntity;
+use Igni\Tests\Fixtures\Playlist\PlaylistDetails;
+use Igni\Tests\Fixtures\Playlist\PlaylistDetailsHydrator;
+use Igni\Tests\Fixtures\Track\TrackEntity;
+use Igni\Tests\Fixtures\Track\TrackRepository;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 

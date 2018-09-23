@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Genre;
+namespace Igni\Tests\Fixtures\Genre;
 
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Id\AutoGenerateId;

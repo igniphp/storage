@@ -54,7 +54,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "IgniTest\\": "tests/"
+      "Igni\\Tests\\": "tests/"
     }
   },
   "scripts": {

@@ -31,9 +31,9 @@ final class Connection implements ConnectionInterface
         $this->handler = null;
     }
 
-    public function open(): void
+    public function connect(): void
     {
-        if ($this->isOpen()) {
+        if ($this->isConnected()) {
             return;
         }
 
@@ -45,7 +45,7 @@ final class Connection implements ConnectionInterface
         );
     }
 
-    public function isOpen(): bool
+    public function isConnected(): bool
     {
         return $this->handler !== null;
     }
@@ -58,8 +58,8 @@ final class Connection implements ConnectionInterface
      */
     public function execute(...$parameters): Cursor
     {
-        if (!$this->isOpen()) {
-            $this->open();
+        if (!$this->isConnected()) {
+            $this->connect();
         }
 
         $query = $parameters[0];
@@ -98,7 +98,7 @@ final class Connection implements ConnectionInterface
 
     public function getBaseConnection(): PDO
     {
-        $this->open();
+        $this->connect();
         return $this->handler;
     }
 

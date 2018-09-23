@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Mapping\Collection;
+namespace Igni\Tests\Functional\Storage\Mapping\Collection;
 
 use Igni\Exception\OutOfBoundsException;
 use Igni\Storage\Exception\CollectionException;
 use Igni\Storage\Mapping\Collection\Collection;
 use ArrayIterator;
-use IgniTest\Functional\Storage\StorageTrait;
+use Igni\Tests\Functional\Storage\StorageTrait;
 use PHPUnit\Framework\TestCase;
 
 final class CollectionTest extends TestCase

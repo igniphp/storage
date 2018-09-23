@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Id;
+namespace Igni\Tests\Functional\Storage\Id;
 
 use Igni\Crypto\Base58;
 use Igni\Storage\Exception\MappingException;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Mapping\Strategy;
+namespace Igni\Tests\Functional\Storage\Mapping\Strategy;
 
 use Igni\Storage\Mapping\Strategy\FloatNumber;
 use PHPUnit\Framework\TestCase;

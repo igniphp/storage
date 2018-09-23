@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Functional\Storage\Mapping\Collection;
+namespace Igni\Tests\Functional\Storage\Mapping\Collection;
 
 use Igni\Storage\Mapping\Collection\LazyCollection;
-use IgniTest\Functional\Storage\StorageTrait;
+use Igni\Tests\Functional\Storage\StorageTrait;
 use PHPUnit\Framework\TestCase;
 
 final class LazyCollectionTest extends TestCase

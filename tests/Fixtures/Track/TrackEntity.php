@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Track;
+namespace Igni\Tests\Fixtures\Track;
 
 use Igni\Storage\Storable;
 use Igni\Storage\Id\GenericId;
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property;
 use Igni\Storage\Id\AutoGenerateId;
-use IgniTest\Fixtures\Album\AlbumEntity;
-use IgniTest\Fixtures\Artist\ArtistEntity;
-use IgniTest\Fixtures\Genre\GenreEntity;
+use Igni\Tests\Fixtures\Album\AlbumEntity;
+use Igni\Tests\Fixtures\Artist\ArtistEntity;
+use Igni\Tests\Fixtures\Genre\GenreEntity;
 
 /**
  * @Storage\Entity("tracks")

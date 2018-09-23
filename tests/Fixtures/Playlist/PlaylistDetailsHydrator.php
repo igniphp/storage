@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Playlist;
+namespace Igni\Tests\Fixtures\Playlist;
 
 use Igni\Storage\Hydration\GenericHydrator;
 use Igni\Storage\Hydration\ObjectHydrator;
-use IgniTest\Fixtures\Track\TrackEntity;
+use Igni\Tests\Fixtures\Track\TrackEntity;
 
 class PlaylistDetailsHydrator implements ObjectHydrator
 {

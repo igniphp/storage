@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Playlist;
+namespace Igni\Tests\Fixtures\Playlist;
 
 use Igni\Storage\Mapping\Annotation as Storage;
 use Igni\Storage\Mapping\Annotation\Property as Property;
 use Igni\Storage\Mapping\Collection\LazyCollection;
-use IgniTest\Fixtures\Track\TrackEntity;
+use Igni\Tests\Fixtures\Track\TrackEntity;
 
 /**
  * @Storage\EmbeddedEntity(hydrator=PlaylistDetailsHydrator::class)

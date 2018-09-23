@@ -33,7 +33,7 @@ final class Connection implements ConnectionInterface
         $this->handler = null;
     }
 
-    public function open(): void
+    public function connect(): void
     {
         $this->handler = new MongoDB\Driver\Manager(
             'mongodb://' . $this->host . '/' . $this->options->getDatabase(),
@@ -42,15 +42,15 @@ final class Connection implements ConnectionInterface
         );
     }
 
-    public function isOpen(): bool
+    public function isConnected(): bool
     {
         return $this->handler !== null;
     }
 
     public function execute(...$parameters): Cursor
     {
-        if (!$this->isOpen()) {
-            $this->open();
+        if (!$this->isConnected()) {
+            $this->connect();
         }
 
         $command = new MongoDB\Driver\Command($parameters[0]);

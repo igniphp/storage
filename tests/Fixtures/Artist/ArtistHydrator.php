@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace IgniTest\Fixtures\Artist;
+namespace Igni\Tests\Fixtures\Artist;
 
 use Igni\Storage\Hydration\GenericHydrator;
 use Igni\Storage\Hydration\ObjectHydrator;
-use IgniTest\Fixtures\Album\AlbumEntity;
+use Igni\Tests\Fixtures\Album\AlbumEntity;
 
 class ArtistHydrator implements ObjectHydrator
 {

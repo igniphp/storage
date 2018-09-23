@@ -2,7 +2,9 @@
 
 namespace Igni\Storage\Driver;
 
-interface Cursor extends \Iterator
+use Iterator;
+
+interface Cursor extends Iterator
 {
     public function open(): void;
     public function close(): void;

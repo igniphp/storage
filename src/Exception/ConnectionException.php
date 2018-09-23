@@ -6,7 +6,7 @@ use Igni\Storage\Driver\Connection;
 
 class ConnectionException extends DriverException
 {
-    public static function forExecutionFailure(string $reason, Connection $connection, array $parameters): ConnectionException
+    public static function forExecutionFailure(string $reason, Connection $connection, array $parameters): self
     {
         $connection = get_class($connection);
 

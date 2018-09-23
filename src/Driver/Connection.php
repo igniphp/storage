@@ -5,7 +5,7 @@ namespace Igni\Storage\Driver;
 interface Connection
 {
     public function close(): void;
-    public function open(): void;
-    public function isOpen(): bool;
+    public function connect(): void;
+    public function isConnected(): bool;
     public function execute(...$parameters);
 }

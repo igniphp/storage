@@ -45,7 +45,7 @@ class RepositoryTest extends TestCase
 
         $this->entityManager->create($album);
 
-        $cursor = $this->sqliteConnection->execute(
+        $cursor = $this->sqliteConnection->createCursor(
             'SELECT * FROM albums WHERE AlbumId = :id',
             ['id' => $album->getId()->getValue()]
         );
@@ -68,7 +68,7 @@ class RepositoryTest extends TestCase
 
         $this->entityManager->remove($artist);
 
-        $cursor = $this->sqliteConnection->execute('SELECT * FROM artists WHERE ArtistId = :id', ['id' => $artist->getId()]);
+        $cursor = $this->sqliteConnection->createCursor('SELECT * FROM artists WHERE ArtistId = :id', ['id' => $artist->getId()]);
         self::assertFalse($cursor->valid());
     }
 
@@ -80,7 +80,7 @@ class RepositoryTest extends TestCase
 
         $this->entityManager->update($artist);
 
-        $cursor = $this->sqliteConnection->execute('SELECT * FROM artists WHERE ArtistId = :id', ['id' => $artist->getId()]);
+        $cursor = $this->sqliteConnection->createCursor('SELECT * FROM artists WHERE ArtistId = :id', ['id' => $artist->getId()]);
         self::assertTrue($cursor->valid());
         $data = $cursor->current();
 

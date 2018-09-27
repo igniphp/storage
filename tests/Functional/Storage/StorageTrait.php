@@ -79,7 +79,7 @@ trait StorageTrait
 
     private function createCursorForSql(string $sql, array $bind = null): Cursor
     {
-        return $this->sqliteConnection->execute($sql, $bind);
+        return $this->sqliteConnection->createCursor($sql, $bind);
     }
 
     private function loadRepositories(): void

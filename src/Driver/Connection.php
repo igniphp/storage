@@ -7,5 +7,5 @@ interface Connection
     public function close(): void;
     public function connect(): void;
     public function isConnected(): bool;
-    public function execute(...$parameters);
+    public function createCursor(...$parameters);
 }

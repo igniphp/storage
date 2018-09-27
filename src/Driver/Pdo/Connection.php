@@ -56,7 +56,7 @@ final class Connection implements ConnectionInterface
      * @return Cursor
      * @throws ConnectionException
      */
-    public function execute(...$parameters): Cursor
+    public function createCursor(...$parameters): Cursor
     {
         if (!$this->isConnected()) {
             $this->connect();

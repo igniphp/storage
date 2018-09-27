@@ -4,6 +4,14 @@ namespace Igni\Storage\Migration;
 
 use Igni\Storage\Exception\VersionException;
 
+/**
+ * Value object used by MigrationManager and VersionSynchronizer.
+ *
+ * @see \Igni\Storage\MigrationManager
+ * @see \Igni\Storage\Migration\VersionSynchronizer
+ *
+ * @package Igni\Storage\Migration
+ */
 final class Version
 {
     private $major;

@@ -5,6 +5,15 @@ namespace Igni\Storage;
 use Igni\Storage\Migration\Version;
 use Igni\Storage\Migration\VersionSynchronizer;
 
+/**
+ * Lightweight migration system usable with multiple databases.
+ * Using migration manager one must implement VersionSynchronizer
+ * which is responsible for providing current system version as well
+ * as storing version used by migration.
+ *
+ * @see \Igni\Storage\Migration\VersionSynchronizer
+ * @package Igni\Storage
+ */
 class MigrationManager
 {
     /**

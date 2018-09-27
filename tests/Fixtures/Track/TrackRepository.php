@@ -13,7 +13,7 @@ class TrackRepository extends Repository
         $bind = implode(',', array_fill(0, count($ids), '?'));
         $query = "SELECT * FROM tracks WHERE TrackId IN(${bind})";
 
-        $cursor = $this->connection->execute($query, $ids);
+        $cursor = $this->connection->createCursor($query, $ids);
         $cursor->hydrateWith($this->hydrator);
 
         return new LazyCollection($cursor);
@@ -23,7 +23,7 @@ class TrackRepository extends Repository
     {
         $query = "SELECT * FROM tracks WHERE GenreId = :id";
 
-        $cursor = $this->connection->execute($query, ['id' => $id]);
+        $cursor = $this->connection->createCursor($query, ['id' => $id]);
         $cursor->hydrateWith($this->hydrator);
 
         return new LazyCollection($cursor);
@@ -33,7 +33,7 @@ class TrackRepository extends Repository
     {
         $query = "SELECT * FROM albums WHERE AlbumId = :id";
 
-        $cursor = $this->connection->execute($query, ['id' => $album->getId()->getValue()]);
+        $cursor = $this->connection->createCursor($query, ['id' => $album->getId()->getValue()]);
         $cursor->hydrateWith($this->hydrator);
 
         return new LazyCollection($cursor);

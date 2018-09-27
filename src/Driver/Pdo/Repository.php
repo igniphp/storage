@@ -54,7 +54,7 @@ abstract class Repository extends GenericRepository
 
     protected function query($query, array $parameters = []): Cursor
     {
-        $cursor = $this->connection->execute($query, $parameters);
+        $cursor = $this->connection->createCursor($query, $parameters);
         $cursor->hydrateWith($this->hydrator);
         return $cursor;
     }
@@ -67,7 +67,7 @@ abstract class Repository extends GenericRepository
             $this->metaData->getIdentifier()->getFieldName()
         );
 
-        return $this->connection->execute($query, ['_id' => $id]);
+        return $this->connection->createCursor($query, ['_id' => $id]);
     }
 
     protected function buildDeleteQuery(Storable $entity): Cursor
@@ -77,7 +77,7 @@ abstract class Repository extends GenericRepository
             $this->metaData->getSource(),
             $this->metaData->getIdentifier()->getFieldName()
         );
-        return $this->connection->execute($query, ['_id' => $entity->getId()]);
+        return $this->connection->createCursor($query, ['_id' => $entity->getId()]);
     }
 
     protected function buildCreateQuery(Storable $entity): Cursor
@@ -96,7 +96,7 @@ abstract class Repository extends GenericRepository
             implode(',', $columns),
             implode(',', $binds)
         );
-        return $this->connection->execute($sql, $data);
+        return $this->connection->createCursor($sql, $data);
     }
 
     protected function buildUpdateQuery(Storable $entity): Cursor
@@ -113,6 +113,6 @@ abstract class Repository extends GenericRepository
             implode(', ', $columns),
             $this->metaData->getIdentifier()->getFieldName()
         );
-        return $this->connection->execute($sql, array_merge($data, ['_id' => $entity->getId()]));
+        return $this->connection->createCursor($sql, array_merge($data, ['_id' => $entity->getId()]));
     }
 }

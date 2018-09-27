@@ -47,7 +47,7 @@ final class Connection implements ConnectionInterface
         return $this->handler !== null;
     }
 
-    public function execute(...$parameters): Cursor
+    public function createCursor(...$parameters): Cursor
     {
         if (!$this->isConnected()) {
             $this->connect();
@@ -60,7 +60,7 @@ final class Connection implements ConnectionInterface
 
     public function dropCollection(string $collection): void
     {
-        $cursor = $this->execute([
+        $cursor = $this->createCursor([
             'drop' => $collection,
         ]);
         $cursor->execute();
@@ -68,7 +68,7 @@ final class Connection implements ConnectionInterface
 
     public function insert(string $collection, array ...$documents): void
     {
-        $cursor = $this->execute([
+        $cursor = $this->createCursor([
             'insert' => $collection,
             'documents' => $documents,
         ]);
@@ -86,7 +86,7 @@ final class Connection implements ConnectionInterface
                 'limit' => 1,
             ];
         }
-        $cursor = $this->execute([
+        $cursor = $this->createCursor([
             'delete' => $collection,
             'deletes' => $deletes,
         ]);
@@ -106,12 +106,12 @@ final class Connection implements ConnectionInterface
             unset ($command['filter']);
         }
 
-        return $this->execute($command);
+        return $this->createCursor($command);
     }
 
     public function count(string $collection, array $query): Cursor
     {
-        return $this->execute([
+        return $this->createCursor([
             'count' => $collection,
             'query' => $query,
         ]);
@@ -141,7 +141,7 @@ final class Connection implements ConnectionInterface
                 'upsert' => true,
             ];
         }
-        $cursor = $this->execute([
+        $cursor = $this->createCursor([
             'update' => $collection,
             'updates' => $updates,
         ]);
